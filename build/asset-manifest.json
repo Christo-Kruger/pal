@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/static/css/main.6d2b02b8.css",
-    "main.js": "/static/js/main.e9d17d84.js",
-    "static/js/787.f121dd1e.chunk.js": "/static/js/787.f121dd1e.chunk.js",
-    "static/media/logo.png": "/static/media/logo.7e213964b8e99cfbface.png",
-    "index.html": "/index.html",
-    "main.6d2b02b8.css.map": "/static/css/main.6d2b02b8.css.map",
-    "main.e9d17d84.js.map": "/static/js/main.e9d17d84.js.map",
-    "787.f121dd1e.chunk.js.map": "/static/js/787.f121dd1e.chunk.js.map"
+    "main.css": "/palbooking/static/css/main.6d2b02b8.css",
+    "main.js": "/palbooking/static/js/main.ba62a2a4.js",
+    "static/js/787.f121dd1e.chunk.js": "/palbooking/static/js/787.f121dd1e.chunk.js",
+    "static/media/logo.png": "/palbooking/static/media/logo.7e213964b8e99cfbface.png",
+    "index.html": "/palbooking/index.html",
+    "main.6d2b02b8.css.map": "/palbooking/static/css/main.6d2b02b8.css.map",
+    "main.ba62a2a4.js.map": "/palbooking/static/js/main.ba62a2a4.js.map",
+    "787.f121dd1e.chunk.js.map": "/palbooking/static/js/787.f121dd1e.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6d2b02b8.css",
-    "static/js/main.e9d17d84.js"
+    "static/js/main.ba62a2a4.js"
   ]
 }
