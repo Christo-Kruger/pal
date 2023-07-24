@@ -9,12 +9,16 @@ import Navbar from './components/Navbar';
 import { AuthProvider } from './context/AuthContext';
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 
 function App() {
   return (
     <AuthProvider>
+      <ToastContainer />
       <Router>
         <Navbar />
         <Routes>

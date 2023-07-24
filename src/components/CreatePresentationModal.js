@@ -3,6 +3,8 @@ import axios from "axios";
 import { getAuthHeader } from "../utils/auth";
 import Modal from "react-modal";
 import "./CreatePresentationModal.css";
+import { toast } from 'react-toastify';
+
 
 function CreatePresentationModal({ isOpen, onRequestClose, onPresentationCreated }) {
   const [name, setName] = useState("");
@@ -13,7 +15,7 @@ function CreatePresentationModal({ isOpen, onRequestClose, onPresentationCreated
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+ 
     const newPresentation = {
       name,
       description,
@@ -22,17 +24,20 @@ function CreatePresentationModal({ isOpen, onRequestClose, onPresentationCreated
       time,
       attendees: [],
     };
-
+ 
     const backendURL = process.env.REACT_APP_BACKEND_URL;
     const response = await axios.post(`${backendURL}/api/presentations`, newPresentation, getAuthHeader());
-
+ 
     if (response.status === 201) {
+      toast.success("Presentation created successfully!");
       onPresentationCreated(response.data);
       onRequestClose();
     } else {
       console.log("Error creating presentation");
+      toast.error("Error creating presentation");
     }
   };
+ 
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose}>

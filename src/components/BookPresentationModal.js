@@ -7,12 +7,15 @@ import {
   getUserPhone,
   getUserCampus,
 } from "../utils/auth";
+import { toast } from "react-toastify"; // Import Toastify
 
 import "./BookPresentationModal.css";
 
-
-
-function BookPresentationModal({ presentations, closeModal, onBookingCreated }) {
+function BookPresentationModal({
+  presentations,
+  closeModal,
+  onBookingCreated,
+}) {
   const [expandedCards, setExpandedCards] = useState([]);
 
   const handleBooking = async (presentationId) => {
@@ -26,9 +29,6 @@ function BookPresentationModal({ presentations, closeModal, onBookingCreated }) 
       campus: getUserCampus(),
     };
 
-    // Log the attendee details
-    console.log("Attendee details:", attendee);
-
     try {
       const response = await axios.patch(
         `${backendURL}/api/presentations/${presentationId}/attendees`,
@@ -39,13 +39,19 @@ function BookPresentationModal({ presentations, closeModal, onBookingCreated }) 
       if (response.status === 200) {
         onBookingCreated(response.data);
         closeModal();
-        window.alert("Booking was successful!"); // Display the success alert
+        toast.success("Booking was successful!"); // Display the success toast
       }
     } catch (err) {
       // Handle error from the server
-      console.log("Error booking presentation:", err.response.data.message);
+      if (err.response.data.message === "User has already booked this presentation") {
+        toast.warn("You have already booked a slot for this presentation."); // Warning toast
+      } else {
+        console.log("Error booking presentation:", err.response.data.message);
+        toast.error("Error booking presentation"); // Error toast
+      }
     }
   };
+
 
   const toggleExpandCard = (presentationId) => {
     setExpandedCards((prevExpandedCards) => {
@@ -58,18 +64,20 @@ function BookPresentationModal({ presentations, closeModal, onBookingCreated }) 
   };
 
   return (
-  
-      <><div className="modal-header">
-         <button className="close-button" onClick={closeModal}>
-        &times;
-      </button>
-      <h2>Book Presentation</h2>
-     
-    </div><div className="presentation-grid">
+    <>
+      <div className="modal-header">
+        <button className="close-button" onClick={closeModal}>
+          &times;
+        </button>
+        <h2>Book Presentation</h2>
+      </div>
+      <div className="presentation-grid">
         {presentations.map((presentation) => (
           <div
             key={presentation._id}
-            className={`presentation-card ${expandedCards.includes(presentation._id) ? "expanded" : ""}`}
+            className={`presentation-card ${
+              expandedCards.includes(presentation._id) ? "expanded" : ""
+            }`}
           >
             <h3>{presentation.name}</h3>
             <p>
@@ -88,12 +96,21 @@ function BookPresentationModal({ presentations, closeModal, onBookingCreated }) 
               </span>
             )}
             <p>{presentation.location}</p>
-            <button onClick={() => handleBooking(presentation._id)}>
+            <p>Booked Slots: {presentation.attendees.length}</p>
+
+            <p>Available Slots: {presentation.availableSlots}</p>
+            <button
+              onClick={() => handleBooking(presentation._id)}
+              disabled={
+                presentation.attendees.length === presentation.maxAttendees
+              }
+            >
               Book Presentation
             </button>
           </div>
         ))}
-      </div></>
+      </div>
+    </>
   );
 }
 

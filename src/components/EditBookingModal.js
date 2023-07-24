@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { getAuthHeader } from '../utils/auth';
+import { toast } from "react-toastify"; // Import toastify
 
 function EditBookingModal({ closeModal, booking, onBookingUpdated }) {
   const [childName, setChildName] = useState(booking.child.name);
@@ -33,15 +34,15 @@ function EditBookingModal({ closeModal, booking, onBookingUpdated }) {
       );
 
       if (response.status === 200) {
-        alert('Booking updated successfully');
+        toast.success('Booking updated successfully');
         onBookingUpdated(); // Fetch updated bookings
         closeModal(); // Close the modal
       } else {
-        alert('Failed to update booking');
+        toast.error('Failed to update booking');
       }
     } catch (error) {
       console.error(error);
-      alert('Failed to update booking');
+      toast.error('Failed to update booking');
     }
   };
 

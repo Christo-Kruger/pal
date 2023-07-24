@@ -4,6 +4,7 @@ import { getAuthHeader, getUserRole } from "../utils/auth";
 import CreatePresentationModal from "../components/CreatePresentationModal";
 import SendSmsModal from "../components/SendSmsModal";
 import "./AdminDashboard.css";
+import { toast } from 'react-toastify';
 
 function AdminDashboard() {
   const [bookings, setBookings] = useState([]);
@@ -150,29 +151,31 @@ function AdminDashboard() {
     }
   };
 
-  //To cancel Prenetation
-  const handlePresentationCancel = async (id) => {
-    console.log("We are here");
-    try {
-      const backendURL = process.env.REACT_APP_BACKEND_URL;
-      const response = await axios.delete(
-        `${backendURL}/api/presentations/admin/delete/${id}`,
-        getAuthHeader()
-      );
+// To cancel Presentation
+const handlePresentationCancel = async (id) => {
+  try {
+    const backendURL = process.env.REACT_APP_BACKEND_URL;
+    const response = await axios.delete(
+      `${backendURL}/api/presentations/admin/delete/${id}`,
+      getAuthHeader()
+    );
 
-      if (response.status === 200) {
-        const updatedPresentations = presentations.filter(
-          (presentation) => presentation._id !== id
-        );
-        setPresentations(updatedPresentations);
-      } else {
-        console.log("Error deleting booking");
-      }
-    } catch (error) {
-      console.log("Ooops");
-      console.error(error);
+    if (response.status === 200) {
+      const updatedPresentations = presentations.filter(
+        (presentation) => presentation._id !== id
+      );
+      setPresentations(updatedPresentations);
+      toast.success("Presentation successfully cancelled.");
+    } else {
+      console.log("Error deleting presentation");
+      toast.error("Error deleting presentation.");
     }
-  };
+  } catch (error) {
+    console.error(error);
+    toast.error("Operation failed.");
+  }
+};
+
 
   //To cancel Booking
   const handleBookingCancel = async (id) => {
@@ -182,17 +185,20 @@ function AdminDashboard() {
         `${backendURL}/api/bookings/admin/delete/${id}`,
         getAuthHeader()
       );
-
+  
       if (response.status === 200) {
         const updatedBookings = bookings.filter(
           (booking) => booking._id !== id
         );
         setBookings(updatedBookings);
+        toast.success("Booking successfully cancelled.");
       } else {
         console.log("Error deleting booking");
+        toast.error("Error deleting booking.");
       }
     } catch (error) {
       console.error(error);
+      toast.error("Operation failed.");
     }
   };
 
@@ -204,18 +210,20 @@ function AdminDashboard() {
         {},
         getAuthHeader()
       );
-
+  
       if (response.status === 200) {
         const updatedBookings = bookings.map((booking) =>
           booking._id === id ? { ...booking, confirmed: true } : booking
         );
         setBookings(updatedBookings);
+        toast.success("Booking marked as paid.");
       } else {
         console.log("Error updating booking");
+        toast.error("Error updating booking.");
       }
     } catch (error) {
       console.log("Error updating booking:", error);
-      alert(`Error updating the booking. ${error.message}`);
+      toast.error(`Error updating the booking. ${error.message}`);
     }
   };
 

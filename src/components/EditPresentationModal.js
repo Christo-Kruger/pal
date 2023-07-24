@@ -3,6 +3,7 @@ import axios from "axios";
 import { getAuthHeader } from "../utils/auth";
 import Modal from "react-modal";
 import "./CreatePresentationModal.css";
+import { toast } from 'react-toastify'; // Import toastify
 
 function EditPresentationModal({ isOpen, onRequestClose, onPresentationUpdated, presentationToEdit }) {
   const [name, setName] = useState("");
@@ -23,6 +24,7 @@ function EditPresentationModal({ isOpen, onRequestClose, onPresentationUpdated, 
       setTime(presentationDate.toTimeString().split(' ')[0].slice(0, 5));
     }
   }, [presentationToEdit]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -32,17 +34,22 @@ function EditPresentationModal({ isOpen, onRequestClose, onPresentationUpdated, 
       location,
       date,
       time,
-
     };
 
     const backendURL = process.env.REACT_APP_BACKEND_URL;
-    const response = await axios.put(`${backendURL}/api/presentations/${presentationToEdit._id}`, updatedPresentation, getAuthHeader());
+    try {
+      const response = await axios.put(`${backendURL}/api/presentations/${presentationToEdit._id}`, updatedPresentation, getAuthHeader());
 
-    if (response.status === 200) {
-      onPresentationUpdated(response.data);
-      onRequestClose();
-    } else {
-      console.log("Error updating presentation");
+      if (response.status === 200) {
+        toast.success('Presentation updated successfully'); // Success toast
+        onPresentationUpdated(response.data);
+        onRequestClose();
+      } else {
+        toast.error('Failed to update presentation'); // Error toast
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to update presentation'); // Error toast
     }
   };
 

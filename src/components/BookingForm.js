@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getUserId, getUserName, getAuthHeader } from '../utils/auth';
+import { toast } from 'react-toastify'; // Import toastify
 
 
 function BookingForm({ closeModal }) {
@@ -26,6 +27,7 @@ function BookingForm({ closeModal }) {
         setBookingCount(response.data.count);
       } catch (error) {
         console.error(error);
+        toast.error('Failed to fetch booking count'); // Error toast
       }
     } else {
       setBookingCount(null);
@@ -43,7 +45,7 @@ function BookingForm({ closeModal }) {
     const parentName = getUserName();
 
     if (!parentId || !parentName) {
-      alert('Error getting user information');
+      toast.error('Error getting user information'); // Error toast
       return;
     }
 
@@ -67,17 +69,18 @@ function BookingForm({ closeModal }) {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.post(`${backendURL}/api/bookings`, bookingData, getAuthHeader());
 
-      if (response.status === 200 || 201) {
-        alert('Booking successful');
+      if (response.status === 200 || response.status === 201) {
+        toast.success('Booking successful'); // Success toast
         closeModal();  // close the modal
       } else {
-        alert('Booking failed');
+        toast.error('Booking failed'); // Error toast
       }
     } catch (error) {
       console.error(error);
-      alert('Booking failed');
+      toast.error('Booking failed'); // Error toast
     }
   };
+
 
   return (
     <div>

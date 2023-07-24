@@ -3,6 +3,7 @@ import Modal from "react-modal";
 import axios from "axios";
 import { MdPhone, MdMessage } from "react-icons/md";
 import { getAuthHeader } from "../utils/auth";
+import { toast } from 'react-toastify';
 import "./SendSmsModal.css";
 
 const SendSmsModal = ({ isOpen, onRequestClose, phoneNumbers }) => {
@@ -25,15 +26,17 @@ const SendSmsModal = ({ isOpen, onRequestClose, phoneNumbers }) => {
       );
 
       if (response.status === 200) {
-        console.log("SMS sent successfully");
+        toast.success("SMS sent successfully!");
         setPhoneNumber("");
         setMessage("");
         onRequestClose("");
       } else {
         console.log("Error sending SMS");
+        toast.error("Error sending SMS");
       }
     } catch (error) {
       console.error("Error sending SMS:", error);
+      toast.error("Error sending SMS");
     }
   };
 

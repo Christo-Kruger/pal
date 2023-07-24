@@ -7,6 +7,7 @@ import axios from "axios";
 import { getUserId, getAuthHeader } from "../utils/auth";
 import "./ParentDashboard.css";
 import { Trash2, Edit } from "react-feather";
+import { toast } from "react-toastify"; // Import toastify
 
 
 
@@ -79,15 +80,17 @@ function ParentDashboard() {
           setBookings((prevBookings) =>
             prevBookings.filter((booking) => booking._id !== id)
           );
+          toast.success("Booking successfully deleted.");
         } else {
           console.log("Error deleting booking");
+          toast.error("Error deleting booking.");
         }
       } catch (error) {
         console.error(error);
+        toast.error("Operation failed.");
       }
     }
   };
-
   const handleEdit = (booking) => {
     // Set the booking to be edited
     setEditingBooking(booking);
