@@ -104,7 +104,7 @@ function ParentDashboard() {
   return (
     <div className="dashboard-container">
       <h1 className="header"> Welcome to Jlee Parent Booking Portal</h1>
-      <h2 className="header-text">What would you like to do?</h2>
+      <h4 className="header-text">What would you like to do?</h4>
       <div className="button-containerPD">
         <button className="button" onClick={() => setBookingModal(true)}>
           Book a Test
