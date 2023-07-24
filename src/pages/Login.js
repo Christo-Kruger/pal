@@ -17,6 +17,7 @@ function LoginForm() {
 
     try {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
+      console.log(backendURL);
       const response = await fetch(`${backendURL}/api/users/login`, {
         method: "POST",
         headers: {
