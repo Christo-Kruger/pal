@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./RegistrationForm.css";
-import backendURL from "../config";
+
 import Logo from "../media/logo.png";
 
 function RegistrationForm() {
@@ -17,6 +17,7 @@ function RegistrationForm() {
     e.preventDefault();
 
     try {
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await fetch(`${backendURL}/api/users/register`, {
         method: "POST",
         headers: {
