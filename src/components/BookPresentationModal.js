@@ -16,7 +16,7 @@ function BookPresentationModal({ presentations, closeModal, onBookingCreated }) 
   const [expandedCards, setExpandedCards] = useState([]);
 
   const handleBooking = async (presentationId) => {
-    const backendURL = "http://localhost:9000";
+    const backendURL = process.env.REACT_APP_BACKEND_URL;
 
     // Define the attendee object based on the current user's details
     const attendee = {

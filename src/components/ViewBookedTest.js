@@ -37,7 +37,7 @@ function ViewBookedTest() {
 
   const fetchBookings = async () => {
     try {
-      const backendURL = "http://localhost:9000";
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const userRole = getUserRole();
 
       if (userRole === "admin") {
@@ -76,7 +76,7 @@ function ViewBookedTest() {
   //To cancel Booking
   const handleBookingCancel = async (id) => {
     try {
-      const backendURL = "http://localhost:9000";
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.delete(
         `${backendURL}/api/bookings/admin/delete/${id}`,
         getAuthHeader()
@@ -97,7 +97,7 @@ function ViewBookedTest() {
 
   const handleBookingPayment = async (id) => {
     try {
-      const backendURL = "http://localhost:9000";
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.patch(
         `${backendURL}/api/bookings/payment/${id}`,
         {},

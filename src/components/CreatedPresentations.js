@@ -8,7 +8,7 @@ function PresentationList() {
   useEffect(() => {
     (async () => {
       try {
-        const response = await axios.get('http://localhost:9000/api/presentations');
+        const response = await axios.get('process.env.REACT_APP_BACKEND_URL/api/presentations');
         setPresentations(response.data);
         setLoading(false);
       } catch (err) {

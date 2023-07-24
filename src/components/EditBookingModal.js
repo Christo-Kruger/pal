@@ -25,7 +25,7 @@ function EditBookingModal({ closeModal, booking, onBookingUpdated }) {
     };
 
     try {
-      const backendURL = 'http://localhost:9000';
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.patch(
         `${backendURL}/api/bookings/${booking._id}`,
         updatedBookingData,

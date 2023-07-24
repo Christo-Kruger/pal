@@ -5,7 +5,6 @@ import CreatePresentationModal from "../components/CreatePresentationModal";
 import SendSmsModal from "../components/SendSmsModal";
 import "./AdminDashboard.css";
 
-
 function AdminDashboard() {
   const [bookings, setBookings] = useState([]);
   const [filteredCampus, setFilteredCampus] = useState("");
@@ -21,8 +20,6 @@ function AdminDashboard() {
   const [smsMode, setSmsMode] = useState(false);
   const [selectedPhoneNumbers, setSelectedPhoneNumbers] = useState([]);
   const [selectedAttendees, setSelectedAttendees] = useState([]);
-  const [editingPresentation, setEditPresentation] = useState([]);
-
 
   function handleSelectBookingChange(event, item) {
     switch (event.target.value) {
@@ -37,8 +34,8 @@ function AdminDashboard() {
         }
         break;
       case "sms":
-        setSelectedPhoneNumbers((prevPhoneNumbers) => [
-          ...prevPhoneNumbers,
+        setSelectedPhoneNumbers((prevPhoneNumber) => [
+          ...prevPhoneNumber,
           item.parent.phone,
         ]);
         setSmsMode(true); // Open SMS modal
@@ -48,6 +45,24 @@ function AdminDashboard() {
     }
   }
 
+  function handleSelectAttendeeeChange(event, item) {
+    switch (event.target.value) {
+      case "sms":
+        if (item?.phone) {
+          setSelectedPhoneNumbers((prevPhoneNumber) => [
+            ...prevPhoneNumber,
+            item.phone,
+          ]);
+          setSmsMode(true); // Open SMS modal
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  
+  
+
   const handleSelectPresentationChange = (event, item) => {
     switch (event.target.value) {
       case "cancel":
@@ -55,28 +70,15 @@ function AdminDashboard() {
           handlePresentationCancel(item._id);
         }
         break;
-      case "edit":
-        setEditPresentation(item._id); // Update the state with the ID of the presentation to be edited
-        setPresentationMode(true); // Set presentation mode to true for editing
-        break;
       default:
         break;
     }
   };
-  
-  const handleCheckboxChange = (attendeeId, isChecked) => {
-    setSelectedAttendees((prev) => {
-      if (isChecked) {
-        return [...prev, attendeeId];
-      } else {
-        return prev.filter((id) => id !== attendeeId);
-      }
-    });
-  };
+
 
   const fetchBookings = async () => {
     try {
-      const backendURL = "http://localhost:9000";
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const userRole = getUserRole();
 
       if (userRole === "admin") {
@@ -113,7 +115,7 @@ function AdminDashboard() {
 
   const fetchPresentations = async () => {
     try {
-      const backendURL = "http://localhost:9000";
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const userRole = getUserRole();
 
       if (userRole === "admin") {
@@ -152,7 +154,7 @@ function AdminDashboard() {
   const handlePresentationCancel = async (id) => {
     console.log("We are here");
     try {
-      const backendURL = "http://localhost:9000";
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.delete(
         `${backendURL}/api/presentations/admin/delete/${id}`,
         getAuthHeader()
@@ -175,7 +177,7 @@ function AdminDashboard() {
   //To cancel Booking
   const handleBookingCancel = async (id) => {
     try {
-      const backendURL = "http://localhost:9000";
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.delete(
         `${backendURL}/api/bookings/admin/delete/${id}`,
         getAuthHeader()
@@ -196,7 +198,7 @@ function AdminDashboard() {
 
   const handleBookingPayment = async (id) => {
     try {
-      const backendURL = "http://localhost:9000";
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.patch(
         `${backendURL}/api/bookings/payment/${id}`,
         {},
@@ -223,8 +225,6 @@ function AdminDashboard() {
       newPresentation,
     ]);
   };
-
- 
 
   useEffect(() => {
     fetchBookings();
@@ -273,16 +273,20 @@ function AdminDashboard() {
         </button>
       </div>
       <CreatePresentationModal
-  isOpen={presentationMode}
-  onRequestClose={() => setPresentationMode(false)}
-  onPresentationCreated={handlePresentationCreated}
-  editingPresentation={editingPresentation}
-/>
-      <SendSmsModal
-        isOpen={smsMode}
-        onRequestClose={() => setSmsMode(false)}
-        phoneNumbers={selectedPhoneNumbers}
+        isOpen={presentationMode}
+        onRequestClose={() => setPresentationMode(false)}
+        onPresentationCreated={handlePresentationCreated}
       />
+    <SendSmsModal
+  isOpen={smsMode}
+  onRequestClose={() => setSmsMode(false)}
+  phoneNumber={selectedPhoneNumbers.length > 0 ? selectedPhoneNumbers[0] : ""}
+  phoneNumbers={[
+    ...selectedPhoneNumbers,
+    ...selectedAttendees.map((attendee) => attendee.phone),
+  ]}
+/>
+
 
       {showBookings && (
         <div>
@@ -362,13 +366,6 @@ function AdminDashboard() {
         <div>
           <h2>Attendees</h2>
           <div className="nav-button-container">
-            <button
-              className="nav-button"
-              onClick={() => setSmsMode(true)}
-              disabled={selectedAttendees.length === 0}
-            >
-              Send SMS to Selected
-            </button>
           </div>
           <div className="filter-container">
             <label className="filter-label">
@@ -400,47 +397,47 @@ function AdminDashboard() {
           <table className="bookings-table">
             <thead>
               <tr>
-                <th>Checkbox</th>
                 <th>Name</th>
                 <th>Phone</th>
                 <th>Campus</th>
                 <th>Presentation</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {presentations.map((presentation) =>
-                presentation.attendees
-                  .filter(
-                    (attendee) =>
-                      !filteredAttendeeName ||
-                      attendee.name
-                        .toLowerCase()
-                        .includes(filteredAttendeeName.toLowerCase())
-                  )
-                  .filter(
-                    (attendee) =>
-                      !filteredAttendeeCampus ||
-                      attendee.campus === filteredAttendeeCampus
-                  )
-                  .map((attendee) => (
-                    <tr key={attendee._id}>
-                      <td>
-                        <input
-                          type="checkbox"
-                          onChange={(e) =>
-                            handleCheckboxChange(attendee._id, e.target.checked)
-                          }
-                          checked={selectedAttendees.includes(attendee._id)}
-                        />
-                      </td>
-                      <td>{attendee.name}</td>
-                      <td>{attendee.phone}</td>
-                      <td>{attendee.campus}</td>
-                      <td>{presentation.name}</td>
-                    </tr>
-                  ))
-              )}
-            </tbody>
+  {presentations.map((presentation) =>
+    presentation.attendees
+      .filter(
+        (attendee) =>
+          !filteredAttendeeName ||
+          attendee.name
+            .toLowerCase()
+            .includes(filteredAttendeeName.toLowerCase())
+      )
+      .filter(
+        (attendee) =>
+          !filteredAttendeeCampus ||
+          attendee.campus === filteredAttendeeCampus
+      )
+      .map((attendee) => (
+        <tr key={attendee._id}>
+          <td>{attendee.name}</td>
+          <td>{attendee?.phone}</td>
+          <td>{attendee.campus}</td>
+          <td>{presentation.name}</td>
+          <td>
+            <select
+              onChange={(e) => handleSelectAttendeeeChange(e, attendee)}
+            >
+              <option value="">Select an action</option>
+              <option value="sms">Send SMS</option>
+            </select>
+          </td>
+        </tr>
+      ))
+  )}
+</tbody>
+
           </table>
         </div>
       )}
@@ -466,7 +463,6 @@ function AdminDashboard() {
                     >
                       <option value="">Select an action</option>
                       <option value="cancel">Cancel</option>
-                      <option value="edit">Edit</option>
                     </select>
                   </td>
                 </tr>

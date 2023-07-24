@@ -1,44 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { getAuthHeader } from "../utils/auth";
 import Modal from "react-modal";
 import "./CreatePresentationModal.css";
 
-function CreatePresentationModal({ isOpen, onRequestClose, onPresentationCreated }) {
+function EditPresentationModal({ isOpen, onRequestClose, onPresentationUpdated, presentationToEdit }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
 
+  useEffect(() => {
+    if (presentationToEdit) {
+      setName(presentationToEdit.name);
+      setDescription(presentationToEdit.description);
+      setLocation(presentationToEdit.location);
+      
+      // Format date and time for input fields
+      const presentationDate = new Date(presentationToEdit.date);
+      setDate(presentationDate.toISOString().split('T')[0]);
+      setTime(presentationDate.toTimeString().split(' ')[0].slice(0, 5));
+    }
+  }, [presentationToEdit]);
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const newPresentation = {
+    const updatedPresentation = {
       name,
       description,
       location,
       date,
       time,
-      attendees: [],
+
     };
 
     const backendURL = process.env.REACT_APP_BACKEND_URL;
-    const response = await axios.post(`${backendURL}/api/presentations`, newPresentation, getAuthHeader());
+    const response = await axios.put(`${backendURL}/api/presentations/${presentationToEdit._id}`, updatedPresentation, getAuthHeader());
 
-    if (response.status === 201) {
-      onPresentationCreated(response.data);
+    if (response.status === 200) {
+      onPresentationUpdated(response.data);
       onRequestClose();
     } else {
-      console.log("Error creating presentation");
+      console.log("Error updating presentation");
     }
   };
 
-  return (
-    <Modal isOpen={isOpen} onRequestClose={onRequestClose}>
-      <h2>Create Presentation</h2>
-      <form onSubmit={handleSubmit}>
-        {/* Additional fields for name and location */}
+    return (
+
+  <Modal isOpen={isOpen} onRequestClose={onRequestClose}>
+    <h2>Edit Presentation</h2>
+    <form onSubmit={handleSubmit}>
         <label>
           Name:
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
@@ -59,10 +71,10 @@ function CreatePresentationModal({ isOpen, onRequestClose, onPresentationCreated
           Time:
           <input type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
         </label>
-        <button type="submit">Create Presentation</button>
-      </form>
-    </Modal>
-  );
-}
+        <button type="submit">Update Presentation</button>
+    </form>
+</Modal>
 
-export default CreatePresentationModal;
+    );
+}
+export default EditPresentationModal;

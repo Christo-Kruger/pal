@@ -19,7 +19,7 @@ function ParentDashboard() {
 
   const fetchBookings = async () => {
     try {
-      const backendURL = "http://localhost:9000";
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.get(
         `${backendURL}/api/bookings?userId=${getUserId()}`,
         getAuthHeader()
@@ -42,7 +42,7 @@ function ParentDashboard() {
   useEffect(() => {
     // Fetch presentations
     const fetchPresentations = async () => {
-      const backendURL = "http://localhost:9000";
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.get(
         `${backendURL}/api/presentations`,
         getAuthHeader()
@@ -68,7 +68,7 @@ function ParentDashboard() {
     if (window.confirm("Are you sure you want to delete this booking?")) {
       try {
         // Make a request to delete the booking with the given id
-        const backendURL = "http://localhost:9000";
+        const backendURL = process.env.REACT_APP_BACKEND_URL;
         const response = await axios.delete(
           `${backendURL}/api/bookings/${id}`,
           getAuthHeader()

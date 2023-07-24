@@ -17,7 +17,7 @@ const SendSmsModal = ({ isOpen, onRequestClose, phoneNumbers }) => {
 
   const handleSend = async () => {
     try {
-      const backendURL = "http://localhost:9000";
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.post(
         `${backendURL}/api/sms`,
         { phoneNumber, message },

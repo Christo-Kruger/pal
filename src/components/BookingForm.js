@@ -19,7 +19,7 @@ function BookingForm({ closeModal }) {
     if (campus && date && time) {
       try {
         const response = await axios.get(
-          `http://localhost:9000/api/bookings/count?date=${date}T${time}&campus=${campus}`,
+          `process.env.REACT_APP_BACKEND_URL/api/bookings/count?date=${date}T${time}&campus=${campus}`,
           getAuthHeader()
         );
         setBookingCount(response.data.count);
@@ -63,7 +63,7 @@ function BookingForm({ closeModal }) {
     };
 
     try {
-      const backendURL = 'http://localhost:9000';
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.post(`${backendURL}/api/bookings`, bookingData, getAuthHeader());
 
       if (response.status === 200 || 201) {
