@@ -19,7 +19,7 @@
 
 .header {
   margin: 0;
-  font-size: calc(12px + 1vw);
+  font-size: calc(12px + 3vw);
   text-align: center;
 }
 .no-booking{
