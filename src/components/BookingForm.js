@@ -18,8 +18,9 @@ function BookingForm({ closeModal }) {
   const fetchBookingCount = async () => {
     if (campus && date && time) {
       try {
+        const backendURL = process.env.REACT_APP_BACKEND_URL;
         const response = await axios.get(
-          `process.env.REACT_APP_BACKEND_URL/api/bookings/count?date=${date}T${time}&campus=${campus}`,
+          `${backendURL}/api/bookings/count?date=${date}T${time}&campus=${campus}`,
           getAuthHeader()
         );
         setBookingCount(response.data.count);
