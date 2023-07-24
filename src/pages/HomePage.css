@@ -37,15 +37,19 @@
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+  flex-direction: row; /* Changed from column to row */
+  gap: 20px; /* Add a gap between buttons */
+  width: 90%;
 }
 
 .button-container button {
-  margin: 0 10px;
-  padding: 10px 20px;
-  font-size: 16px;
+  font-size: 18px;
   border-radius: 5px;
   background-color: #007bff;
   color: #fff;
   border: none;
   cursor: pointer;
+  width: 100%;
+  max-width: 200px;
+  height: 40px;
 }

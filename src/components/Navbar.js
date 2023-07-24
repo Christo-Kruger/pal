@@ -21,14 +21,14 @@ const Navbar = () => {
   }
 
   const logoLink = userRole === 'parent' ? "/parent" : "/admin";
-  const headerText = userRole === 'parent' ? "Welcome to the Jlee Parent Booking Portal" : "Welcome to the Jlee Admin Portal";
+ 
 
   return (
     <nav style={styles.navbar}>
       <Link to={logoLink}>
         <img src={logo} alt="Logo" style={styles.logo} />
       </Link>
-      <h1 style={styles.header}>{headerText}</h1>
+  
       <button onClick={handleLogout} style={styles.logoutButton}>
         Logout
       </button>
@@ -47,18 +47,16 @@ const styles = {
   logo: {
     height: '3em',
   },
-  header: {
-    margin: 0,
-    fontSize: 'calc(12px + 2vw)', // Responsive font size using vw unit
-    fontWeight: 'bold',
-    textAlign: 'center', // Center align the text
-  },
+
   logoutButton: {
     backgroundColor: '#007BFF',
     color: 'white',
     border: 'none',
-    padding: '0.5em 1em',
     cursor: 'pointer',
+    width: '90px',
+    height: '40px',
+    fontSize: '15px', // Responsive font size using vw unit
+    borderRadius: '5px',
   },
 };
 

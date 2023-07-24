@@ -99,7 +99,7 @@ function BookingForm({ closeModal }) {
           </select>
         </label>
         <label>
-          Previous School:
+          Previous School: <h5>If no previous school write N/A</h5>
           <input type="text" value={previousSchool} onChange={(e) => setPreviousSchool(e.target.value)} required />
         </label>
         <label>
