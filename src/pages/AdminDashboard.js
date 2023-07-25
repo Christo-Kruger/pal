@@ -331,6 +331,7 @@ const handlePresentationCancel = async (id) => {
               <tr>
                 <th>Child Name</th>
                 <th>Age</th>
+                <th>DOB</th>
                 <th>Gender</th>
                 <th>Campus</th>
                 <th>Date</th>
@@ -346,6 +347,7 @@ const handlePresentationCancel = async (id) => {
                 <tr key={booking._id}>
                   <td>{booking.child.name}</td>
                   <td>{booking.child.age}</td>
+                  <td>{new Date (booking.child.dateOfBirth).toLocaleDateString()}</td>
                   <td>{booking.child.gender}</td>
                   <td>{booking.campus}</td>
                   <td>{new Date(booking.date).toLocaleDateString()}</td>
