@@ -46,7 +46,7 @@ function LoginForm() {
       }
     } catch (error) {
       console.error(error);
-      setErrorMessage("An error occurred during login"); // Set error message instead of alert
+      setErrorMessage("Invalid email or password"); // Set error message instead of alert
     }
   };
 
