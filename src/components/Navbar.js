@@ -14,11 +14,11 @@ const Navbar = () => {
     navigate('/');
   };
 
-  if (isLoggedIn) {
-    userRole = getUserRole();
-  } else {
+  if (!isLoggedIn) {
     return null;
   }
+
+  userRole = getUserRole();
 
   const logoLink = userRole === 'parent' ? "/parent" : "/admin";
  
@@ -35,6 +35,7 @@ const Navbar = () => {
     </nav>
   );
 };
+
 
 const styles = {
   navbar: {
