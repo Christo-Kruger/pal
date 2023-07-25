@@ -456,6 +456,7 @@ const handlePresentationCancel = async (id) => {
               <tr>
                 <th>Name</th>
                 <th>Actions</th>
+                <th>Attendees</th>
               </tr>
             </thead>
             <tbody>
@@ -473,6 +474,9 @@ const handlePresentationCancel = async (id) => {
                       <option value="cancel">Cancel</option>
                     </select>
                   </td>
+                  <td>
+                  {presentation.attendees.length}
+                    </td>
                 </tr>
               ))}
             </tbody>
