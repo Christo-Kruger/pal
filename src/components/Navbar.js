@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getUserRole } from "../utils/auth";
 import logo from '../media/logo.png';
@@ -7,6 +7,7 @@ import logo from '../media/logo.png';
 const Navbar = () => {
   const { isLoggedIn, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   let userRole; 
 
   const handleLogout = () => {
@@ -14,7 +15,7 @@ const Navbar = () => {
     navigate('/');
   };
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn || location.pathname === '/') {
     return null;
   }
 
