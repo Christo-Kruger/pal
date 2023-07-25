@@ -69,3 +69,9 @@
     width: 90%;
   }
 }
+
+.error-message {
+  color: red;
+  margin-bottom: 15px;
+  text-align: center;
+}

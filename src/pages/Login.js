@@ -11,9 +11,11 @@ function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // New state for error message
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage(''); // Clear the error message
 
     try {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
@@ -35,15 +37,16 @@ function LoginForm() {
         } else if (data.role === "admin") {
           navigate("/admin");
         } else {
-          alert("Invalid role");
+          setErrorMessage("Invalid role"); // Set error message instead of alert
         }
       } else {
         const errorData = await response.json();
         console.error(errorData);
-        alert("Invalid email or password");
+        setErrorMessage("Invalid email or password"); // Set error message instead of alert
       }
     } catch (error) {
       console.error(error);
+      setErrorMessage("An error occurred during login"); // Set error message instead of alert
     }
   };
 
@@ -56,6 +59,8 @@ function LoginForm() {
       </div>
       <form className="form" onSubmit={handleSubmit}>
         <h1 className="form-title">Login</h1>
+        {/* Display error message */}
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
         <div className="form-field">
           <label className="form-label" htmlFor="email">
             Email:
