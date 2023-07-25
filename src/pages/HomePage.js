@@ -32,7 +32,7 @@ function HomePage() {
           </button>
         </div>
         <p>By logging and/or registering, you agree to 
-        <a href="/개인정보_보호정책_및_이용_약관.pdf" target="_blank" rel="noopener noreferrer"> these term, conditions and privacy guideliness</a>
+        <a href="/개인정보_보호정책_및_이용_약관.pdf" target="_blank" rel="noopener noreferrer"> these term, conditions and privacy guidelines</a>
         </p>
       </div>
     </div>
