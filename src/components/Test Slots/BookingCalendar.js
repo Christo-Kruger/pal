@@ -23,13 +23,13 @@ const formatBookingToEvent = (booking) => {
   endDate.setHours(parseInt(endHour), parseInt(endMinute));
 
   return {
-    title: booking.child ? booking.child.name : "No Name",
+    title: booking?.child ? booking?.child?.name : "No Name",
     start: startDate,
     end: endDate,
     resource: booking,
     desc: booking.child
-      ? `Additional info: ${booking.child.gender || "No Gender"} ${
-          booking.child.testGrade || "No TestGrade"
+      ? `Additional info: ${booking?.child?.gender || "No Gender"} ${
+          booking?.child?.testGrade || "No TestGrade"
         }`
       : "No Child Data",
   };
