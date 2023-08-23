@@ -124,10 +124,9 @@ function ParentDashboard() {
               <h3>{booking.child.name}</h3>
               <p>Previous School: {booking.child.previousSchool}</p>
               <p>Test Grade: {booking.child.testGrade}</p>
-              {booking.testSlot && <p>Campus: {booking.testSlot.campus}</p>}
-
-              <p>Date: {new Date(booking.testSlot.date).toLocaleDateString()}</p>
-              <p>Time: {booking.testSlot.startTime}</p>
+              <p>Campus: {booking?.testSlot?.campus}</p>
+              <p>Date: {new Date(booking?.testSlot?.date).toLocaleDateString()}</p>
+              <p>Time: {booking?.testSlot?.startTime}</p>
               <div className="booking-actions">
                 <div
                   className="booking-action-icon"
