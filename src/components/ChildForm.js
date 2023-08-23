@@ -100,7 +100,7 @@ function ChildForm({ parentId }) {
             onChange={(e) => setGender(e.target.value)}
             required
           >
-            <option value="">Select Gender</option>
+            <option value="Select Gender">Select Gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>

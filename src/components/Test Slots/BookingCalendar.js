@@ -13,6 +13,10 @@ const calendarStyle = { height: 500 };
 
 const formatBookingToEvent = (booking) => {
   console.log("Booking's child:", booking.child);
+  if (!booking.testSlot) {
+    return null; // Return early if there's no testSlot
+  }
+
   const startDate = new Date(booking.testSlot.date);
   const endDate = new Date(booking.testSlot.date);
 
@@ -34,6 +38,7 @@ const formatBookingToEvent = (booking) => {
       : "No Child Data",
   };
 };
+
 
 const BookingCalendar = () => {
   const [bookings, setBookings] = useState([]);
