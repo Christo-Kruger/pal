@@ -124,7 +124,8 @@ function ParentDashboard() {
               <h3>{booking.child.name}</h3>
               <p>Previous School: {booking.child.previousSchool}</p>
               <p>Test Grade: {booking.child.testGrade}</p>
-              <p>Campus: {booking?.testSlot?.campus}</p>
+              {booking.testSlot && <p>Campus: {booking.testSlot.campus}</p>}
+
               <p>Date: {new Date(booking.testSlot.date).toLocaleDateString()}</p>
               <p>Time: {booking.testSlot.startTime}</p>
               <div className="booking-actions">
