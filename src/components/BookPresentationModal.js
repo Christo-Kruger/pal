@@ -1,13 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  getAuthHeader,
-  getUserId,
-  getUserName,
-  getUserPhone,
-  getUserCampus,
-} from "../utils/auth";
-import { toast } from "react-toastify"; // Import Toastify
+import { getAuthHeader, getUserId } from "../utils/auth";
+import { toast } from "react-toastify";
+import moment from "moment";
+import { MdDateRange, MdPlace, MdAccessTime } from "react-icons/md"; // icons for date, place, and time
 
 import "./BookPresentationModal.css";
 
@@ -16,97 +12,119 @@ function BookPresentationModal({
   closeModal,
   onBookingCreated,
 }) {
-  const [expandedCards, setExpandedCards] = useState([]);
+  const [expandedPresentation, setExpandedPresentation] = useState(null);
 
-  const handleBooking = async (presentationId) => {
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      // Add fetch presentations function here to get updates every 5 seconds
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const handleBooking = async (presentationId, slotId) => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
-
-    // Define the attendee object based on the current user's details
-    const attendee = {
-      _id: getUserId(),
-      name: getUserName(),
-      phone: getUserPhone(),
-      campus: getUserCampus(),
-    };
 
     try {
       const response = await axios.patch(
-        `${backendURL}/api/presentations/${presentationId}/attendees`,
-        { attendee }, // Pass the attendee object in the request body
+        `${backendURL}/api/presentations/${presentationId}/slots/${slotId}/attendees`,
+        {},
         getAuthHeader()
       );
 
       if (response.status === 200) {
         onBookingCreated(response.data);
         closeModal();
-        toast.success("Booking was successful!"); // Display the success toast
+        toast.success("Booking was successful!");
       }
     } catch (err) {
-      // Handle error from the server
-      if (err.response.data.message === "User has already booked this presentation") {
-        toast.warn("You have already booked a slot for this presentation."); // Warning toast
-      } else {
-        console.log("Error booking presentation:", err.response.data.message);
-        toast.error("Error booking presentation"); // Error toast
-      }
+      toast.error(err.response.data.message || "You've already booked!");
     }
   };
 
-
   const toggleExpandCard = (presentationId) => {
-    setExpandedCards((prevExpandedCards) => {
-      if (prevExpandedCards.includes(presentationId)) {
-        return prevExpandedCards.filter((id) => id !== presentationId);
-      } else {
-        return [...prevExpandedCards, presentationId];
-      }
-    });
+    if (expandedPresentation === presentationId) {
+      setExpandedPresentation(null);
+    } else {
+      setExpandedPresentation(presentationId);
+    }
   };
 
   return (
     <>
       <div className="modal-header">
+        <h1>Book Presentation</h1>
         <button className="close-button" onClick={closeModal}>
-          &times;
+          &times; {/* This is the "x" symbol */}
         </button>
-        <h2>Book Presentation</h2>
       </div>
       <div className="presentation-grid">
         {presentations.map((presentation) => (
           <div
             key={presentation._id}
             className={`presentation-card ${
-              expandedCards.includes(presentation._id) ? "expanded" : ""
+              expandedPresentation === presentation._id ? "expanded" : ""
             }`}
           >
             <h3>{presentation.name}</h3>
+            <div className="presentation-meta">
+              <span>
+                <MdDateRange />{" "}
+                {new Date(presentation.date).toLocaleDateString()}
+              </span>
+              <span>
+                <MdPlace /> {presentation.location}
+              </span>
+            </div>
             <p>
-              {expandedCards.includes(presentation._id)
+              {expandedPresentation === presentation._id
                 ? presentation.description
-                : presentation.description.substring(0, 100) + "..."}
+                : `${presentation.description.substring(0, 100)}...`}
             </p>
             {presentation.description.length > 100 && (
-              <span
+              <button
                 className="view-more"
                 onClick={() => toggleExpandCard(presentation._id)}
               >
-                {expandedCards.includes(presentation._id)
+                {expandedPresentation === presentation._id
                   ? "View Less"
                   : "View More"}
-              </span>
+              </button>
             )}
-            <p>{presentation.location}</p>
-            <p>Booked Slots: {presentation.attendees.length}</p>
-
-            <p>Available Slots: {presentation.availableSlots}</p>
-            <button
-              onClick={() => handleBooking(presentation._id)}
-              disabled={
-                presentation.attendees.length === presentation.maxAttendees
-              }
-            >
-              Book Presentation
-            </button>
+            <h4>
+              <MdAccessTime /> Time Slots:
+            </h4>
+            <div className="time-slots">
+              {presentation.timeSlots ? (
+                presentation.timeSlots.map((slot) => {
+                  const userHasBooked = slot.attendees.includes(getUserId());
+                  return (
+                    <div key={slot._id} className="time-slot">
+                      <div className="slot-time">
+                        {moment(slot.startTime).format("HH:mm")} -{" "}
+                        {moment(slot.endTime).format("HH:mm")}
+                      </div>
+                      <div className="slot-info">
+                        <span>Available: {slot.availableSlots}</span>
+                        <button
+                          onClick={() =>
+                            handleBooking(presentation._id, slot._id)
+                          }
+                          disabled={
+                            slot.attendees.length >= slot.maxAttendees ||
+                            userHasBooked
+                          }
+                        >
+                          Book Slot
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p>No time slots available for this presentation.</p>
+              )}
+            </div>
           </div>
         ))}
       </div>

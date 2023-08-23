@@ -2,6 +2,7 @@ import jwtDecode from 'jwt-decode';
 
 export function getUserRole() {
   const token = localStorage.getItem('token');
+
   
   if (!token) {
     console.error('No token in local storage');
@@ -10,7 +11,27 @@ export function getUserRole() {
 
   try {
     const decodedToken = jwtDecode(token);
+    console.log(decodedToken)
     return decodedToken.role; // Access the 'role' property from the decoded token
+  } catch (error) {
+    console.error('Error decoding token', error);
+    return null;
+  }
+}
+
+export function getAttendedPresentation() {
+  const token = localStorage.getItem('token');
+
+  
+  if (!token) {
+    console.error('No token in local storage');
+    return null;
+  }
+
+  try {
+    const decodedToken = jwtDecode(token);
+    console.log(decodedToken)
+    return decodedToken.attendedPresentation; // Access the 'attendedPresentation' property from the decoded token
   } catch (error) {
     console.error('Error decoding token', error);
     return null;
@@ -24,7 +45,8 @@ export function getAuthHeader() {
     return null;
   }
 
-  return { headers: { 'x-auth-token': token } };
+  // Return the token in the 'Authorization' header with 'Bearer' prefix
+  return { headers: { 'Authorization': `Bearer ${token}` } };
 }
 
 

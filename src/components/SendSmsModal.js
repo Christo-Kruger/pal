@@ -3,7 +3,7 @@ import Modal from "react-modal";
 import axios from "axios";
 import { MdPhone, MdMessage } from "react-icons/md";
 import { getAuthHeader } from "../utils/auth";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import "./SendSmsModal.css";
 
 const SendSmsModal = ({ isOpen, onRequestClose, phoneNumbers }) => {
@@ -19,12 +19,19 @@ const SendSmsModal = ({ isOpen, onRequestClose, phoneNumbers }) => {
   const handleSend = async () => {
     try {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
+  
+      // Format data for the request
+      const requestData = {
+        phoneNumbers: phoneNumber.split(", "), 
+        message
+      };
+  
       const response = await axios.post(
         `${backendURL}/api/sms`,
-        { phoneNumber, message },
+        requestData, // use the formatted data here
         getAuthHeader()
       );
-
+  
       if (response.status === 200) {
         toast.success("SMS sent successfully!");
         setPhoneNumber("");
@@ -39,13 +46,14 @@ const SendSmsModal = ({ isOpen, onRequestClose, phoneNumbers }) => {
       toast.error("Error sending SMS");
     }
   };
+  
 
   const handleClose = () => {
     setPhoneNumber("");
     setMessage("");
     onRequestClose();
   };
- 
+
   return (
     <Modal
       isOpen={isOpen}
@@ -62,7 +70,7 @@ const SendSmsModal = ({ isOpen, onRequestClose, phoneNumbers }) => {
             className="phone"
             type="text"
             value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            readOnly
             placeholder="Phone number"
           />
         </div>

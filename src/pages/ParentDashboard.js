@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
-import BookingForm from "../components/BookingForm";
+import Book from "../components/Test Slots/Book";
 import BookPresentationModal from "../components/BookPresentationModal";
 import EditBookingModal from "../components/EditBookingModal"; // Import the new EditBookingModal
 import axios from "axios";
@@ -22,10 +22,10 @@ function ParentDashboard() {
     try {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.get(
-        `${backendURL}/api/bookings?userId=${getUserId()}`,
+        `${backendURL}/api/bookings/parent?userId=${getUserId()}`,
         getAuthHeader()
       );
-
+  
       if (response.status === 200) {
         setBookings(response.data);
       } else {
@@ -35,7 +35,7 @@ function ParentDashboard() {
       console.error(error);
     }
   };
-
+  
   useEffect(() => {
     fetchBookings();
   }, [bookingModal, bookingPresentation]); // re-fetch bookings whenever bookingMode changes
@@ -123,10 +123,10 @@ function ParentDashboard() {
             <div key={booking._id} className="booking-card">
               <h3>{booking.child.name}</h3>
               <p>Previous School: {booking.child.previousSchool}</p>
-              <p>Age: {booking.child.age}</p>
-              <p>Campus: {booking.campus}</p>
-              <p>Date: {new Date(booking.date).toLocaleDateString()}</p>
-              <p>Time: {booking.time}</p>
+              <p>Test Grade: {booking.child.testGrade}</p>
+              <p>Campus: {booking.testSlot.campus}</p>
+              <p>Date: {new Date(booking.testSlot.date).toLocaleDateString()}</p>
+              <p>Time: {booking.testSlot.startTime}</p>
               <div className="booking-actions">
                 <div
                   className="booking-action-icon"
@@ -158,7 +158,7 @@ function ParentDashboard() {
             onBookingUpdated={fetchBookings}
           />
         ) : (
-          <BookingForm closeModal={closeModal} />
+          <Book closeModal={closeModal} />
         )}
       </Modal>
 

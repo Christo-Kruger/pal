@@ -21,7 +21,7 @@ function HomePage() {
       </div>
       <div className="content-container">
         <div className="text-container">
-          <h1>Welcome to Jlee Reservations</h1>
+          <h1>Welcome to J lee Reservations</h1>
         </div>
         <div className="button-container">
           <button className="login-button" onClick={handleLogin}>
@@ -31,7 +31,7 @@ function HomePage() {
             Register
           </button>
         </div>
-        <p>By logging and/or registering, you agree to 
+        <p className='terms'>By logging and/or registering, you agree to 
         <a href="/개인정보_보호정책_및_이용_약관.pdf" target="_blank" rel="noopener noreferrer"> these term, conditions and privacy guidelines</a>
         </p>
       </div>

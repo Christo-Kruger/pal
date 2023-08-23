@@ -4,7 +4,7 @@ import { getAuthHeader, getUserRole } from "../utils/auth";
 import CreatePresentationModal from "../components/CreatePresentationModal";
 import SendSmsModal from "../components/SendSmsModal";
 import "./AdminDashboard.css";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 function AdminDashboard() {
   const [bookings, setBookings] = useState([]);
@@ -61,21 +61,38 @@ function AdminDashboard() {
         break;
     }
   }
-  
-  
 
-  const handleSelectPresentationChange = (event, item) => {
+  const handleSelectPresentationChange = (event, presentation) => {
     switch (event.target.value) {
       case "cancel":
         if (window.confirm("Are you sure you want to cancel this record?")) {
-          handlePresentationCancel(item._id);
+          handlePresentationCancel(presentation._id);
         }
         break;
-      default:
+
+      case "export":
+        // Handle export here
+        const backendURL = process.env.REACT_APP_BACKEND_URL;
+        fetch(`${backendURL}/api/presentations/${presentation._id}/export`)
+          .then((res) => res.blob())
+          .then((blob) => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            // the filename you want
+            a.download = `${presentation.name}_attendees.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+          })
+          .catch((err) => console.error(err));
         break;
+
+      default:
+        console.log("No action selected");
     }
   };
-
 
   const fetchBookings = async () => {
     try {
@@ -151,31 +168,30 @@ function AdminDashboard() {
     }
   };
 
-// To cancel Presentation
-const handlePresentationCancel = async (id) => {
-  try {
-    const backendURL = process.env.REACT_APP_BACKEND_URL;
-    const response = await axios.delete(
-      `${backendURL}/api/presentations/admin/delete/${id}`,
-      getAuthHeader()
-    );
-
-    if (response.status === 200) {
-      const updatedPresentations = presentations.filter(
-        (presentation) => presentation._id !== id
+  // To cancel Presentation
+  const handlePresentationCancel = async (id) => {
+    try {
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
+      const response = await axios.delete(
+        `${backendURL}/api/presentations/admin/delete/${id}`,
+        getAuthHeader()
       );
-      setPresentations(updatedPresentations);
-      toast.success("Presentation successfully cancelled.");
-    } else {
-      console.log("Error deleting presentation");
-      toast.error("Error deleting presentation.");
-    }
-  } catch (error) {
-    console.error(error);
-    toast.error("Operation failed.");
-  }
-};
 
+      if (response.status === 200) {
+        const updatedPresentations = presentations.filter(
+          (presentation) => presentation._id !== id
+        );
+        setPresentations(updatedPresentations);
+        toast.success("Presentation successfully cancelled.");
+      } else {
+        console.log("Error deleting presentation");
+        toast.error("Error deleting presentation.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Operation failed.");
+    }
+  };
 
   //To cancel Booking
   const handleBookingCancel = async (id) => {
@@ -185,7 +201,7 @@ const handlePresentationCancel = async (id) => {
         `${backendURL}/api/bookings/admin/delete/${id}`,
         getAuthHeader()
       );
-  
+
       if (response.status === 200) {
         const updatedBookings = bookings.filter(
           (booking) => booking._id !== id
@@ -210,7 +226,7 @@ const handlePresentationCancel = async (id) => {
         {},
         getAuthHeader()
       );
-  
+
       if (response.status === 200) {
         const updatedBookings = bookings.map((booking) =>
           booking._id === id ? { ...booking, confirmed: true } : booking
@@ -285,16 +301,22 @@ const handlePresentationCancel = async (id) => {
         onRequestClose={() => setPresentationMode(false)}
         onPresentationCreated={handlePresentationCreated}
       />
-    <SendSmsModal
-  isOpen={smsMode}
-  onRequestClose={() => setSmsMode(false)}
-  phoneNumber={selectedPhoneNumbers.length > 0 ? selectedPhoneNumbers[0] : ""}
-  phoneNumbers={[
-    ...selectedPhoneNumbers,
-    ...selectedAttendees.map((attendee) => attendee.phone),
-  ]}
-/>
-
+      <SendSmsModal
+        key={smsMode}
+        isOpen={smsMode}
+        onRequestClose={() => {
+          setSmsMode(false);
+          setSelectedPhoneNumbers([]);  // Add these two lines
+          setSelectedAttendees([]);  // to clear the selected phone numbers and attendees
+        }}
+        phoneNumber={
+          selectedPhoneNumbers.length > 0 ? selectedPhoneNumbers[0] : ""
+        }
+        phoneNumbers={[
+          ...selectedPhoneNumbers,
+          ...selectedAttendees.map((attendee) => attendee.phone),
+        ]}
+      />
 
       {showBookings && (
         <div>
@@ -347,7 +369,9 @@ const handlePresentationCancel = async (id) => {
                 <tr key={booking._id}>
                   <td>{booking.child.name}</td>
                   <td>{booking.child.age}</td>
-                  <td>{new Date (booking.child.dateOfBirth).toLocaleDateString()}</td>
+                  <td>
+                    {new Date(booking.child.dateOfBirth).toLocaleDateString()}
+                  </td>
                   <td>{booking.child.gender}</td>
                   <td>{booking.campus}</td>
                   <td>{new Date(booking.date).toLocaleDateString()}</td>
@@ -375,8 +399,7 @@ const handlePresentationCancel = async (id) => {
       {showPresentationsAttendees && (
         <div>
           <h2>Attendees</h2>
-          <div className="nav-button-container">
-          </div>
+          <div className="nav-button-container"></div>
           <div className="filter-container">
             <label className="filter-label">
               Filter by Name:
@@ -415,39 +438,40 @@ const handlePresentationCancel = async (id) => {
               </tr>
             </thead>
             <tbody>
-  {presentations.map((presentation) =>
-    presentation.attendees
-      .filter(
-        (attendee) =>
-          !filteredAttendeeName ||
-          attendee.name
-            .toLowerCase()
-            .includes(filteredAttendeeName.toLowerCase())
-      )
-      .filter(
-        (attendee) =>
-          !filteredAttendeeCampus ||
-          attendee.campus === filteredAttendeeCampus
-      )
-      .map((attendee) => (
-        <tr key={attendee._id}>
-          <td>{attendee.name}</td>
-          <td>{attendee?.phone}</td>
-          <td>{attendee.campus}</td>
-          <td>{presentation.name}</td>
-          <td>
-            <select
-              onChange={(e) => handleSelectAttendeeeChange(e, attendee)}
-            >
-              <option value="">Select an action</option>
-              <option value="sms">Send SMS</option>
-            </select>
-          </td>
-        </tr>
-      ))
-  )}
-</tbody>
-
+              {presentations.map((presentation) =>
+                presentation.attendees
+                  .filter(
+                    (attendee) =>
+                      !filteredAttendeeName ||
+                      attendee.name
+                        .toLowerCase()
+                        .includes(filteredAttendeeName.toLowerCase())
+                  )
+                  .filter(
+                    (attendee) =>
+                      !filteredAttendeeCampus ||
+                      attendee.campus === filteredAttendeeCampus
+                  )
+                  .map((attendee) => (
+                    <tr key={attendee._id}>
+                      <td>{attendee.name}</td>
+                      <td>{attendee?.phone}</td>
+                      <td>{attendee.campus}</td>
+                      <td>{presentation.name}</td>
+                      <td>
+                        <select
+                          onChange={(e) =>
+                            handleSelectAttendeeeChange(e, attendee)
+                          }
+                        >
+                          <option value="">Select an action</option>
+                          <option value="sms">Send SMS</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))
+              )}
+            </tbody>
           </table>
         </div>
       )}
@@ -474,11 +498,10 @@ const handlePresentationCancel = async (id) => {
                     >
                       <option value="">Select an action</option>
                       <option value="cancel">Cancel</option>
+                      <option value="export">Export Attendees</option>
                     </select>
                   </td>
-                  <td>
-                  {presentation.attendees.length}
-                    </td>
+                  <td>{presentation.attendees.length}</td>
                 </tr>
               ))}
             </tbody>

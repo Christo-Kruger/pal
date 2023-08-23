@@ -1,0 +1,80 @@
+/* BookingCalendar.css */
+
+/* Style for calendar events */
+.rbc-event {
+    background-color: #2196f3;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 4px;
+    cursor: pointer;
+  }
+  
+  /* Style for selected event */
+  .rbc-selected {
+    background-color: #ff9800;
+  }
+  
+  /* Style for event tooltip */
+  .rbc-tooltip {
+    background-color: #333;
+    color: #fff;
+    padding: 6px;
+    border-radius: 4px;
+  }
+  
+  /* Style for event tooltip arrow */
+  .rbc-tooltip::before {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 6px;
+    border-color: transparent transparent #333 transparent;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  /* Hover effect for events */
+  .rbc-event:hover {
+    background-color: #1565c0;
+  }
+  
+  /* Style for modal overlay */
+  .overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Style for modal content */
+  .modal {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    width: 400px;
+    max-width: 90%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* Style for modal content */
+  .modal-content {
+    text-align: center;
+  }
+  
+  /* Style for close button */
+  .close-button {
+    background-color: #ff5722;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  
+  /* Hover effect for close button */
+  .close-button:hover {
+    background-color: #ff7043;
+  }
+  

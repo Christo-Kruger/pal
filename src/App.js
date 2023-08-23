@@ -1,6 +1,4 @@
-// App.js
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import AdminProtectedRoute from './components/AdminProtectedRoute';
 import ParentProtectedRoute from './components/ParentProtectedRoute';
 import HomePage from './pages/HomePage';
 import Login from './pages/Login';
@@ -11,9 +9,7 @@ import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
-
+import Admin from './pages/Admin';
 
 function App() {
   return (
@@ -22,10 +18,10 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/*" element={<HomePage />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/admin/*" element={<AdminProtectedRoute />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/parent/*" element={<ParentProtectedRoute />} />
         </Routes>
       </Router>

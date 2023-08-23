@@ -31,10 +31,12 @@ function LoginForm() {
       if (response.ok) {
         const data = await response.json();
         login(data.token);
+        
+        localStorage.setItem("userCampus", data.campus);
 
         if (data.role === "parent") {
           navigate("/parent");
-        } else if (data.role === "admin") {
+        } else if (data.role === "admin" || "superadmin") {
           navigate("/admin");
         } else {
           setErrorMessage("Invalid role"); // Set error message instead of alert
