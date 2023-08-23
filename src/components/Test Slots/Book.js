@@ -19,12 +19,25 @@ const TimeSlotCard = ({ timeSlot, onBook, selectedChildId }) => {
     onBook(timeSlot._id, selectedChildId);
   };
 
+  const availableSlots = timeSlot.capacity - (timeSlot.bookings ? timeSlot.bookings.length : 0);
+
   return (
     <div className="time-slot-card">
-      <h5><FaSchool /> {timeSlot.campus + " Campus"}</h5>
-      <p><FaClock /> Date: {new Date(timeSlot.date).toLocaleDateString()}</p>
-      <p>Start: {timeSlot.startTime} - End: {timeSlot.endTime}</p>
-      <button className="book-button" onClick={handleBook}>Book</button>
+      <h5>
+        <FaSchool /> {timeSlot.campus + " Campus"}
+      </h5>
+      <p>
+        <FaClock /> Date: {new Date(timeSlot.date).toLocaleDateString()}
+      </p>
+      <p>
+        Start: {timeSlot.startTime} - End: {timeSlot.endTime}
+      </p>
+      <p>
+        Available Slots: {availableSlots}
+      </p>
+      <button className="book-button" onClick={handleBook}>
+        Book
+      </button>
     </div>
   );
 };
@@ -46,9 +59,11 @@ const TimeSlotList = ({ onClose }) => {
     try {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.get(`${backendURL}/api/timeSlots`);
-      
+
       // Sort by date
-      const sortedSlots = response.data.sort((a, b) => new Date(a.date) - new Date(b.date));
+      const sortedSlots = response.data.sort(
+        (a, b) => new Date(a.date) - new Date(b.date)
+      );
       setTimeSlots(sortedSlots);
     } catch (error) {
       console.error("Error fetching time slots:", error);
@@ -102,8 +117,6 @@ const TimeSlotList = ({ onClose }) => {
       return;
     }
 
-    
-
     const alreadyBooked = await checkExistingBookingForChild(childId);
     if (alreadyBooked) {
       toast.error("This child is already booked for a test slot.");
@@ -125,13 +138,17 @@ const TimeSlotList = ({ onClose }) => {
         headersObj
       );
 
-      if (response.status === 201) {
-        toast.success("Booking successfully made! SMS sent."); // Updated message
-        onClose(); // Close the modal
+      if (response.data && response.data._id) {
+        toast.success("Booking successfully made! SMS sent.");
+        onClose();
       }
     } catch (error) {
       console.error(error);
-      toast.error("There was an error making your booking. Please try again.");
+      if (error.response && error.response.data === "This test slot is fully booked.") {
+        toast.error("This test slot is fully booked. Please select another slot.");
+      } else {
+        toast.error("There was an error making your booking. Please try again.");
+      }
     }
   };
 
@@ -150,7 +167,9 @@ const TimeSlotList = ({ onClose }) => {
           >
             <option value="">Select...</option>
             {children.map((child) => (
-              <option key={child._id} value={child._id}>{child.name}</option>
+              <option key={child._id} value={child._id}>
+                {child.name}
+              </option>
             ))}
           </select>
         </div>
@@ -164,7 +183,9 @@ const TimeSlotList = ({ onClose }) => {
           >
             <option value="">All</option>
             {["Bundang", "Dongtan", "Suji"].map((campus) => (
-              <option key={campus} value={campus}>{campus}</option>
+              <option key={campus} value={campus}>
+                {campus}
+              </option>
             ))}
           </select>
         </div>
@@ -174,17 +195,23 @@ const TimeSlotList = ({ onClose }) => {
       <div className="slot-cards">
         {timeSlots.length ? (
           timeSlots
-            .filter(slot => !selectedCampus || slot.campus === selectedCampus)
+            .filter((slot) => !selectedCampus || slot.campus === selectedCampus)
             .map((slot) => (
-              <TimeSlotCard key={slot._id} timeSlot={slot} onBook={handleBookSlot} selectedChildId={selectedChildId} />
+              <TimeSlotCard
+                key={slot._id}
+                timeSlot={slot}
+                onBook={handleBookSlot}
+                selectedChildId={selectedChildId}
+              />
             ))
         ) : (
-          <p className="no-slots">No available time slots at the moment. Please check back later.</p>
+          <p className="no-slots">
+            No available time slots at the moment. Please check back later.
+          </p>
         )}
       </div>
     </div>
   );
 };
-
 
 export default TimeSlotList;

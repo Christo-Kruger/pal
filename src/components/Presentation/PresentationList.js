@@ -26,7 +26,7 @@ const PresentationList = () => {
   const handleSendSMS = (presentationId) => {
     const presentation = presentations.find(p => p._id === presentationId);
     const phoneNumbers = presentation.timeSlots.flatMap(timeSlot => 
-        timeSlot.attendees.map(attendee => attendee._id.phone)  // Note the change here.
+        timeSlot.attendees.map(attendee => attendee._id?.phone)  // Note the change here.
     );
     setCurrentPhoneNumbers(phoneNumbers);
     setSmsModalOpen(true);

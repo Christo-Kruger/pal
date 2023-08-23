@@ -80,7 +80,7 @@ const TestSlotList = () => {
               <td>{testSlot.startTime}</td>
               <td>{testSlot.endTime}</td>
 
-              <td>{testSlot.capacity}</td>
+              <td>{testSlot.booked || 0}/{testSlot.capacity}</td>
               <td>
                 <button onClick={() => handleEdit(testSlot)}>Edit</button>
                 <button onClick={() => handleDelete(testSlot._id)}>

@@ -131,10 +131,7 @@ function RegistrationForm() {
         </p>
       </form>
        ) : null}
-      <div className="form-container">
-      
-      {showChildForm && <ChildForm parentId={parentId} />}
-    </div>
+   {showChildForm && <ChildForm parentId={parentId} />}
     </div>
   );
 }

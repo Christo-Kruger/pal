@@ -148,7 +148,7 @@ const BookingList = () => {
 
               <td>{booking.testSlot && new Date(booking.testSlot.date).toLocaleDateString()}</td>
 
-              <td>{booking.parent && booking.parent.phone}</td>
+              <td>{booking.parent && booking.parent._id.phone}</td>
               <td>
               <select
                       onChange={(e) => handleSelectBookingChange(e, booking)}

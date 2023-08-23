@@ -7,8 +7,8 @@
 }
 
 .form {
-  width: 100%;
-  max-width: 400px;
+    width: 100%; /* or any specific width */
+    max-width: 500px; /* or any specific max-width */
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
