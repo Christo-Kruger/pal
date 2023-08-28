@@ -10,6 +10,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Admin from './pages/Admin';
+import AddChild from '../src/components/Parents/AddChild'
+import UpdateDetail from '../src/components/Parents/UpdateDetail'
+import UpdateChild from '../src/components/Parents/UpdateChild'
+
 
 function App() {
   return (
@@ -22,6 +26,10 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/add-child" element={<AddChild />} />
+          <Route path="/update-details" element={<UpdateDetail />} />
+          <Route path="/update-child" element={<UpdateChild />} />
+
           <Route path="/parent/*" element={<ParentProtectedRoute />} />
         </Routes>
       </Router>

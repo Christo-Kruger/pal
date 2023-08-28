@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./LoginForm.css";
-
+import "./LoginForm.css"
 import { useAuth } from "../context/AuthContext";
 import Logo from "../media/logo.png";
 
@@ -11,11 +10,14 @@ function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // New state for error message
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage(''); // Clear the error message
+    setErrorMessage('');
+    setLoading(true);
 
     try {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
@@ -27,28 +29,31 @@ function LoginForm() {
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         login(data.token);
-        
+  
+        localStorage.setItem("userRole", data.role);
         localStorage.setItem("userCampus", data.campus);
-
+  
         if (data.role === "parent") {
           navigate("/parent");
-        } else if (data.role === "admin" || "superadmin") {
+        } else if (data.role === "admin" || data.role === "superadmin") {
           navigate("/admin");
         } else {
-          setErrorMessage("Invalid role"); // Set error message instead of alert
+          setErrorMessage("Invalid role");
         }
       } else {
         const errorData = await response.json();
         console.error(errorData);
-        setErrorMessage("Invalid email or password"); // Set error message instead of alert
+        setErrorMessage("Invalid email or password");
       }
     } catch (error) {
       console.error(error);
-      setErrorMessage("Invalid email or password"); // Set error message instead of alert
+      setErrorMessage("Invalid email or password");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -61,7 +66,6 @@ function LoginForm() {
       </div>
       <form className="form" onSubmit={handleSubmit}>
         <h1 className="form-title">Login</h1>
-        {/* Display error message */}
         {errorMessage && <div className="error-message">{errorMessage}</div>}
         <div className="form-field">
           <label className="form-label" htmlFor="email">
@@ -77,21 +81,29 @@ function LoginForm() {
           />
         </div>
         <div className="form-field">
-          <label className="form-label" htmlFor="password">
-            Password:
-          </label>
-          <input
-            className="form-input"
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+    <label className="form-label" htmlFor="password">
+      Password:
+    </label>
+    <div className="password-container">
+      <input
+        className="form-input"
+        type={passwordVisible ? "text" : "password"}
+        id="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      <div 
+        className="toggle-password"
+        onClick={() => setPasswordVisible(!passwordVisible)}
+      >
+        {passwordVisible ? "Hide" : "Show"}
+      </div>
+    </div>
+  </div>
         <div className="form-field">
-          <button className="form-button" type="submit">
-            Login
+          <button className="form-button" type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </div>
         <p className="link">

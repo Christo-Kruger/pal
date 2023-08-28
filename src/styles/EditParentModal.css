@@ -1,0 +1,151 @@
+:root {
+    --background-light: #f9f9f9;
+    --background-dark: #f4f4f4;
+    --border: #e0e0e0;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --text-dark: #333;
+    --text-light: #f9f9f9;
+    --success: #4CAF50;
+    --error: #f44336;
+}
+.content {
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+}
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    width: 80%;
+    background-color: var(--background-dark);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin: 20px;
+}
+
+.edit-parent-modal {
+    overflow-y: auto;
+    max-height: 80vh;
+}
+
+.input-group div {
+    margin-bottom: 10px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.edit-parent-modal {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-dark);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.edit-child {
+    display: flex;
+    justify-content: center;
+}
+
+.input-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.child-details-card {
+    background-color: var(--background-light);
+    padding: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 5px var(--shadow);
+    max-width: 300px;
+    margin: 20px;
+}
+
+.child-input label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.child-input input,
+.child-input select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.save-button,
+.cancel-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin-left: 10px;
+}
+
+.save-button {
+    background-color: var(--success);
+    color: var(--text-light);
+}
+
+.save-button:hover {
+    background-color: #45a049;
+    color: var(--text-light);
+}
+
+.cancel-button {
+    background-color: var(--error);
+    color: var(--text-light);
+}
+
+.cancel-button:hover {
+    background-color: #e33326;
+    color: var(--text-light);
+}
+
+@media (max-width: 768px) {
+    .actions {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .save-button,
+    .cancel-button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}

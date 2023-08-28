@@ -1,0 +1,78 @@
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: auto;
+    background-color: #ffffff00;
+border-color: none;
+box-shadow: none;
+    
+  }
+  
+  .form {
+      width: 100%; /* or any specific width */
+      max-width: 500px; /* or any specific max-width */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+    .form-title {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    
+    .form-field {
+      margin-bottom: 15px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    
+    .form-button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+    .link {
+      text-align: center;
+      margin-top: 10px;
+    }
+    
+    .link a {
+      color: #007bff;
+    }
+    
+    /* Media Query for larger screens */
+    @media screen and (min-width: 600px) {
+      .form-container {
+        height: auto;
+      }
+    }
+    @media screen and (max-width: 600px) {
+      .modal-content {
+        width: 90%; /* or any percentage/value that seems suitable */
+      }
+    }
+  
+    
+    /* New styles for the modal */
+

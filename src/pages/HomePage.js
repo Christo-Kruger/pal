@@ -21,7 +21,7 @@ function HomePage() {
       </div>
       <div className="content-container">
         <div className="text-container">
-          <h1>Welcome to J lee Reservations</h1>
+          <h1>Welcome to J Lee Reservations</h1>
         </div>
         <div className="button-container">
           <button className="login-button" onClick={handleLogin}>

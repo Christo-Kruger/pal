@@ -19,6 +19,8 @@ export function getUserRole() {
   }
 }
 
+
+
 export function getAttendedPresentation() {
   const token = localStorage.getItem('token');
 
@@ -114,6 +116,23 @@ export function getUserCampus() {
     const decodedToken = jwtDecode(token);
     console.log(decodedToken); // log the entire decoded token
     return decodedToken.campus; 
+  } catch (error) {
+    console.error('Error decoding token', error);
+    return null;
+  }
+}
+
+export function getUserEmail() {
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    console.error('No token in local storage');
+    return null;
+  }
+
+  try {
+    const decodedToken = jwtDecode(token);
+    return decodedToken.email; 
   } catch (error) {
     console.error('Error decoding token', error);
     return null;

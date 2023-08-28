@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import moment from "moment";
 import { MdDateRange, MdPlace, MdAccessTime } from "react-icons/md"; // icons for date, place, and time
 
+
 import "./BookPresentationModal.css";
 
 function BookPresentationModal({
@@ -105,7 +106,6 @@ function BookPresentationModal({
                         {moment(slot.endTime).format("HH:mm")}
                       </div>
                       <div className="slot-info">
-                        <span>Available: {slot.availableSlots}</span>
                         <button
                           onClick={() =>
                             handleBooking(presentation._id, slot._id)

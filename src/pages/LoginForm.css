@@ -4,16 +4,20 @@
   align-items: center;
   justify-content: center;
   padding: 10px;
+
+
 }
 
 .form {
   width: 100%;
   max-width: 300px;
+
 }
 
 .error-message {
   color: red;
-  margin-top: 5px;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
 .form-title {
@@ -33,12 +37,30 @@
 }
 
 .form-input {
-  width: 100%;
+  width: calc(100% - 40px);
   padding: 8px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+
+.password-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+
+
+.toggle-password {
+  margin-left: 10px;
+  cursor: pointer;
+  color: #007bff;
+}
+
+
+
 
 .form-button {
   width: 100%;
@@ -49,6 +71,10 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.form-button[disabled] {
+  background-color: #a0aec0;
 }
 
 .link {
@@ -68,10 +94,4 @@
   .form-input {
     width: 90%;
   }
-}
-
-.error-message {
-  color: red;
-  margin-bottom: 15px;
-  text-align: center;
 }

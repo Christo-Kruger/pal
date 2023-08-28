@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import {toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from 'react-modal';
 import "../../styles/CreatePresentationModal.css"
@@ -82,7 +82,7 @@ const CreatePresentationModal = ({ isOpen, onRequestClose }) => {
         <h2>Create Presentation</h2>
         <button className="close-button" onClick={onRequestClose}>&times;</button>
       </div>
-
+      <div className="scrollable-content">
       <form className="modal-form" onSubmit={handleSubmit}>
         <div className="input-group">
           <label>Name:</label>
@@ -159,12 +159,12 @@ const CreatePresentationModal = ({ isOpen, onRequestClose }) => {
             <button type="button" className="remove-slot-btn" onClick={() => handleRemoveTimeSlot(index)}>X</button>
           </div>
         ))}
-        <button type="button" className="add-slot-btn" onClick={handleAddTimeSlot}>Add Time Slot</button>
+       <button type="button" className="add-slot-btn" onClick={handleAddTimeSlot}>Add Time Slot</button>
         
         <button type="submit" className="submit-btn">Create Presentation</button>
       </form>
-
-      <ToastContainer position="top-center" autoClose={3000} />
+      </div>
+      
     </Modal>
   );
 };

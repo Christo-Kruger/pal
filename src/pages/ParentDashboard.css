@@ -9,6 +9,14 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding: 20px; /* padding added for some breathing space */
+  font-family: 'Arial', sans-serif; /* Added a fallback font */
+}
+
+.header {
+  margin: 0;
+  font-size: calc(12px + 3vw);
+  text-align: center;
 }
 
 .header-text {
@@ -17,14 +25,10 @@
   font-size: 28px;
 }
 
-.header {
-  margin: 0;
-  font-size: calc(12px + 3vw);
-  text-align: center;
-}
-.no-booking{
+.no-booking {
   text-align: center;
   margin: 20px;
+  color: #888; /* Grey color to indicate emptiness */
 }
 
 .button-containerPD {
@@ -36,8 +40,6 @@
   width: 100%; 
 }
 
-
-
 .button {
   height: 43px;
   min-width: 300px;
@@ -47,6 +49,7 @@
   border-radius: 5px;
   color: #fff;
   cursor: pointer;
+  transition: 0.2s; /* Added transition for smooth hover effect */
 }
 
 .button:hover {
@@ -55,33 +58,23 @@
 
 .card-container {
   display: grid;
-  flex-direction: row;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* This line makes the cards responsive. */
   grid-gap: 20px;
   margin: 20px;
 }
 
+
 .booking-card {
-  border: 1px solid black;
+  border: 1px solid #ccc; /* made the border softer */
   border-radius: 5px;
   padding: 15px;
   box-sizing: border-box;
+  transition: 0.2s; /* added transition for hover effect */
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* box shadow for depth */
 }
 
-@media screen and (max-width: 768px) {
-  .button-containePD {
-    flex-direction: column;
-  }
-
-  .card-container {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .booking-card {
-    width: 75%;
-    margin: 10px auto;
-  }
+.booking-card:hover {
+  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2); /* added shadow effect on hover */
 }
 
 .booking-actions {
@@ -96,16 +89,30 @@
   border: none;
   background-color: transparent;
   margin-right: 20px;
-  /* Add any additional styling you want */
+  transition: 0.2s; /* Transition added for hover effects */
 }
 
-/* Additional styles for color-coded buttons */
-.booking-action-icon:hover {
-  color: red; /* Red color on hover for the delete button */
+.booking-action-icon.trash-icon:hover { /* Red color on hover for the delete button */
+  color: red;
 }
 
-.edit-icon {
-  color: green; /* Green color for the edit button */
+.booking-action-icon.edit-icon { /* Green color for the edit button */
+  color: green;
 }
 
-/* Add more styling for the color-coded buttons if needed */
+@media screen and (max-width: 768px) {
+  .button-containerPD {
+    flex-direction: column;
+  }
+
+  .card-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .booking-card {
+    width: 100%; /* Adjusting this ensures the card takes the full width of the grid cell. */
+    margin: 10px 0; /* Adjusted margin to only vertical, since grid-gap takes care of the horizontal. */
+  }
+
+}

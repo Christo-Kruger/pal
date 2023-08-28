@@ -65,6 +65,7 @@ const TestSlotList = () => {
         <thead>
           <tr>
             <th>Campus</th>
+            <th>Age Group</th>
             <th>Date</th>
             <th>Start Time</th>
             <th>End Time</th>
@@ -76,6 +77,7 @@ const TestSlotList = () => {
           {timeSlots.map((testSlot) => (
             <tr key={testSlot._id}>
               <td>{testSlot.campus}</td>
+              <td>{testSlot.testGrade}</td>
               <td>{new Date(testSlot.date).toLocaleDateString()}</td>
               <td>{testSlot.startTime}</td>
               <td>{testSlot.endTime}</td>

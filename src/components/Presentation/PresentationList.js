@@ -52,13 +52,17 @@ const PresentationList = () => {
   }, []);
 
   const handleDelete = async (presentationId) => {
+    if (!window.confirm("Are you sure you want to delete this presentation?")) {
+      return; // if the user presses Cancel, do not continue with the deletion
+    }
+  
     try {
       const authHeaders = getAuthHeader();
       await axios.delete(
         `${process.env.REACT_APP_BACKEND_URL}/api/presentations/${presentationId}`,
         authHeaders
       );
-
+  
       setPresentations((prevPresentations) =>
         prevPresentations.filter(
           (presentation) => presentation._id !== presentationId
@@ -122,7 +126,6 @@ const PresentationList = () => {
           ))}
         </tbody>
       </table>
-      <ToastContainer position="top-center" autoClose={3000} />
       <UpdatePresentationModal
         presentationId={selectedPresentationId}
         isOpen={isModalOpen}

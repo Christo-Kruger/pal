@@ -1,0 +1,115 @@
+body, html {
+    height: 100%;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+h3 {
+    font-size: 2em;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.edit-child-box {
+    display: flex;
+    justify-content: center;
+}
+
+.input-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.child-details-card {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    max-width: 300px;
+    margin: 20px;
+}
+
+.child-input label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.child-input input,
+.child-input select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    /* Add placeholder color */
+    ::placeholder {
+        color: #aaa;
+    }
+}
+
+.child-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;  /* Add margin at the bottom */
+}
+
+.save-button,
+.cancel-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin-left: 10px;
+}
+
+.save-button {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+    color: #f9f9f9;
+}
+
+.cancel-button {
+    background-color: #f44336;
+    color: #fff;
+}
+
+.cancel-button:hover {
+    background-color: #e33326;
+    color: #f9f9f9;
+}
+
+/* For Mobile Devices */
+@media (max-width: 768px) {
+    .actions {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .save-button,
+    .cancel-button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}

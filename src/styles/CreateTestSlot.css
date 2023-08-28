@@ -19,7 +19,7 @@
   input[type="time"],
   input[type="number"],
   select {
-    width: 100%;
+    width: 300px;
     padding: 10px;
     box-sizing: border-box;
     border: 1px solid #ccc;
@@ -40,3 +40,15 @@
     background-color: #0056b3;
   }
   
+
+  .testslot-modal {
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+    background: #ffffff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.overlay {
+    background: rgba(0, 0, 0, 0.6);
+}

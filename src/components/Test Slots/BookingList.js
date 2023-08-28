@@ -10,6 +10,9 @@ const BookingList = () => {
   const [smsMode, setSmsMode] = useState(false);
   const [selectedAttendees, setSelectedAttendees] = useState([]);
 
+  const [userCampus, setUserCampus] = useState('');
+  const [userRole, setUserRole] = useState('');
+
   function handleSelectBookingChange(event, item) {
     switch (event.target.value) {
       case "cancel":
@@ -85,19 +88,34 @@ const BookingList = () => {
       };
     
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/bookings`
-        );
-        setBookings(response.data);
-      } catch (error) {
-        console.log("Error fetching bookings:", error);
-      }
-    };
-    fetchBookings();
-  }, []);
+      useEffect(() => {
+        // Step 2: Populate states from localStorage
+        setUserCampus(localStorage.getItem("userCampus"));
+        setUserRole(localStorage.getItem("userRole")); // Assuming you store userRole in localStorage. If not, this will need to be fetched or set up another way.
+    
+        const fetchBookings = async () => {
+          try {
+            const response = await axios.get(
+              `${process.env.REACT_APP_BACKEND_URL}/api/bookings`
+            );
+    
+            // Step 3: Filter bookings based on the user's role and campus
+            if (userRole === "superadmin") {
+              setBookings(response.data); // Show all bookings if superadmin
+            } else {
+              const filteredBookings = response.data.filter((booking) =>
+                booking.testSlot && booking.testSlot.campus === userCampus
+              );
+              setBookings(filteredBookings); // Show only bookings of the user's campus if not superadmin
+    
+            }
+          } catch (error) {
+            console.log("Error fetching bookings:", error);
+          }
+        };
+    
+        fetchBookings();
+      }, [userCampus, userRole]);
 
   return (
     <div>
@@ -148,7 +166,7 @@ const BookingList = () => {
 
               <td>{booking.testSlot && new Date(booking.testSlot.date).toLocaleDateString()}</td>
 
-              <td>{booking.parent && booking.parent._id.phone}</td>
+              <td>{booking.parent && booking.parent.phone}</td>
               <td>
               <select
                       onChange={(e) => handleSelectBookingChange(e, booking)}

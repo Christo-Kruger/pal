@@ -52,8 +52,8 @@ function ChildForm({ parentId }) {
   };
 
   return (
-    <div className="form-container">
-    <form className="form" onSubmit={(e) => e.preventDefault()}>
+    <div className="form-container">  
+      <form className="form" onSubmit={(e) => e.preventDefault()}>
         <h2 className="form-title">Child Details</h2>
         <div className="form-field">
           <label className="form-label" htmlFor="name">
@@ -68,9 +68,7 @@ function ChildForm({ parentId }) {
           />
         </div>
         <div className="form-field">
-          <label className="form-label" htmlFor="previousSchool">
-            Previous School:
-          </label>
+        <label className="form-label" htmlFor="previousSchool">Last Attended School:</label>
           <input
             className="form-input"
             type="text"
@@ -92,26 +90,24 @@ function ChildForm({ parentId }) {
           />
         </div>
         <div className="form-field">
-          <label className="form-label" htmlFor="gender">
-            Gender:
-          </label>
-          <select
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
-            required
-          >
-            <option value="Select Gender">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-        </div>
+    <label className="form-label" htmlFor="gender">Gender:</label>
+    <select
+        className="form-input"
+        value={gender}
+        onChange={(e) => setGender(e.target.value)}
+        required
+    >
+        <option value="">Select Gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+    </select>
+</div>
         <button className="form-button" onClick={handleSave}>
           Save
         </button>
-        <button className="form-button" onClick={handleAddAnotherChild}>
-          Add Another Child
-        </button>
+        <button className="form-button secondary" onClick={handleAddAnotherChild}>Add Another Child</button>
       </form>
+     
     </div>
   );
 }

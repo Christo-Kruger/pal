@@ -17,6 +17,13 @@
     margin-bottom: 20px;
   }
   
+  .scrollable-content {
+    max-height: 60vh; /* Adjust as per your requirement */
+    overflow-y: auto; /* Enable vertical scrolling */
+    margin-bottom: 20px; /* Space at the bottom for aesthetics */
+    padding: 10px;
+  }
+
   .close-button {
     background: none;
     border: none;

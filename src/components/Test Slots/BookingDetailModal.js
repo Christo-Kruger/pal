@@ -28,6 +28,7 @@ const BookingDetailModal = ({ isOpen, booking, onClose }) => {
             <p>
               <strong>End Time:</strong> {booking.testSlot.endTime}
             </p>
+            
             <p>
             <strong>Fee:</strong> {booking.price ? `₩${new Intl.NumberFormat('ko-KR').format(booking.price)}` : "N/A"}
 

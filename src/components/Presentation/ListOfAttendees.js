@@ -9,19 +9,23 @@ const AttendeeList = () => {
   const [isSmsModalOpen, setIsSmsModalOpen] = useState(false);
   const [selectedPhoneNumber, setSelectedPhoneNumber] = useState(null);
   const userCampus = localStorage.getItem("userCampus");
+  const userRole = localStorage.getItem("userRole");
   const [checkedAttendees, setCheckedAttendees] = useState({});
 
   const handleExport = async () => {
     try {
       // Here we make a request to our backend to trigger the CSV export.
-      
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/presentations/exportToExcel`, getAuthHeader());
-  
-      const blob = new Blob([response.data], { type: 'text/csv' });  // Modified MIME type for CSV
+
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/presentations/exportToExcel`,
+        getAuthHeader()
+      );
+
+      const blob = new Blob([response.data], { type: "text/csv" }); // Modified MIME type for CSV
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', 'attendees_data.csv');  // Modified file extension to .csv
+      link.setAttribute("download", "attendees_data.csv"); // Modified file extension to .csv
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -29,8 +33,7 @@ const AttendeeList = () => {
       console.error("Error exporting data: ", error);
       alert("Error exporting data. Please try again.");
     }
-};
-
+  };
 
   const openSmsModal = (phoneNumber) => {
     setSelectedPhoneNumber(phoneNumber);
@@ -61,14 +64,14 @@ const AttendeeList = () => {
         `${process.env.REACT_APP_BACKEND_URL}/api/users/${userId}/attendedPresentation`,
         { attended: isChecked }
       );
-  
+
       if (response.status !== 200) {
         // Revert checkbox state in case of an error
         setCheckedAttendees((prevState) => ({
           ...prevState,
           [userId]: !isChecked,
         }));
-  
+
         alert("There was an error updating the attendance status.");
       } else {
         // Display a toast when successful
@@ -86,13 +89,17 @@ const AttendeeList = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/presentations/allAttendeesInTimeSlots`,getAuthHeader()
+          `${process.env.REACT_APP_BACKEND_URL}/api/presentations/allAttendeesInTimeSlots`,
+          getAuthHeader()
         );
 
         if (mounted) {
           const filteredPresentations = response.data.filter((presentation) => {
             return presentation.timeSlots.some((slot) =>
-              slot.attendees.some((attendee) => attendee.campus === userCampus)
+              slot.attendees.some(
+                (attendee) =>
+                  attendee.campus === userCampus || userRole === "superadmin"
+              )
             );
           });
           setPresentations(filteredPresentations);
@@ -102,8 +109,8 @@ const AttendeeList = () => {
           filteredPresentations.forEach((presentation) => {
             presentation.timeSlots.forEach((slot) => {
               slot.attendees.forEach((attendee) => {
-                initialCheckedAttendees[attendee._id] = attendee.attendedPresentation;
-
+                initialCheckedAttendees[attendee._id] =
+                  attendee.attendedPresentation;
               });
             });
           });
@@ -130,7 +137,8 @@ const AttendeeList = () => {
       <table>
         <thead>
           <tr>
-            <th>Attendee Name</th>
+            <th>Children Names</th>
+            <th>Children Test Grades</th>
             <th>Phone Number</th>
             <th>Campus</th>
             <th>Presentation Booked</th>
@@ -151,7 +159,18 @@ const AttendeeList = () => {
                     slot.attendees &&
                     slot.attendees.map((attendee) => (
                       <tr key={attendee._id}>
-                        <td>{attendee.name}</td>
+                        <td>
+                          {attendee.children &&
+                            attendee.children
+                              .map((child) => child.name)
+                              .join(", ")}
+                        </td>
+                        <td>
+                          {attendee.children &&
+                            attendee.children
+                              .map((child) => child.testGrade)
+                              .join(", ")}
+                        </td>
                         <td>{attendee.phone}</td>
                         <td>{attendee.campus}</td>
                         <td>{presentationItem.presentationName}</td>
@@ -167,7 +186,6 @@ const AttendeeList = () => {
                           </button>
                         </td>
                         <td>
-                         
                           <input
                             type="checkbox"
                             checked={checkedAttendees[attendee._id] || false}

@@ -19,8 +19,6 @@ const TimeSlotCard = ({ timeSlot, onBook, selectedChildId }) => {
     onBook(timeSlot._id, selectedChildId);
   };
 
-  const availableSlots = timeSlot.capacity - (timeSlot.bookings ? timeSlot.bookings.length : 0);
-
   return (
     <div className="time-slot-card">
       <h5>
@@ -32,9 +30,6 @@ const TimeSlotCard = ({ timeSlot, onBook, selectedChildId }) => {
       <p>
         Start: {timeSlot.startTime} - End: {timeSlot.endTime}
       </p>
-      <p>
-        Available Slots: {availableSlots}
-      </p>
       <button className="book-button" onClick={handleBook}>
         Book
       </button>
@@ -43,11 +38,13 @@ const TimeSlotCard = ({ timeSlot, onBook, selectedChildId }) => {
 };
 
 const TimeSlotList = ({ onClose }) => {
+  const userCampus = localStorage.getItem("userCampus");
+
   const [timeSlots, setTimeSlots] = useState([]);
   const [isEligibleForBooking, setIsEligibleForBooking] = useState(false);
   const [selectedChildId, setSelectedChildId] = useState(null);
   const [children, setChildren] = useState([]);
-  const [selectedCampus, setSelectedCampus] = useState(""); // To filter by campus
+  const [selectedCampus, setSelectedCampus] = useState(userCampus); // Defaults to userCampus
 
   useEffect(() => {
     fetchTimeSlots();
@@ -77,6 +74,11 @@ const TimeSlotList = ({ onClose }) => {
       const response = await axios.get(`${backendURL}/api/child`, headersObj);
       console.log(response.data);
       setChildren(response.data);
+
+      // Set the first child's ID as the default selected child
+      if (response.data.length > 0) {
+        setSelectedChildId(response.data[0]._id);
+      }
     } catch (error) {
       console.error("Error fetching children:", error);
     }
@@ -144,14 +146,20 @@ const TimeSlotList = ({ onClose }) => {
       }
     } catch (error) {
       console.error(error);
-      if (error.response && error.response.data === "This test slot is fully booked.") {
-        toast.error("This test slot is fully booked. Please select another slot.");
+      if (
+        error.response &&
+        error.response.data === "This test slot is fully booked."
+      ) {
+        toast.error(
+          "This test slot is fully booked. Please select another slot."
+        );
       } else {
-        toast.error("There was an error making your booking. Please try again.");
+        toast.error(
+          "There was an error making your booking. Please try again."
+        );
       }
     }
   };
-
   return (
     <div className="time-slot-list">
       <h1>Booking Time Slots</h1>
@@ -165,26 +173,9 @@ const TimeSlotList = ({ onClose }) => {
             value={selectedChildId}
             onChange={(e) => setSelectedChildId(e.target.value)}
           >
-            <option value="">Select...</option>
             {children.map((child) => (
               <option key={child._id} value={child._id}>
                 {child.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="filter campus-selection">
-          <label htmlFor="campusSelect">Campus:</label>
-          <select
-            id="campusSelect"
-            value={selectedCampus}
-            onChange={(e) => setSelectedCampus(e.target.value)}
-          >
-            <option value="">All</option>
-            {["Bundang", "Dongtan", "Suji"].map((campus) => (
-              <option key={campus} value={campus}>
-                {campus}
               </option>
             ))}
           </select>
@@ -195,7 +186,7 @@ const TimeSlotList = ({ onClose }) => {
       <div className="slot-cards">
         {timeSlots.length ? (
           timeSlots
-            .filter((slot) => !selectedCampus || slot.campus === selectedCampus)
+            .filter((slot) => slot.campus === selectedCampus)
             .map((slot) => (
               <TimeSlotCard
                 key={slot._id}
