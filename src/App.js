@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom'; // Import BrowserRouter
+import { HashRouter, Routes, Route } from 'react-router-dom'; // Import HashRouter
 import ParentProtectedRoute from './components/ParentProtectedRoute';
 import HomePage from './pages/HomePage';
 import Login from './pages/Login';
@@ -19,13 +19,13 @@ function App() {
   return (
     <AuthProvider>
       <ToastContainer />
-      {/* Use BrowserRouter and set basename */}
-      <BrowserRouter basename="/">
+      {/* Use HashRouter instead of BrowserRouter */}
+      <HashRouter>
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<Register />} />
-          <Route path="./login" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/add-child" element={<AddChild />} />
           <Route path="/update-details" element={<UpdateDetail />} />
@@ -33,7 +33,7 @@ function App() {
 
           <Route path="/parent/*" element={<ParentProtectedRoute />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </AuthProvider>
   );
 }
