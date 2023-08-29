@@ -11,6 +11,7 @@ import "./BookPresentationModal.css";
 function BookPresentationModal({
   presentations,
   closeModal,
+  childData,
   onBookingCreated,
 }) {
   const [expandedPresentation, setExpandedPresentation] = useState(null);
@@ -23,7 +24,26 @@ function BookPresentationModal({
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleBooking = async (presentationId, slotId) => {
+  const handleBooking = async (presentationId, slotId, presentationName, startTime) => {
+    const presentation = presentations.find(p => p._id === presentationId);
+    const child = childData.find(child => child.ageGroup === presentation.ageGroup);
+    if (!child) {
+      toast.error("You don't have any children in this age group.");
+      return;
+    }
+
+    const presentationInfo = `
+  Presentation: ${presentationName}
+  Start Time: ${startTime}
+  Child: ${child.name}
+  Test Grade: ${child.testGrade}
+`;
+
+const confirmation = window.confirm(`Do you want to book the following presentation?\n\n${presentationInfo}`);
+
+
+    if (!confirmation) return;
+
     const backendURL = process.env.REACT_APP_BACKEND_URL;
 
     try {
@@ -35,12 +55,15 @@ function BookPresentationModal({
 
       if (response.status === 200) {
         onBookingCreated(response.data);
+        
         closeModal();
         toast.success("Booking was successful!");
+        
       }
     } catch (err) {
       toast.error(err.response.data.message || "You've already booked!");
     }
+
   };
 
   const toggleExpandCard = (presentationId) => {
@@ -108,7 +131,8 @@ function BookPresentationModal({
                       <div className="slot-info">
                         <button
                           onClick={() =>
-                            handleBooking(presentation._id, slot._id)
+                            handleBooking(presentation._id, slot._id, presentation.name, moment(slot.startTime).format("HH:mm"))
+                          
                           }
                           disabled={
                             slot.attendees.length >= slot.maxAttendees ||

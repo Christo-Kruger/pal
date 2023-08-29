@@ -150,55 +150,43 @@ const AttendeeList = () => {
         </thead>
 
         <tbody>
-          {presentations &&
-            presentations.map(
-              (presentationItem) =>
-                presentationItem.timeSlots &&
-                presentationItem.timeSlots.map(
-                  (slot) =>
-                    slot.attendees &&
-                    slot.attendees.map((attendee) => (
-                      <tr key={attendee._id}>
-                        <td>
-                          {attendee.children &&
-                            attendee.children
-                              .map((child) => child.name)
-                              .join(", ")}
-                        </td>
-                        <td>
-                          {attendee.children &&
-                            attendee.children
-                              .map((child) => child.testGrade)
-                              .join(", ")}
-                        </td>
-                        <td>{attendee.phone}</td>
-                        <td>{attendee.campus}</td>
-                        <td>{presentationItem.presentationName}</td>
-                        <td>
-                          {new Date(slot.startTime).toLocaleTimeString()} -{" "}
-                          {new Date(slot.endTime).toLocaleTimeString()}
-                        </td>
+  {presentations &&
+    presentations.map((presentationItem) =>
+      presentationItem.timeSlots &&
+      presentationItem.timeSlots.map((slot) =>
+        slot.attendees &&
+        slot.attendees.map((attendee) =>
+          attendee.children &&
+          attendee.children.map((child, index) => (
+            <tr key={index}>
+              <td>{child.name}</td>
+              <td>{child.testGrade}</td>
+              <td>{attendee.phone}</td>
+              <td>{attendee.campus}</td>
+              <td>{presentationItem.presentationName}</td>
+              <td>
+                {new Date(slot.startTime).toLocaleTimeString()}
+              </td>
+              <td>{new Date(attendee.bookedAt).toLocaleString()}</td>
+              <td>
+                <button onClick={() => openSmsModal(attendee.phone)}>
+                  Send SMS
+                </button>
+              </td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={checkedAttendees[attendee._id] || false}
+                  onChange={(e) => handleCheckboxChange(e, attendee._id)}
+                />
+              </td>
+            </tr>
+          ))
+        )
+      )
+    )}
+</tbody>
 
-                        <td>{new Date(attendee.bookedAt).toLocaleString()}</td>
-                        <td>
-                          <button onClick={() => openSmsModal(attendee.phone)}>
-                            Send SMS
-                          </button>
-                        </td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            checked={checkedAttendees[attendee._id] || false}
-                            onChange={(e) =>
-                              handleCheckboxChange(e, attendee._id)
-                            }
-                          />
-                        </td>
-                      </tr>
-                    ))
-                )
-            )}
-        </tbody>
       </table>
       <SendSmsModal
         isOpen={isSmsModalOpen}

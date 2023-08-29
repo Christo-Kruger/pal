@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getUserRole } from "../utils/auth";
+import { getUserRole, getUserName, getUserCampus } from "../utils/auth";
 import logo from '../media/logo.png';
 
 const Navbar = () => {
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   let userRole;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const hamburgerRef = useRef(null);
   const sidebarRef = useRef(null);
+  const userName = getUserName();
+  const campus = getUserCampus();
+
   
   
 
@@ -65,6 +68,11 @@ const Navbar = () => {
       padding: '1em',
       backgroundColor: isSuperAdmin ? '#364150' : '#f5f5f5',
     },
+    campusName: {
+      marginRight: '10px',
+      fontSize: '18px',
+      color: 'black',
+    },
     logo: {
       height: '4em',
     },
@@ -107,7 +115,7 @@ const Navbar = () => {
 
   return (
     <nav style={{ ...styles.navbar, backgroundColor: isSuperAdmin ? '#2b3643' : '#f5f5f5' }}>
-    {isParent &&
+      {isParent &&
         <button ref={hamburgerRef} onClick={toggleSidebar} style={styles.hamburger}>
           ☰
         </button>
@@ -115,16 +123,22 @@ const Navbar = () => {
       <Link to={logoLink}>
         <img src={logo} alt="Logo" style={styles.logo} />
       </Link>
+      {isSuperAdmin && <span style={{...styles.campusName, color: 'white'}}>Super Admin</span>}
+      {isAdmin && !isSuperAdmin && campus && <span style={styles.campusName}>{campus}</span>}
       <button onClick={handleLogout} style={styles.logoutButton}>
         Logout
       </button>
+   
       {isParent &&
         <div ref={sidebarRef} style={{ ...styles.sidebar, transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}>
+          <div style={{ padding: '1em 0', fontWeight: 'bold', fontSize: '1.2em' }}>Hello, {userName}</div>
           <Link to="/update-child" style={styles.sidebarLink}>Update Child</Link>
           <Link to="/update-details" style={styles.sidebarLink}>Update Details</Link>
         </div>
       }
     </nav>
+
+  
   );
 };
 

@@ -52,8 +52,12 @@ function UpdateChild() {
         },
         body: JSON.stringify(child),
       });
-
+  
       if (response.ok) {
+        const updatedChild = await response.json();
+        const updatedChildren = editedChildren.map((child, i) => i === index ? updatedChild : child);
+        setChildren(updatedChildren);
+        setEditedChildren(updatedChildren);
         toast.success("Child updated successfully");
       } else {
         toast.error("Failed to update child");
@@ -63,6 +67,33 @@ function UpdateChild() {
       toast.error("An error occurred while updating child");
     } finally {
       setIsSaving(false);
+    }
+  };
+  
+
+  const handleChildDelete = async (index, childId) => {
+    const isConfirmed = window.confirm("Are you sure you want to delete this child?");
+    
+    if (isConfirmed) {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/child/${childId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          },
+        });
+
+        if (response.ok) {
+          toast.success("Child deleted successfully");
+          const updatedChildren = editedChildren.filter((child, i) => i !== index);
+          setEditedChildren(updatedChildren);
+        } else {
+          toast.error("Failed to delete child");
+        }
+      } catch (error) {
+        console.error("Error deleting child:", error);
+        toast.error("An error occurred while deleting child");
+      }
     }
   };
 
@@ -123,12 +154,20 @@ function UpdateChild() {
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
+              </div>
+              <div>
+                <label>Test Grade:</label>
+                <p>{child.testGrade}</p>
             </div>
             <div className="child-actions">
               <button className="save-button" onClick={() => handleChildSave(index)} disabled={isSaving}>
                 {isSaving ? "Saving..." : "Save Child"}
               </button>
+              <button className="delete-button" onClick={() => handleChildDelete(index, child._id)} disabled={isSaving}>
+                Delete Child
+              </button>
             </div>
+            
           </div>
         ))}
       </div>

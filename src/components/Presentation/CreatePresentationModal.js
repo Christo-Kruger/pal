@@ -70,7 +70,6 @@ const CreatePresentationModal = ({ isOpen, onRequestClose }) => {
         toast.error('Error creating presentation.');
     }
   };
-
   return (
     <Modal
       isOpen={isOpen}
@@ -133,7 +132,7 @@ const CreatePresentationModal = ({ isOpen, onRequestClose }) => {
             <option value="Elementary">J Lee Elementary</option>
           </select>
         </div>
-
+  
         <label>Time Slots:</label>
         {formData.timeSlots.map((timeSlot, index) => (
           <div key={index} className="timeslot-group">
@@ -176,6 +175,8 @@ const CreatePresentationModal = ({ isOpen, onRequestClose }) => {
       
     </Modal>
   );
+  
+  
 };
 
 export default CreatePresentationModal;

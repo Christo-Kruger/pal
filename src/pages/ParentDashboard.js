@@ -7,7 +7,8 @@ import EditBookingModal from "../components/EditBookingModal";
 import axios from "axios";
 import { getUserId, getAuthHeader, getAuthToken } from "../utils/auth";
 import "./ParentDashboard.css";
-import { Trash2, Edit } from "react-feather";
+import ChangeTimeSlotModal from "../components/ChangeTimeSlotModal";
+
 import { MdError } from "react-icons/md";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
@@ -19,6 +20,8 @@ function ParentDashboard() {
   const [presentations, setPresentations] = useState([]);
   const [error, setError] = useState(null);
   const [myPresentations, setMyPresentations] = useState([]);
+  const [childData, setChildData] = useState([]);
+
 
   const fetchBookings = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
@@ -69,25 +72,31 @@ function ParentDashboard() {
     const userId = getUserId();
     const token = getAuthToken();
     const config = { headers: { Authorization: `Bearer ${token}` } };
-
+  
     const [presentationResponse, childrenResponse] = await Promise.all([
       axios.get(`${backendURL}/api/presentations/myBookings`, config),
       axios.get(`${backendURL}/api/users/${userId}/children`, config),
     ]);
-
+  
     if (
       presentationResponse.status === 200 &&
       childrenResponse.status === 200
     ) {
+      const myChildren = childrenResponse.data;
+      setChildData(myChildren); // update childData state variable
+  
       const presentationsWithChildName = presentationResponse.data.map(
         (presentation) => {
-          const childrenInSameAgeGroup = childrenResponse.data.filter(
+          const childrenInSameAgeGroup = myChildren.filter(
             (child) => child.ageGroup === presentation.ageGroup
           );
           const childNames = childrenInSameAgeGroup
             .map((child) => child.name)
             .join(", ");
-          return { ...presentation, childName: childNames };
+          const childTestGrades = childrenInSameAgeGroup
+            .map((child) => child.testGrade)
+            .join(", ");
+          return { ...presentation, childName: childNames, testGrade: childTestGrades, oldSlotId: presentation.timeSlots[0]._id, };
         }
       );
       setMyPresentations(presentationsWithChildName);
@@ -95,7 +104,8 @@ function ParentDashboard() {
       setError("Error fetching my presentations");
     }
   };
-
+  
+  
   useEffect(() => {
     fetchMyPresentations();
   }, [myPresentations.length]);
@@ -141,6 +151,12 @@ function ParentDashboard() {
     }
   };
 
+  const handleTimeSlotChange = (presentationId) => {
+    const presentation = myPresentations.find((p) => p._id === presentationId);
+    setEditingBooking(presentation);
+    setActiveModal("changeTimeSlot");
+};
+
   const isEmptyState = bookings.length === 0;
 
   const downloadQRCode = async () => {
@@ -161,6 +177,8 @@ function ParentDashboard() {
       toast.error("Error downloading QR code PDF.");
     }
   };
+
+  
 
   return (
     <div className="dashboard-container">
@@ -236,6 +254,7 @@ function ParentDashboard() {
               <h3>{presentation.name}</h3>
               <p>Location: {presentation.location}</p>
               <p>Child: {presentation.childName}</p>
+              <p>Test Grade: {presentation.testGrade}</p>
               <p>Date: {new Date(presentation.date).toLocaleDateString()}</p>
               <p>
                 Start Time:{" "}
@@ -244,6 +263,12 @@ function ParentDashboard() {
                 ).toLocaleTimeString()}
               </p>
               <div className="booking-actions">
+              <button
+    className="button-bookings"
+    onClick={() => handleTimeSlotChange(presentation._id)}
+  >
+    Change Time Slot
+  </button>
                 <button
                   className="button-bookings"
                   onClick={() =>
@@ -269,6 +294,8 @@ function ParentDashboard() {
       )}
 
       <Modal
+
+      
         isOpen={activeModal !== null}
         onRequestClose={closeModal}
         contentLabel="Dynamic Modal"
@@ -278,6 +305,7 @@ function ParentDashboard() {
           <BookPresentationModal
             presentations={presentations}
             closeModal={closeModal}
+            childData={childData}
             onBookingCreated={fetchBookings}
           />
         )}
@@ -288,6 +316,16 @@ function ParentDashboard() {
             onBookingUpdated={fetchBookings}
           />
         )}
+
+{activeModal === "changeTimeSlot" && (
+   <ChangeTimeSlotModal
+   closeModal={closeModal}
+   presentationId={editingBooking._id}
+   oldSlotId={editingBooking.oldSlotId}
+   onTimeSlotChanged={fetchMyPresentations}
+/>
+  
+    )}
       </Modal>
     </div>
   );
