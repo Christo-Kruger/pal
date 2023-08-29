@@ -120,7 +120,6 @@ const Navbar = () => {
       </button>
       {isParent &&
         <div ref={sidebarRef} style={{ ...styles.sidebar, transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}>
-          <Link to="/add-child" style={styles.sidebarLink}>Add Child</Link>
           <Link to="/update-child" style={styles.sidebarLink}>Update Child</Link>
           <Link to="/update-details" style={styles.sidebarLink}>Update Details</Link>
         </div>

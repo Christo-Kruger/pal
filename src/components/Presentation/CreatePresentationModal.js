@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import {toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from 'react-modal';
 import "../../styles/CreatePresentationModal.css"
@@ -11,6 +11,7 @@ const CreatePresentationModal = ({ isOpen, onRequestClose }) => {
     description: '',
     location: '',
     date: '',
+    ageGroup: '',
     timeSlots: [],
   });
 
@@ -57,6 +58,7 @@ const CreatePresentationModal = ({ isOpen, onRequestClose }) => {
 
     const updatedFormData = {
         ...formData,
+        ageGroup: formData.ageGroup,
         timeSlots: updatedTimeSlots
     };
 
@@ -67,8 +69,7 @@ const CreatePresentationModal = ({ isOpen, onRequestClose }) => {
     } catch (error) {
         toast.error('Error creating presentation.');
     }
-};
-
+  };
 
   return (
     <Modal
@@ -95,15 +96,15 @@ const CreatePresentationModal = ({ isOpen, onRequestClose }) => {
           />
         </div>
         <div className="input-group">
-  <label>Description:</label>
-  <textarea 
-    className="description-box"
-    name="description"
-    value={formData.description}
-    onChange={handleChange}
-    required
-  />
-</div>
+          <label>Description:</label>
+          <textarea 
+            className="description-box"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            required
+          />
+        </div>
         <div className="input-group">
           <label>Location:</label>
           <input
@@ -123,6 +124,14 @@ const CreatePresentationModal = ({ isOpen, onRequestClose }) => {
             onChange={handleChange}
             required
           />
+        </div>
+        <div className="input-group">
+          <label>Age Group:</label>
+          <select name="ageGroup" value={formData.ageGroup} onChange={handleChange} required>
+            <option value="">Select Age Group</option>
+            <option value="Kids">J Lee Kids</option>
+            <option value="Elementary">J Lee Elementary</option>
+          </select>
         </div>
 
         <label>Time Slots:</label>
@@ -159,7 +168,7 @@ const CreatePresentationModal = ({ isOpen, onRequestClose }) => {
             <button type="button" className="remove-slot-btn" onClick={() => handleRemoveTimeSlot(index)}>X</button>
           </div>
         ))}
-       <button type="button" className="add-slot-btn" onClick={handleAddTimeSlot}>Add Time Slot</button>
+        <button type="button" className="add-slot-btn" onClick={handleAddTimeSlot}>Add Time Slot</button>
         
         <button type="submit" className="submit-btn">Create Presentation</button>
       </form>

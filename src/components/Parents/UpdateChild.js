@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "../../styles/EditChild.css";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -81,16 +82,16 @@ function UpdateChild() {
 
   return (
     <div className="container">
-        <h3>Edit Child Details</h3>
-    
-    <div className="edit-child-box">
-    <div className="input-group">
-
-      <div className="input-group">
+      <h3>Edit Child Details</h3>
+      <Link to="/add-child">
+        <button className="button" aria-label="Add Child">
+          Add Child
+        </button>
+      </Link>
+      <div className="edit-child-box">
         {editedChildren.map((child, index) => (
-          <div key={index} className="child-details-card">
+          <div key={child.id || index} className="child-details-card">
             <h5>Child {index + 1}</h5>
-
             <div className="child-input">
               <label>Name:</label>
               <input
@@ -98,35 +99,31 @@ function UpdateChild() {
                 onChange={e => handleChildChange(index, 'name', e.target.value)}
               />
             </div>
-
             <div className="child-input">
-                        <label>Previous School:</label>
-                        <input
-                            value={child.previousSchool}
-                            onChange={e => handleChildChange(index, 'previousSchool', e.target.value)}
-                        />
-                    </div>
-  
-                    <div className="child-input">
-                        <label>Date of Birth:</label>
-                        <input
-                            type="date"
-                            value={child.dateOfBirth}
-                            onChange={e => handleChildChange(index, 'dateOfBirth', e.target.value)}
-                        />
-                    </div>
-  
-                    <div className="child-input">
-                        <label>Gender:</label>
-                        <select
-                            value={child.gender}
-                            onChange={e => handleChildChange(index, 'gender', e.target.value)}
-                        >
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                    </div>
-
+              <label>Previous School:</label>
+              <input
+                value={child.previousSchool}
+                onChange={e => handleChildChange(index, 'previousSchool', e.target.value)}
+              />
+            </div>
+            <div className="child-input">
+              <label>Date of Birth:</label>
+              <input
+                type="date"
+                value={child.dateOfBirth}
+                onChange={e => handleChildChange(index, 'dateOfBirth', e.target.value)}
+              />
+            </div>
+            <div className="child-input">
+              <label>Gender:</label>
+              <select
+                value={child.gender}
+                onChange={e => handleChildChange(index, 'gender', e.target.value)}
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
             <div className="child-actions">
               <button className="save-button" onClick={() => handleChildSave(index)} disabled={isSaving}>
                 {isSaving ? "Saving..." : "Save Child"}
@@ -136,9 +133,8 @@ function UpdateChild() {
         ))}
       </div>
     </div>
-    </div>
-    </div>
   );
+  
 }
 
 export default UpdateChild;

@@ -5,12 +5,12 @@ import Book from "../components/Test Slots/Book";
 import BookPresentationModal from "../components/BookPresentationModal";
 import EditBookingModal from "../components/EditBookingModal";
 import axios from "axios";
-import { getUserId, getAuthHeader } from "../utils/auth";
+import { getUserId, getAuthHeader, getAuthToken } from "../utils/auth";
 import "./ParentDashboard.css";
 import { Trash2, Edit } from "react-feather";
 import { MdError } from "react-icons/md";
 import { toast } from "react-toastify";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 function ParentDashboard() {
   const [activeModal, setActiveModal] = useState(null);
@@ -37,27 +37,69 @@ function ParentDashboard() {
   useEffect(() => {
     fetchBookings();
   }, [bookings.length]);
-  
+
+  const handleCancelPresentation = async (presentationId) => {
+    const userId = getUserId();
+    try {
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
+      const response = await axios.delete(
+        `${backendURL}/api/presentations/parent/${presentationId}/attendees/${userId}`,
+        getAuthHeader()
+      );
+
+      if (response.status === 200) {
+        // update the myPresentations state
+        setMyPresentations((prevPresentations) =>
+          prevPresentations.filter(
+            (presentation) => presentation._id !== presentationId
+          )
+        );
+        toast.success("Booking successfully cancelled.");
+      } else {
+        toast.error("Error cancelling booking.");
+      }
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      toast.error("Error cancelling booking.");
+    }
+  };
 
   const fetchMyPresentations = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
-    const response = await axios.get(
-      `${backendURL}/api/presentations/myBookings`,
-      getAuthHeader()
-    );
+    const userId = getUserId();
+    const token = getAuthToken();
+    const config = { headers: { Authorization: `Bearer ${token}` } };
 
-    if (response.status === 200) {
-      setMyPresentations(response.data);
+    const [presentationResponse, childrenResponse] = await Promise.all([
+      axios.get(`${backendURL}/api/presentations/myBookings`, config),
+      axios.get(`${backendURL}/api/users/${userId}/children`, config),
+    ]);
+
+    if (
+      presentationResponse.status === 200 &&
+      childrenResponse.status === 200
+    ) {
+      const presentationsWithChildName = presentationResponse.data.map(
+        (presentation) => {
+          const childrenInSameAgeGroup = childrenResponse.data.filter(
+            (child) => child.ageGroup === presentation.ageGroup
+          );
+          const childNames = childrenInSameAgeGroup
+            .map((child) => child.name)
+            .join(", ");
+          return { ...presentation, childName: childNames };
+        }
+      );
+      setMyPresentations(presentationsWithChildName);
     } else {
       setError("Error fetching my presentations");
     }
   };
 
-
   useEffect(() => {
     fetchMyPresentations();
   }, [myPresentations.length]);
- 
+
   useEffect(() => {
     const fetchPresentations = async () => {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
@@ -99,8 +141,6 @@ function ParentDashboard() {
     }
   };
 
-
-
   const isEmptyState = bookings.length === 0;
 
   const downloadQRCode = async () => {
@@ -129,10 +169,10 @@ function ParentDashboard() {
           <MdError /> {error}
         </p>
       )}
-  
+
       <h1 className="header"> Welcome to J Lee Parent Booking Portal</h1>
       <h4 className="header-text">What would you like to do?</h4>
-  
+
       <div className="button-containerPD">
         <button
           className="button"
@@ -150,12 +190,12 @@ function ParentDashboard() {
         </button>
 
         <Link to="/add-child">
-    <button className="button" aria-label="Add Child">
-      Add Child
-    </button>
-  </Link>
+          <button className="button" aria-label="Add Child">
+            Add Child
+          </button>
+        </Link>
       </div>
-  
+
       {isEmptyState && myPresentations.length === 0 ? (
         <p className="no-booking">
           No bookings found. Book a test or presentation now!
@@ -163,7 +203,11 @@ function ParentDashboard() {
       ) : (
         <div className="card-container">
           {bookings.map((booking) => (
-            <div key={booking._id} className="booking-card" style={{backgroundColor: '#f0f0f0', border: '2px solid #ccc'}}>
+            <div
+              key={booking._id}
+              className="booking-card"
+              style={{ backgroundColor: "#f0f0f0", border: "2px solid #ccc" }}
+            >
               <h3>{booking.child.name}</h3>
               <p>Previous School: {booking.child.previousSchool}</p>
               <p>Test Grade: {booking.child.testGrade}</p>
@@ -182,39 +226,48 @@ function ParentDashboard() {
               </div>
             </div>
           ))}
-  
+
           {myPresentations.map((presentation) => (
-             <div key={presentation._id} className="presentation-card" style={{backgroundColor: '#e0f7fa', border: '2px '}}>
+            <div
+              key={presentation._id}
+              className="presentation-card"
+              style={{ backgroundColor: "#e0f7fa", border: "2px " }}
+            >
               <h3>{presentation.name}</h3>
               <p>Location: {presentation.location}</p>
+              <p>Child: {presentation.childName}</p>
+              <p>Date: {new Date(presentation.date).toLocaleDateString()}</p>
               <p>
-                Date: {new Date(presentation.date).toLocaleDateString()}
+                Start Time:{" "}
+                {new Date(
+                  presentation.timeSlots[0].startTime
+                ).toLocaleTimeString()}
               </p>
-              {presentation.timeSlots.map((timeSlot, index) => (
-                <div key={index}>
-                  <p>
-                    Start Time:{" "}
-                    {new Date(timeSlot.startTime).toLocaleTimeString()}
-                  </p>
-                  <p>
-                    End Time: {new Date(timeSlot.endTime).toLocaleTimeString()}
-                  </p>
-                </div>
-              ))}
-        {new Date(presentation.date) - new Date() <= 2 * 24 * 60 * 60 * 1000 && (
-          <button
-            className="button"
-            onClick={() => downloadQRCode()}
-            aria-label="Download QR Code"
-          >
-            <MdFileDownload /> Download QR
-          </button>
-        )}
-      </div>
+              <div className="booking-actions">
+                <button
+                  className="button-bookings"
+                  onClick={() =>
+                    handleCancelPresentation(presentation._id /* attendeeId */)
+                  }
+                >
+                  Cancel
+                </button>
+                {new Date(presentation.date) - new Date() <=
+                  2 * 24 * 60 * 60 * 1000 && (
+                  <button
+                    className="button-bookings"
+                    onClick={() => downloadQRCode()}
+                    aria-label="Download QR Code"
+                  >
+                    <MdFileDownload /> Download QR
+                  </button>
+                )}
+              </div>
+            </div>
           ))}
         </div>
       )}
-  
+
       <Modal
         isOpen={activeModal !== null}
         onRequestClose={closeModal}
@@ -237,7 +290,7 @@ function ParentDashboard() {
         )}
       </Modal>
     </div>
-  );  
+  );
 }
 
 export default ParentDashboard;

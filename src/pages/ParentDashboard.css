@@ -58,6 +58,18 @@
   transition: 0.2s; /* Added transition for smooth hover effect */
 }
 
+.button-bookings {
+  height: 43px;
+  width: 150px;
+  padding: 5px;
+  background-color: #2196f3;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s; /* Added transition for smooth hover effect */
+}
+
 .button:hover {
   background-color: #1976d2;
 }
@@ -85,7 +97,8 @@
 
 .booking-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  align-items: center;
 }
 
 .booking-action-icon {

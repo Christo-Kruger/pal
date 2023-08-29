@@ -20,6 +20,16 @@ export function getUserRole() {
 }
 
 
+export function getAuthToken() {
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    console.error('No token in local storage');
+    return null;
+  }
+
+  return token;
+}
 
 export function getAttendedPresentation() {
   const token = localStorage.getItem('token');
