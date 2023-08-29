@@ -125,8 +125,7 @@ const confirmation = window.confirm(`Do you want to book the following presentat
                   return (
                     <div key={slot._id} className="time-slot">
                       <div className="slot-time">
-                        {moment(slot.startTime).format("HH:mm")} -{" "}
-                        {moment(slot.endTime).format("HH:mm")}
+                        {moment(slot.startTime).format("HH:mm")}
                       </div>
                       <div className="slot-info">
                         <button
