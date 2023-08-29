@@ -30,8 +30,8 @@ function ParentList() {
   }, [userRole, userCampus]);
 
   const filteredParents = Array.isArray(parents) 
-  ? parents.filter(parent => parent.name && parent.name.toLowerCase().includes(searchTerm.toLowerCase()))
-  : [];
+? parents.filter(parent => parent.children.some(child => child.name.toLowerCase().includes(searchTerm.toLowerCase())))
+: [];
 
   return (
     <div>
@@ -40,7 +40,7 @@ function ParentList() {
       <div>
         <input 
           type="text" 
-          placeholder="Search by parent name..." 
+          placeholder="Search by child name..." 
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -49,7 +49,6 @@ function ParentList() {
       <table>
         <thead>
           <tr>
-            <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
             <th>Campus</th>
@@ -61,7 +60,6 @@ function ParentList() {
         <tbody>
           {filteredParents.map(parent => (
             <tr key={parent._id}>
-              <td>{parent.name}</td>
               <td>{parent.email}</td>
               <td>{parent.phone}</td>
               <td>{parent.campus}</td>
@@ -90,6 +88,7 @@ function ParentList() {
       }
     </div>
   );
+
 }
 
 export default ParentList;

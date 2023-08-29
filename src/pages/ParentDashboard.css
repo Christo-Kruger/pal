@@ -13,6 +13,12 @@
   font-family: 'Arial', sans-serif; /* Added a fallback font */
 }
 
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
 .header {
   margin: 0;
   font-size: calc(12px + 3vw);

@@ -153,11 +153,7 @@ const TimeSlotList = ({ onClose }) => {
         toast.error(
           "This test slot is fully booked. Please select another slot."
         );
-      } else {
-        toast.error(
-          "There was an error making your booking. Please try again."
-        );
-      }
+      } 
     }
   };
   return (
