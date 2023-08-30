@@ -28,18 +28,19 @@ function BookPresentationModal({
     const presentation = presentations.find(p => p._id === presentationId);
     const child = childData.find(child => child.ageGroup === presentation.ageGroup);
     if (!child) {
-      toast.error("You don't have any children in this age group.");
+      toast.error("이 연령대에는 자녀가 없습니다.");
       return;
     }
 
     const presentationInfo = `
-  Presentation: ${presentationName}
-  Start Time: ${startTime}
-  Child: ${child.name}
-  Test Grade: ${child.testGrade}
+    프레젠테이션: ${presentationName}
+    시작 시간: ${startTime}
+    어린이: ${child.name}
+  
+시험 등급: ${child.testGrade}
 `;
 
-const confirmation = window.confirm(`Do you want to book the following presentation?\n\n${presentationInfo}`);
+const confirmation = window.confirm(`다음 프레젠테이션을 예약하시겠습니까?\n\n${presentationInfo}`);
 
 
     if (!confirmation) return;
@@ -57,11 +58,12 @@ const confirmation = window.confirm(`Do you want to book the following presentat
         onBookingCreated(response.data);
         
         closeModal();
-        toast.success("Booking was successful!");
+        toast.success("예약 성공했어요!");
         
       }
     } catch (err) {
-      toast.error(err.response.data.message || "You've already booked!");
+      toast.error(err.response.data.message || 
+        "이미 예약하셨네요!");
     }
 
   };
@@ -77,7 +79,7 @@ const confirmation = window.confirm(`Do you want to book the following presentat
   return (
     <>
       <div className="modal-header">
-        <h1>Book Presentation</h1>
+        <h1>설명회 예약</h1>
         <button className="close-button" onClick={closeModal}>
           &times; {/* This is the "x" symbol */}
         </button>
@@ -94,10 +96,10 @@ const confirmation = window.confirm(`Do you want to book the following presentat
             <div className="presentation-meta">
               <span>
                 <MdDateRange />{" "}
-                {new Date(presentation.date).toLocaleDateString()}
+                <h5>{new Date(presentation.date).toLocaleDateString()}</h5>
               </span>
               <span>
-                <MdPlace /> {presentation.location}
+                <MdPlace /> <h5>{presentation.location}</h5>
               </span>
             </div>
             <p>
@@ -111,12 +113,13 @@ const confirmation = window.confirm(`Do you want to book the following presentat
                 onClick={() => toggleExpandCard(presentation._id)}
               >
                 {expandedPresentation === presentation._id
-                  ? "View Less"
-                  : "View More"}
+                  ? 
+                  "간단히 보기"
+                  : "더보기"}
               </button>
             )}
             <h4>
-              <MdAccessTime /> Time Slots:
+              <MdAccessTime /> 시간대:
             </h4>
             <div className="time-slots">
               {presentation.timeSlots ? (
@@ -138,14 +141,14 @@ const confirmation = window.confirm(`Do you want to book the following presentat
                             userHasBooked
                           }
                         >
-                          Book Slot
+                          도서 슬롯
                         </button>
                       </div>
                     </div>
                   );
                 })
               ) : (
-                <p>No time slots available for this presentation.</p>
+                <p>이 프리젠테이션에 사용할 수 있는 시간이 없습니다.</p>
               )}
             </div>
           </div>

@@ -22,7 +22,6 @@ function ParentDashboard() {
   const [myPresentations, setMyPresentations] = useState([]);
   const [childData, setChildData] = useState([]);
 
-
   const fetchBookings = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
     const response = await axios.get(
@@ -41,50 +40,24 @@ function ParentDashboard() {
     fetchBookings();
   }, [bookings.length]);
 
-  const handleCancelPresentation = async (presentationId) => {
-    const userId = getUserId();
-    try {
-      const backendURL = process.env.REACT_APP_BACKEND_URL;
-      const response = await axios.delete(
-        `${backendURL}/api/presentations/parent/${presentationId}/attendees/${userId}`,
-        getAuthHeader()
-      );
-
-      if (response.status === 200) {
-        // update the myPresentations state
-        setMyPresentations((prevPresentations) =>
-          prevPresentations.filter(
-            (presentation) => presentation._id !== presentationId
-          )
-        );
-        toast.success("Booking successfully cancelled.");
-      } else {
-        toast.error("Error cancelling booking.");
-      }
-    } catch (error) {
-      console.error("Error cancelling booking:", error);
-      toast.error("Error cancelling booking.");
-    }
-  };
-
   const fetchMyPresentations = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
     const userId = getUserId();
     const token = getAuthToken();
     const config = { headers: { Authorization: `Bearer ${token}` } };
-  
+
     const [presentationResponse, childrenResponse] = await Promise.all([
       axios.get(`${backendURL}/api/presentations/myBookings`, config),
       axios.get(`${backendURL}/api/users/${userId}/children`, config),
     ]);
-  
+
     if (
       presentationResponse.status === 200 &&
       childrenResponse.status === 200
     ) {
       const myChildren = childrenResponse.data;
       setChildData(myChildren); // update childData state variable
-  
+
       const presentationsWithChildName = presentationResponse.data.map(
         (presentation) => {
           const childrenInSameAgeGroup = myChildren.filter(
@@ -96,7 +69,12 @@ function ParentDashboard() {
           const childTestGrades = childrenInSameAgeGroup
             .map((child) => child.testGrade)
             .join(", ");
-          return { ...presentation, childName: childNames, testGrade: childTestGrades, oldSlotId: presentation.timeSlots[0]._id, };
+          return {
+            ...presentation,
+            childName: childNames,
+            testGrade: childTestGrades,
+            oldSlotId: presentation.timeSlots[0]._id,
+          };
         }
       );
       setMyPresentations(presentationsWithChildName);
@@ -104,8 +82,7 @@ function ParentDashboard() {
       setError("Error fetching my presentations");
     }
   };
-  
-  
+
   useEffect(() => {
     fetchMyPresentations();
   }, [myPresentations.length]);
@@ -133,7 +110,7 @@ function ParentDashboard() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this booking?")) {
+    if (window.confirm("정말로 이 예약을 삭제하시겠습니까?")) {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.delete(
         `${backendURL}/api/bookings/${id}`,
@@ -144,9 +121,9 @@ function ParentDashboard() {
         setBookings((prevBookings) =>
           prevBookings.filter((booking) => booking._id !== id)
         );
-        toast.success("Booking successfully deleted.");
+        toast.success("예약이 성공적으로 삭제되었습니다.");
       } else {
-        toast.error("Error deleting booking.");
+        toast.error("예약을 삭제하는 중에 오류가 발생했습니다.");
       }
     }
   };
@@ -155,7 +132,7 @@ function ParentDashboard() {
     const presentation = myPresentations.find((p) => p._id === presentationId);
     setEditingBooking(presentation);
     setActiveModal("changeTimeSlot");
-};
+  };
 
   const isEmptyState = bookings.length === 0;
 
@@ -174,11 +151,9 @@ function ParentDashboard() {
       URL.revokeObjectURL(link.href);
     } catch (error) {
       console.error("Error downloading QR code PDF:", error);
-      toast.error("Error downloading QR code PDF.");
+      toast.error("QR 코드 PDF를 다운로드하는 중에 오류가 발생했습니다.");
     }
   };
-
-  
 
   return (
     <div className="dashboard-container">
@@ -188,8 +163,11 @@ function ParentDashboard() {
         </p>
       )}
 
-      <h1 className="header"> Welcome to J Lee Parent Booking Portal</h1>
-      <h4 className="header-text">What would you like to do?</h4>
+      <h1 className="header">
+        {" "}
+        J Lee 학부모 예약 포털에 오신 것을 환영합니다.
+      </h1>
+      <h4 className="header-text">무엇을하고 싶으십니까?</h4>
 
       <div className="button-containerPD">
         <button
@@ -197,26 +175,26 @@ function ParentDashboard() {
           onClick={() => setActiveModal("booking")}
           aria-label="Book a Test"
         >
-          Book a Test
+          시험 예약
         </button>
         <button
           className="button"
           onClick={() => setActiveModal("presentation")}
           aria-label="Book Presentation"
         >
-          Book Presentation
+          설명회 예약
         </button>
 
         <Link to="/add-child">
           <button className="button" aria-label="Add Child">
-            Add Child
+            자녀 추가
           </button>
         </Link>
       </div>
 
       {isEmptyState && myPresentations.length === 0 ? (
         <p className="no-booking">
-          No bookings found. Book a test or presentation now!
+          예약이 없습니다. 지금 시험이나 프레젠테이션을 예약하세요!
         </p>
       ) : (
         <div className="card-container">
@@ -227,19 +205,20 @@ function ParentDashboard() {
               style={{ backgroundColor: "#f0f0f0", border: "2px solid #ccc" }}
             >
               <h3>{booking.child.name}</h3>
-              <p>Previous School: {booking.child.previousSchool}</p>
-              <p>Test Grade: {booking.child.testGrade}</p>
-              <p>Campus: {booking?.testSlot?.campus}</p>
+              <p>이전 학교: {booking.child.previousSchool}</p>
+              <p>시험등급: {booking.child.testGrade}</p>
+              <p>교정: {booking?.testSlot?.campus}</p>
               <p>
-                Date: {new Date(booking?.testSlot?.date).toLocaleDateString()}
+              날짜: {new Date(booking?.testSlot?.date).toLocaleDateString()}
               </p>
-              <p>Time: {booking?.testSlot?.startTime}</p>
+              <p>
+시간: {booking?.testSlot?.startTime}</p>
               <div className="booking-actions">
                 <button
                   className="button"
                   onClick={() => handleDelete(booking._id)}
                 >
-                  Cancel
+                 취소
                 </button>
               </div>
             </div>
@@ -252,31 +231,24 @@ function ParentDashboard() {
               style={{ backgroundColor: "#e0f7fa", border: "2px " }}
             >
               <h3>{presentation.name}</h3>
-              <p>Location: {presentation.location}</p>
-              <p>Child: {presentation.childName}</p>
-              <p>Test Grade: {presentation.testGrade}</p>
-              <p>Date: {new Date(presentation.date).toLocaleDateString()}</p>
+              <p>위치: {presentation.location}</p>
+              <p>어린이: {presentation.childName}</p>
+              <p>시험등급: {presentation.testGrade}</p>
+              <p>날짜: {new Date(presentation.date).toLocaleDateString()}</p>
               <p>
-                Start Time:{" "}
+                시작 시간:{" "}
                 {new Date(
                   presentation.timeSlots[0].startTime
                 ).toLocaleTimeString()}
               </p>
               <div className="booking-actions">
-              <button
-    className="button-bookings"
-    onClick={() => handleTimeSlotChange(presentation._id)}
-  >
-    Change Time Slot
-  </button>
                 <button
                   className="button-bookings"
-                  onClick={() =>
-                    handleCancelPresentation(presentation._id /* attendeeId */)
-                  }
+                  onClick={() => handleTimeSlotChange(presentation._id)}
                 >
-                  Cancel
+                  시간대 변경
                 </button>
+
                 {new Date(presentation.date) - new Date() <=
                   2 * 24 * 60 * 60 * 1000 && (
                   <button
@@ -284,7 +256,7 @@ function ParentDashboard() {
                     onClick={() => downloadQRCode()}
                     aria-label="Download QR Code"
                   >
-                    <MdFileDownload /> Download QR
+                    <MdFileDownload /> QR 다운로드
                   </button>
                 )}
               </div>
@@ -294,8 +266,6 @@ function ParentDashboard() {
       )}
 
       <Modal
-
-      
         isOpen={activeModal !== null}
         onRequestClose={closeModal}
         contentLabel="Dynamic Modal"
@@ -317,15 +287,14 @@ function ParentDashboard() {
           />
         )}
 
-{activeModal === "changeTimeSlot" && (
-   <ChangeTimeSlotModal
-   closeModal={closeModal}
-   presentationId={editingBooking._id}
-   oldSlotId={editingBooking.oldSlotId}
-   onTimeSlotChanged={fetchMyPresentations}
-/>
-  
-    )}
+        {activeModal === "changeTimeSlot" && (
+          <ChangeTimeSlotModal
+            closeModal={closeModal}
+            presentationId={editingBooking._id}
+            oldSlotId={editingBooking.oldSlotId}
+            onTimeSlotChanged={fetchMyPresentations}
+          />
+        )}
       </Modal>
     </div>
   );

@@ -18,7 +18,14 @@
 .input-group label {
   display: block;
   font-weight: bold;
+  text-align: left; /* Align labels to the left */
 }
+.top-left-arrow {
+  position: absolute;
+  top: 120px; /* Adjust the value to match the height of your navigation bar */
+  left:20px;
+}
+
 
 .input-group input,
 .input-group select {
@@ -29,7 +36,9 @@
 }
 
 .actions {
-  text-align: center;
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  margin-top: 20px;
 }
 
 .actions button {

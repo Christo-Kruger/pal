@@ -138,6 +138,7 @@ const AttendeeList = () => {
         <thead>
           <tr>
             <th>Children Names</th>
+            <th>Gender</th>
             <th>Children Test Grades</th>
             <th>Phone Number</th>
             <th>Campus</th>
@@ -160,6 +161,7 @@ const AttendeeList = () => {
           attendee.children.map((child, index) => (
             <tr key={index}>
               <td>{child.name}</td>
+              <td>{child.gender}</td>
               <td>{child.testGrade}</td>
               <td>{attendee.phone}</td>
               <td>{attendee.campus}</td>

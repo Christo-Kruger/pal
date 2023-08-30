@@ -13,7 +13,7 @@ import { FaClock, FaSchool } from "react-icons/fa";
 const TimeSlotCard = ({ timeSlot, onBook, selectedChildId }) => {
   const handleBook = () => {
     if (!selectedChildId) {
-      toast.error("Please select a child before booking.");
+      toast.error("예약 전 아동을 ​​선택해주세요.");
       return;
     }
     onBook(timeSlot._id, selectedChildId);
@@ -22,16 +22,16 @@ const TimeSlotCard = ({ timeSlot, onBook, selectedChildId }) => {
   return (
     <div className="time-slot-card">
       <h5>
-        <FaSchool /> {timeSlot.campus + " Campus"}
+        <FaSchool /> {timeSlot.campus + " 캠퍼스"}
       </h5>
       <p>
-        <FaClock /> Date: {new Date(timeSlot.date).toLocaleDateString()}
+        <FaClock />날짜: {new Date(timeSlot.date).toLocaleDateString()}
       </p>
       <p>
-        Start: {timeSlot.startTime} - End: {timeSlot.endTime}
+      시작: {timeSlot.startTime} - End: {timeSlot.endTime}
       </p>
       <button className="book-button" onClick={handleBook}>
-        Book
+      책
       </button>
     </div>
   );
@@ -115,13 +115,13 @@ const TimeSlotList = ({ onClose }) => {
 
   const handleBookSlot = async (slotId, childId) => {
     if (!isEligibleForBooking) {
-      toast.error("You are not eligible for booking at this time.");
+      toast.error("지금은 예약할 수 없습니다.");
       return;
     }
 
     const alreadyBooked = await checkExistingBookingForChild(childId);
     if (alreadyBooked) {
-      toast.error("This child is already booked for a test slot.");
+      toast.error("이 아이는 이미 시험 시간을 예약했습니다.");
       return;
     }
 
@@ -141,7 +141,7 @@ const TimeSlotList = ({ onClose }) => {
       );
 
       if (response.data && response.data._id) {
-        toast.success("Booking successfully made! SMS sent.");
+        toast.success("예약이 성공적으로 완료되었습니다! SMS가 전송되었습니다.");
         onClose();
       }
     } catch (error) {
@@ -151,19 +151,20 @@ const TimeSlotList = ({ onClose }) => {
         error.response.data === "This test slot is fully booked."
       ) {
         toast.error(
-          "This test slot is fully booked. Please select another slot."
+          "이 테스트 슬롯은 예약이 꽉 찼습니다. 다른 슬롯을 선택하세요."
         );
       } 
     }
   };
   return (
     <div className="time-slot-list">
-      <h1>Booking Time Slots</h1>
+      <h1>
+      테스트 예약</h1>
 
       {/* Filter Section */}
       <div className="filters">
         <div className="filter child-selection">
-          <label htmlFor="childSelect">Child:</label>
+          <label htmlFor="childSelect">어린이:</label>
           <select
             id="childSelect"
             value={selectedChildId}
@@ -193,7 +194,7 @@ const TimeSlotList = ({ onClose }) => {
             ))
         ) : (
           <p className="no-slots">
-            No available time slots at the moment. Please check back later.
+           현재 이용 가능한 시간대가 없습니다. 나중에 다시 확인해 주세요.
           </p>
         )}
       </div>

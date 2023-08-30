@@ -88,7 +88,7 @@ const Navbar = () => {
       color: 'white',
       border: 'none',
       cursor: 'pointer',
-      width: '90px',
+      width: '120px',
       height: '40px',
       fontSize: '15px',
       borderRadius: '5px',
@@ -126,14 +126,14 @@ const Navbar = () => {
       {isSuperAdmin && <span style={{...styles.campusName, color: 'white'}}>Super Admin</span>}
       {isAdmin && !isSuperAdmin && campus && <span style={styles.campusName}>{campus}</span>}
       <button onClick={handleLogout} style={styles.logoutButton}>
-        Logout
+로그 아웃
       </button>
    
       {isParent &&
         <div ref={sidebarRef} style={{ ...styles.sidebar, transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}>
-          <div style={{ padding: '1em 0', fontWeight: 'bold', fontSize: '1.2em' }}>Hello, {userName}</div>
-          <Link to="/update-child" style={styles.sidebarLink}>Update Child</Link>
-          <Link to="/update-details" style={styles.sidebarLink}>Update Details</Link>
+          <div style={{ padding: '1em 0', fontWeight: 'bold', fontSize: '1.2em' }}>안녕하세요, {userName}</div>
+          <Link to="/update-child" style={styles.sidebarLink}>하위 업데이트</Link>
+          <Link to="/update-details" style={styles.sidebarLink}>업데이트 세부정보</Link>
         </div>
       }
     </nav>

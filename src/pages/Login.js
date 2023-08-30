@@ -65,11 +65,13 @@ function LoginForm() {
         </Link>
       </div>
       <form className="form" onSubmit={handleSubmit}>
-        <h1 className="form-title">Login</h1>
+        <h1 className="form-title">
+로그인</h1>
         {errorMessage && <div className="error-message">{errorMessage}</div>}
         <div className="form-field">
           <label className="form-label" htmlFor="email">
-            Email:
+            
+이메일:
           </label>
           <input
             className="form-input"
@@ -82,7 +84,7 @@ function LoginForm() {
         </div>
         <div className="form-field">
     <label className="form-label" htmlFor="password">
-      Password:
+    비밀번호:
     </label>
     <div className="password-container">
       <input
@@ -97,17 +99,22 @@ function LoginForm() {
         className="toggle-password"
         onClick={() => setPasswordVisible(!passwordVisible)}
       >
-        {passwordVisible ? "Hide" : "Show"}
+        {passwordVisible ? 
+"숨다" : 
+"보여주다"}
       </div>
     </div>
   </div>
         <div className="form-field">
           <button className="form-button" type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+            {loading ? 
+"로그인 중..." : 
+"로그인"}
           </button>
         </div>
         <p className="link">
-          Not registered? <Link to="/register">Register here</Link>
+         
+등록되지 않은 경우 <Link to="/register">여기에서 등록하세요</Link>
         </p>
       </form>
     </div>

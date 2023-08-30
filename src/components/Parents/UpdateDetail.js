@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "../../styles/UpdateDetails.css";
+import { Link } from "react-router-dom";
+import backArrow from '../../styles/back_arrow.png'
 import { getUserPhone, getUserName, getUserEmail, getUserCampus, getUserId  } from '../../utils/auth';
 
 function UpdateDetail() {
@@ -53,10 +55,16 @@ function UpdateDetail() {
 
   return (
     <div className="container">
+      <div className="top-left-arrow">
+        <Link to="/parent">
+        <img src={backArrow} alt="Back to Parent Page" />
+        </Link>
+        </div>
       <div className="edit-parent">
-        <h3>Edit Parent Details</h3>
+        <h3>
+상위 세부정보 편집</h3>
         <div className="input-group">
-          <label>Name:</label>
+          <label>이름:</label>
           <input
             value={editedParent.name}
             onChange={(e) =>
@@ -64,7 +72,7 @@ function UpdateDetail() {
             }
           />
 
-          <label>Phone Number:</label>
+          <label>전화 번호:</label>
           <input
             value={editedParent.phone}
             onChange={(e) =>
@@ -72,7 +80,7 @@ function UpdateDetail() {
             }
           />
 
-          <label>Email:</label>
+          <label>이메일:</label>
           <input
             value={editedParent.email}
             onChange={(e) =>
@@ -80,21 +88,12 @@ function UpdateDetail() {
             }
           />
 
-          <label>Campus:</label>
-          <select
-            value={editedParent.campus}
-            onChange={(e) =>
-              setEditedParent({ ...editedParent, campus: e.target.value })
-            }
-          >
-            <option value="Bundang">Bundang</option>
-            <option value="Dongtan">Dongtan</option>
-            <option value="Suji">Suji</option>
-          </select>
+          <label>교정:</label>
+          <p>{editedParent.campus}</p>
         </div>
         <div className="actions">
           <button className="save-button" onClick={handleSave} disabled={isLoading}>
-            {isLoading ? 'Updating...' : 'Update'}
+            {isLoading ? '업데이트 중...' : '업데이트'}
           </button>
         </div>
       </div>

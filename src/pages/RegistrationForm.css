@@ -13,6 +13,11 @@
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+.error {
+  color: red;
+  text-align: center;
+}
+
 
 .form-title {
   text-align: center;

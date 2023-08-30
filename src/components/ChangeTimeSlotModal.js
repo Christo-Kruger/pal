@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { getAuthHeader, getUserId } from "../utils/auth";
 import { toast } from "react-toastify";
-
+import '../styles/ChangeTimeSlotModal.css'
 
 function ChangeTimeSlotModal({ closeModal, presentationId, oldSlotId, onTimeSlotChanged }) {
   const [timeSlots, setTimeSlots] = useState([]);
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
 
   const fetchTimeSlots = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
@@ -64,12 +64,16 @@ function ChangeTimeSlotModal({ closeModal, presentationId, oldSlotId, onTimeSlot
   
   
 
-  return (
-    <div className="change-time-slot-modal">
-      <h2>Change Time Slot</h2>
+    return (  
+    <div>
+    <button className="close-button" onClick={closeModal}>X</button>
+      <div className="change-time-slot-modal">
+      
+        <h2>Change Time Slot</h2>
       <select
         value={selectedTimeSlot}
         onChange={(e) => setSelectedTimeSlot(e.target.value)}
+        style={{ padding: "8px", borderRadius: "5px", border: "1px solid #ccc", marginBottom: "10px" }}
       >
         <option value="">Select a new time slot</option>
         {timeSlots.map((timeSlot) => (
@@ -78,8 +82,15 @@ function ChangeTimeSlotModal({ closeModal, presentationId, oldSlotId, onTimeSlot
           </option>
         ))}
       </select>
-      <button onClick={handleChangeTimeSlot}>Change Time Slot</button>
-      <button onClick={closeModal}>Cancel</button>
+      <button
+        onClick={handleChangeTimeSlot}
+        style={{ backgroundColor: "#007BFF", color: "white", padding: "10px 20px", marginRight: "10px" }}
+        disabled={!selectedTimeSlot}
+      >
+        Change Time Slot
+      </button>
+  
+    </div>
     </div>
   );
 }

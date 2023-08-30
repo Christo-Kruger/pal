@@ -52,12 +52,13 @@ function ChildForm({ parentId }) {
   };
 
   return (
-    <div className="form-container">
-    <form className="form" onSubmit={(e) => e.preventDefault()}>
-        <h2 className="form-title">Child Details</h2>
+    <div className="form-container">  
+      <form className="form" onSubmit={(e) => e.preventDefault()}>
+        <h2 className="form-title">
+아동 세부정보</h2>
         <div className="form-field">
           <label className="form-label" htmlFor="name">
-            Name:
+          이름:
           </label>
           <input
             className="form-input"
@@ -68,9 +69,7 @@ function ChildForm({ parentId }) {
           />
         </div>
         <div className="form-field">
-          <label className="form-label" htmlFor="previousSchool">
-            Previous School:
-          </label>
+        <label className="form-label" htmlFor="previousSchool">마지막 출석 학교:</label>
           <input
             className="form-input"
             type="text"
@@ -81,7 +80,7 @@ function ChildForm({ parentId }) {
         </div>
         <div className="form-field">
           <label className="form-label" htmlFor="dateOfBirth">
-            Date of Birth:
+          생일:
           </label>
           <input
             className="form-input"
@@ -92,28 +91,28 @@ function ChildForm({ parentId }) {
           />
         </div>
         <div className="form-field">
-          <label className="form-label" htmlFor="gender">
-            Gender:
-          </label>
-          <select
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
-            required
-          >
-            <option value="Select Gender">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-        </div>
+    <label className="form-label" htmlFor="gender">Gender:</label>
+    <select
+        className="form-input"
+        value={gender}
+        onChange={(e) => setGender(e.target.value)}
+        required
+    >
+        <option value="">성별을 선택하세요</option>
+        <option value="male">
+남성</option>
+        <option value="female">여성</option>
+    </select>
+</div>
         <button className="form-button" onClick={handleSave}>
-          Save
+        구하다
         </button>
-        <button className="form-button" onClick={handleAddAnotherChild}>
-          Add Another Child
-        </button>
+        <button className="form-button secondary" onClick={handleAddAnotherChild}>다른 자녀 추가</button>
       </form>
+     
     </div>
   );
 }
+
 
 export default ChildForm;

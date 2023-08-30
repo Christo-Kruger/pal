@@ -25,6 +25,13 @@ h3 {
     justify-content: center;
 }
 
+
+.top-left-arrow {
+    position: absolute;
+    top: 120px; /* Adjust the value to match the height of your navigation bar */
+    left:20px;
+  }
+  
 .input-group {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -71,18 +78,20 @@ h3 {
 }
 
 .save-button,
-.cancel-button {
+.delete-button {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
     margin-left: 10px;
+    
 }
 
 .save-button {
     background-color: #007BFF;
     color: #fff;
+ 
 }
 
 .save-button:hover {

@@ -1,0 +1,63 @@
+.change-time-slot-modal {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 320px;
+  position: absolute;
+  top: 100px;
+  left: calc(50% - 160px);
+}
+
+.change-time-slot-modal h2 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.change-time-slot-modal select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.change-time-slot-modal .close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.change-time-slot-modal button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.change-time-slot-modal button:disabled {
+  cursor: not-allowed;
+}
+
+.change-time-slot-modal button:first-child {
+  background-color: #007BFF;
+  color: white;
+  margin-right: 10px;
+}
+
+.change-time-slot-modal button:last-child {
+  background-color: #6c757d;
+  color: white;
+}
+
+.change-time-slot-modal button:hover {
+  background-color: #0056b3;
+}
+
+/* Add more styles as needed */

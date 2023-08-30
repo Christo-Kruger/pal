@@ -15,9 +15,13 @@ function RegistrationForm() {
   const [showChildForm, setShowChildForm] = useState(false);
   const [parentId, setParentId] = useState("");
   const [showRegistrationForm, setShowRegistrationForm] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
     const backendURL = process.env.REACT_APP_BACKEND_URL;
     const response = await fetch(`${backendURL}/api/users/register`, {
@@ -27,6 +31,8 @@ function RegistrationForm() {
       },
       body: JSON.stringify({ name, email, password, phone, campus }),
     });
+
+    setLoading(false);
 
     if (response.ok) {
       const data = await response.json();
@@ -42,8 +48,9 @@ function RegistrationForm() {
     } else {
       const errorData = await response.json();
       console.error(errorData);
+      setError(errorData.message || "An error occurred");
     }
-};
+  };
 
 
   return (
@@ -55,10 +62,12 @@ function RegistrationForm() {
       </div>
       {showRegistrationForm ? (
       <form className="form" onSubmit={handleSubmit}>
-        <h1 className="form-title">Register</h1>
+        <h1 className="form-title">회원가입</h1>
+        {error && <p className="error">{error}</p>}
         <div className="form-field">
           <label className="form-label" htmlFor="name">
-            Name:
+            
+이름:
           </label>
           <input
             className="form-input"
@@ -71,7 +80,7 @@ function RegistrationForm() {
         </div>
         <div className="form-field">
           <label className="form-label" htmlFor="email">
-            Email:
+          이메일:
           </label>
           <input
             className="form-input"
@@ -84,7 +93,7 @@ function RegistrationForm() {
         </div>
         <div className="form-field">
           <label className="form-label" htmlFor="password">
-            Password:
+          비밀번호:
           </label>
           <input
             className="form-input"
@@ -97,37 +106,40 @@ function RegistrationForm() {
         </div>
         <div className="form-field">
           <label className="form-label" htmlFor="phone">
-            Phone:
+          전화 번호
           </label>
           <input
-            className="form-input"
-            type="text"
-            id="phone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-          />
+  className="form-input"
+  type="text"
+  id="phone"
+  value={phone}
+  onChange={(e) => setPhone(e.target.value)}
+  required
+  pattern="010[0-9]{8}"
+  title="Phone number must be in the format 010XXXXXXXX"
+/>
         </div>
         <label>
-          What campus are you intrested in?
+        어느 캠퍼스에 관심이 있나요?
           <select
             value={campus}
             onChange={(e) => setCampus(e.target.value)}
             required
           >
-            <option value="">--Please choose an option--</option>
+            <option value="">
+--옵션을 선택해주세요--</option>
             <option value="Suji">Suji</option>
             <option value="Dongtan">Dongtan</option>
             <option value="Bundang">Bundang</option>
           </select>
         </label>
         <div className="form-field">
-          <button className="form-button" type="submit">
-            Register
+          <button className="form-button" type="submit" disabled={loading}>
+            {loading ? "Registering..." : "Register"}
           </button>
         </div>
         <p className="link">
-          Have an account? <Link to="/login">Login here</Link>
+        계정을 갖고있다면 <Link to="/login">여기에 로그인하세요</Link>
         </p>
       </form>
        ) : null}
