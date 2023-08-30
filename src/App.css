@@ -24,7 +24,7 @@
 }  */
 
 /* Form styles */
-/* form {
+form {
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
@@ -67,4 +67,4 @@
     font: 1em sans-serif;
     text-align: center;
     color: #000000;
-  }  */
+  } 

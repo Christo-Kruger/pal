@@ -142,18 +142,20 @@ function UpdateChild() {
           <img src={backArrow} alt="Back to Parent Page" />
         </Link>
       </div>
-      <h3>자녀 세부정보 편집</h3>
+      <h3>학생정보 편집</h3>
       <Link to="/add-child">
         <button className="button" aria-label="Add Child">
-          자녀 추가
+        학생 추가
+
         </button>
       </Link>
       <div className="edit-child-box">
         {editedChildren.map((child, index) => (
           <div key={child.id || index} className="child-details-card">
-            <h5>어린이{index + 1}</h5>
+            <h5>학생(유아)
+{index + 1}</h5>
             <div className="child-input">
-              <label>이름:</label>
+              <label>학생(유아) 한글명</label>
               <input
                 value={child.name}
                 onChange={(e) =>
@@ -162,7 +164,8 @@ function UpdateChild() {
               />
             </div>
             <div className="child-input">
-              <label>이전 학교:</label>
+              <label>현재 재원중인 기관명:
+</label>
               <input
                 value={child.previousSchool}
                 onChange={(e) =>
@@ -171,7 +174,7 @@ function UpdateChild() {
               />
             </div>
             <div className="child-input">
-              <label>생일:</label>
+              <label>생년월일:</label>
               <input
                 type="date"
                 value={child.dateOfBirth}
@@ -181,7 +184,8 @@ function UpdateChild() {
               />
             </div>
             <div className="child-input">
-              <label>성별:</label>
+              <label>성별:
+</label>
               <select
                 value={child.gender}
                 onChange={(e) =>
@@ -193,7 +197,8 @@ function UpdateChild() {
               </select>
             </div>
             <div>
-              <label>시험 등급:</label>
+              <label>2024년 예비 학년/연령
+</label>
               <p>{child.testGrade}</p>
             </div>
             <div className="child-actions">
@@ -202,7 +207,7 @@ function UpdateChild() {
                 onClick={() => handleChildSave(index)}
                 disabled={isSaving}
               >
-                {isSaving ? "절약..." : "구하다"}
+                {isSaving ? "저장..." : "저장"}
               </button>
               <button
                 className="delete-button"

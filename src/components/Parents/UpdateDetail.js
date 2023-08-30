@@ -2,16 +2,22 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "../../styles/UpdateDetails.css";
 import { Link } from "react-router-dom";
-import backArrow from '../../styles/back_arrow.png'
-import { getUserPhone, getUserName, getUserEmail, getUserCampus, getUserId  } from '../../utils/auth';
+import backArrow from "../../styles/back_arrow.png";
+import {
+  getUserPhone,
+  getUserName,
+  getUserEmail,
+  getUserCampus,
+  getUserId,
+} from "../../utils/auth";
 
 function UpdateDetail() {
   const [editedParent, setEditedParent] = useState({
     _id: getUserId(),
-    name: '',
-    phone: '',
-    email: '',
-    campus: ''
+    name: "",
+    phone: "",
+    email: "",
+    campus: "",
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,7 +27,7 @@ function UpdateDetail() {
       name: getUserName(),
       phone: getUserPhone(),
       email: getUserEmail(),
-      campus: getUserCampus()
+      campus: getUserCampus(),
     });
   }, []);
 
@@ -44,27 +50,25 @@ function UpdateDetail() {
 
       // update the user details in the local storage
       const updatedUser = await response.json();
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      localStorage.setItem("user", JSON.stringify(updatedUser));
     } else {
       const errorData = await response.json();
       toast.error("Failed to update parent: " + errorData.message);
     }
   };
 
-
-
   return (
     <div className="container">
       <div className="top-left-arrow">
         <Link to="/parent">
-        <img src={backArrow} alt="Back to Parent Page" />
+          <img src={backArrow} alt="Back to Parent Page" />
         </Link>
-        </div>
+      </div>
       <div className="edit-parent">
-        <h3>
-상위 세부정보 편집</h3>
+        <h3>내 정보</h3>
         <div className="input-group">
-          <label>이름:</label>
+          <label>학부모이름:
+</label>
           <input
             value={editedParent.name}
             onChange={(e) =>
@@ -72,7 +76,7 @@ function UpdateDetail() {
             }
           />
 
-          <label>전화 번호:</label>
+          <label>전화번호:</label>
           <input
             value={editedParent.phone}
             onChange={(e) =>
@@ -88,12 +92,17 @@ function UpdateDetail() {
             }
           />
 
-          <label>교정:</label>
+          <label>캠퍼스:
+</label>
           <p>{editedParent.campus}</p>
         </div>
         <div className="actions">
-          <button className="save-button" onClick={handleSave} disabled={isLoading}>
-            {isLoading ? '업데이트 중...' : '업데이트'}
+          <button
+            className="save-button"
+            onClick={handleSave}
+            disabled={isLoading}
+          >
+            {isLoading ? "저장..." : "저장"}
           </button>
         </div>
       </div>

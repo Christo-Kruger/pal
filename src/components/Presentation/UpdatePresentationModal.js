@@ -11,6 +11,7 @@ const UpdatePresentationModal = ({
   onUpdated,
 }) => {
   const [presentation, setPresentation] = useState(null);
+  const [timeSlots, setTimeSlots] = useState([]);
 
   useEffect(() => {
     const fetchPresentation = async () => {
@@ -23,7 +24,9 @@ const UpdatePresentationModal = ({
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/presentations/${presentationId}`
         );
-        setPresentation(response.data);
+        const fetchedPresentation = response.data;
+        setPresentation(fetchedPresentation);
+        setTimeSlots(fetchedPresentation.timeSlots);
       } catch (error) {
         toast.error("Error fetching presentation.");
       }
@@ -33,15 +36,33 @@ const UpdatePresentationModal = ({
   }, [presentationId]);
 
   const handleChange = (e) => {
-    setPresentation({ ...presentation, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setPresentation((prevPresentation) => ({
+      ...prevPresentation,
+      [name]: value,
+    }));
+  };
+
+  const handleTimeSlotChange = (index, field, value) => {
+    const newTimeSlots = [...timeSlots];
+    if (field === "startTime" || field === "endTime") {
+      const [hours, minutes] = value.split(":");
+      const newDate = new Date(newTimeSlots[index][field]);
+      newDate.setUTCHours(hours, minutes);
+      newTimeSlots[index][field] = newDate.toISOString();
+    } else {
+      newTimeSlots[index][field] = value;
+    }
+    setTimeSlots(newTimeSlots);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const updatedPresentation = { ...presentation, timeSlots };
     try {
       await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/api/presentations/${presentationId}`,
-        presentation
+        updatedPresentation
       );
       toast.success("Presentation updated successfully!");
       onRequestClose();
@@ -58,6 +79,13 @@ const UpdatePresentationModal = ({
   if (!presentation) {
     return null;
   }
+
+  const formatTime = (isoTime) => {
+    const date = new Date(isoTime);
+    const hours = date.getUTCHours().toString().padStart(2, "0");
+    const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
 
   return (
     <Modal
@@ -102,11 +130,56 @@ const UpdatePresentationModal = ({
           <input
             type="date"
             name="date"
-            value={presentation.date}
+            value={presentation.date.slice(0, 10)} // assuming date is a string in YYYY-MM-DDTHH:mm:ss.sssZ format
             onChange={handleChange}
             required
           />
         </div>
+
+        {timeSlots.map((slot, index) => {
+          const formattedStartTime = formatTime(slot.startTime);
+          const formattedEndTime = formatTime(slot.endTime);
+
+          return (
+            <div key={index}>
+              <label>Time Slot {index + 1}</label>
+              <div>
+                <label>Start Time:</label>
+                <input
+                  type="time"
+                  value={formattedStartTime}
+                  onChange={(e) =>
+                    handleTimeSlotChange(index, "startTime", e.target.value)
+                  }
+                  required
+                />
+              </div>
+              <div>
+                <label>End Time:</label>
+                <input
+                  type="time"
+                  value={formattedEndTime}
+                  onChange={(e) =>
+                    handleTimeSlotChange(index, "endTime", e.target.value)
+                  }
+                  required
+                />
+              </div>
+              <div>
+                <label>Max Attendees:</label>
+                <input
+                  type="number"
+                  value={slot.maxAttendees}
+                  onChange={(e) =>
+                    handleTimeSlotChange(index, "maxAttendees", e.target.value)
+                  }
+                  required
+                />
+              </div>
+            </div>
+          );
+        })}
+
         <button type="submit">Update Presentation</button>
       </form>
       <ToastContainer position="top-center" autoClose={3000} />

@@ -5,15 +5,15 @@ import { toast } from "react-toastify";
 import moment from "moment";
 import { MdDateRange, MdPlace, MdAccessTime } from "react-icons/md"; // icons for date, place, and time
 
-
 import "./BookPresentationModal.css";
 
 function BookPresentationModal({
-  presentations,
+  presentations: initialPresentations,
   closeModal,
   childData,
   onBookingCreated,
 }) {
+  const [presentations, setPresentations] = useState(initialPresentations);
   const [expandedPresentation, setExpandedPresentation] = useState(null);
 
   useEffect(() => {
@@ -24,24 +24,30 @@ function BookPresentationModal({
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleBooking = async (presentationId, slotId, presentationName, startTime) => {
-    const presentation = presentations.find(p => p._id === presentationId);
-    const child = childData.find(child => child.ageGroup === presentation.ageGroup);
+  const handleBooking = async (
+    presentationId,
+    slotId,
+    presentationName,
+    startTime
+  ) => {
+    const presentation = presentations.find((p) => p._id === presentationId);
+    const child = childData.find(
+      (child) => child.ageGroup === presentation.ageGroup
+    );
     if (!child) {
       toast.error("이 연령대에는 자녀가 없습니다.");
       return;
     }
 
     const presentationInfo = `
-    프레젠테이션: ${presentationName}
-    시작 시간: ${startTime}
-    어린이: ${child.name}
-  
-시험 등급: ${child.testGrade}
-`;
-
-const confirmation = window.confirm(`다음 프레젠테이션을 예약하시겠습니까?\n\n${presentationInfo}`);
-
+    설명회: ${presentationName}
+    예약 시간:  ${startTime}
+    학생(유아)명: ${child.name}
+    2024년 예비 학년/연령: ${child.testGrade}
+`;const confirmation = window.confirm(
+      `아래의 입학설명회 예약정보를 확인해주시기 바랍니다.
+      \n${presentationInfo}`
+    );
 
     if (!confirmation) return;
 
@@ -56,16 +62,32 @@ const confirmation = window.confirm(`다음 프레젠테이션을 예약하시�
 
       if (response.status === 200) {
         onBookingCreated(response.data);
-        
+
+        // find the index of the updated presentation and slot
+        const presentationIndex = presentations.findIndex(
+          (p) => p._id === presentationId
+        );
+        const slotIndex = presentations[presentationIndex].timeSlots.findIndex(
+          (s) => s._id === slotId
+        );
+
+        // create a copy of the presentations state
+        const updatedPresentations = [...presentations];
+
+        // update the attendees of the slot
+        updatedPresentations[presentationIndex].timeSlots[
+          slotIndex
+        ].attendees.push(getUserId());
+
+        // update the state
+        setPresentations(updatedPresentations);
+
         closeModal();
         toast.success("예약 성공했어요!");
-        
       }
     } catch (err) {
-      toast.error(err.response.data.message || 
-        "이미 예약하셨네요!");
+      toast.error(err.response.data.message || "이미 예약하셨네요!");
     }
-
   };
 
   const toggleExpandCard = (presentationId) => {
@@ -79,7 +101,7 @@ const confirmation = window.confirm(`다음 프레젠테이션을 예약하시�
   return (
     <>
       <div className="modal-header">
-        <h1>설명회 예약</h1>
+        <h1> J LEE 어학원 설명회 예약</h1>
         <button className="close-button" onClick={closeModal}>
           &times; {/* This is the "x" symbol */}
         </button>
@@ -96,10 +118,13 @@ const confirmation = window.confirm(`다음 프레젠테이션을 예약하시�
             <div className="presentation-meta">
               <span>
                 <MdDateRange />{" "}
-                <h5>{new Date(presentation.date).toLocaleDateString()}</h5>
+                <h5>
+                  일시:
+                  {new Date(presentation.date).toLocaleDateString()}
+                </h5>
               </span>
               <span>
-                <MdPlace /> <h5>{presentation.location}</h5>
+                <MdPlace /> <h5>장소: {presentation.location}</h5>
               </span>
             </div>
             <p>
@@ -113,13 +138,12 @@ const confirmation = window.confirm(`다음 프레젠테이션을 예약하시�
                 onClick={() => toggleExpandCard(presentation._id)}
               >
                 {expandedPresentation === presentation._id
-                  ? 
-                  "간단히 보기"
+                  ? "간단히 보기"
                   : "더보기"}
               </button>
             )}
             <h4>
-              <MdAccessTime /> 시간대:
+              <MdAccessTime /> 시간
             </h4>
             <div className="time-slots">
               {presentation.timeSlots ? (
@@ -133,15 +157,19 @@ const confirmation = window.confirm(`다음 프레젠테이션을 예약하시�
                       <div className="slot-info">
                         <button
                           onClick={() =>
-                            handleBooking(presentation._id, slot._id, presentation.name, moment(slot.startTime).format("HH:mm"))
-                          
+                            handleBooking(
+                              presentation._id,
+                              slot._id,
+                              presentation.name,
+                              moment(slot.startTime).format("HH:mm")
+                            )
                           }
                           disabled={
                             slot.attendees.length >= slot.maxAttendees ||
                             userHasBooked
                           }
                         >
-                          도서 슬롯
+                          예약
                         </button>
                       </div>
                     </div>

@@ -27,13 +27,17 @@ function ChildForm({ parentId }) {
 
   const saveChild = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
-    const response = await axios.post(`${backendURL}/api/child`, {
-      name,
-      previousSchool,
-      dateOfBirth,
-      gender,
-      parent: parentId
-    }, getAuthHeader());
+    const response = await axios.post(
+      `${backendURL}/api/child`,
+      {
+        name,
+        previousSchool,
+        dateOfBirth,
+        gender,
+        parent: parentId,
+      },
+      getAuthHeader()
+    );
 
     if (response.status === 201) {
       console.log("Child created:", response.data);
@@ -52,13 +56,12 @@ function ChildForm({ parentId }) {
   };
 
   return (
-    <div className="form-container">  
+    <div className="form-container">
       <form className="form" onSubmit={(e) => e.preventDefault()}>
-        <h2 className="form-title">
-아동 세부정보</h2>
+        <h2 className="form-title">학생정보</h2>
         <div className="form-field">
           <label className="form-label" htmlFor="name">
-          이름:
+            학생(유아)한글명:
           </label>
           <input
             className="form-input"
@@ -69,7 +72,9 @@ function ChildForm({ parentId }) {
           />
         </div>
         <div className="form-field">
-        <label className="form-label" htmlFor="previousSchool">마지막 출석 학교:</label>
+          <label className="form-label" htmlFor="previousSchool">
+            현재 재원중인 기관명:
+          </label>
           <input
             className="form-input"
             type="text"
@@ -80,7 +85,7 @@ function ChildForm({ parentId }) {
         </div>
         <div className="form-field">
           <label className="form-label" htmlFor="dateOfBirth">
-          생일:
+            생년월일:
           </label>
           <input
             className="form-input"
@@ -89,27 +94,36 @@ function ChildForm({ parentId }) {
             onChange={(e) => setDateOfBirth(e.target.value)}
             required
           />
+          <p className="text-red">
+            *생년월일을 기입 시 자동으로 학년선택이 되므로 정확하게 기입해주시기
+            바랍니다.
+          </p>
         </div>
         <div className="form-field">
-    <label className="form-label" htmlFor="gender">Gender:</label>
-    <select
-        className="form-input"
-        value={gender}
-        onChange={(e) => setGender(e.target.value)}
-        required
-    >
-        <option value="">성별을 선택하세요</option>
-        <option value="male">
-남성</option>
-        <option value="female">여성</option>
-    </select>
-</div>
+          <label className="form-label" htmlFor="gender">
+            성별: :
+          </label>
+          <select
+            className="form-input"
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            required
+          >
+            <option value="">성별을 선택하세요</option>
+            <option value="male">남성</option>
+            <option value="female">여성</option>
+          </select>
+        </div>
         <button className="form-button" onClick={handleSave}>
-        구하다
+          등록
         </button>
-        <button className="form-button secondary" onClick={handleAddAnotherChild}>다른 자녀 추가</button>
+        <button
+          className="form-button secondary"
+          onClick={handleAddAnotherChild}
+        >
+          학생 추가
+        </button>
       </form>
-     
     </div>
   );
 }

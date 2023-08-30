@@ -155,6 +155,20 @@ function ParentDashboard() {
     }
   };
 
+  const fetchUpdatedPresentations = async () => {
+    const backendURL = process.env.REACT_APP_BACKEND_URL;
+    const response = await axios.get(
+      `${backendURL}/api/presentations`,
+      getAuthHeader()
+    );
+
+    if (response.status === 200) {
+      setPresentations(response.data);
+    } else {
+      setError("Error fetching updated presentations");
+    }
+  };
+
   return (
     <div className="dashboard-container">
       {error && (
@@ -163,38 +177,46 @@ function ParentDashboard() {
         </p>
       )}
 
-      <h1 className="header">
-        {" "}
-        J Lee 학부모 예약 포털에 오신 것을 환영합니다.
-      </h1>
-      <h4 className="header-text">무엇을하고 싶으십니까?</h4>
-
+      <h1 className="header"> J LEE 신입생 입학설명회 예약</h1>
+      <div className="header-text">
+  
+      <ol>
+        <li>
+          형제, 있으실 경우 "학생추가"를 해주시기 바랍니다.
+        </li>
+        <li>
+          설명회 예약이 완료되면 학부모님께 예약확인 문자가 발송됩니다.
+        </li>
+      </ol>
+  
+  </div>
       <div className="button-containerPD">
-        <button
+        {/* <button
           className="button"
           onClick={() => setActiveModal("booking")}
           aria-label="Book a Test"
         >
           시험 예약
-        </button>
+        </button> */}
         <button
           className="button"
           onClick={() => setActiveModal("presentation")}
           aria-label="Book Presentation"
         >
-          설명회 예약
+          신입생 설명회 예약
         </button>
 
         <Link to="/add-child">
           <button className="button" aria-label="Add Child">
-            자녀 추가
+            학생 추가
           </button>
         </Link>
       </div>
 
       {isEmptyState && myPresentations.length === 0 ? (
         <p className="no-booking">
-          예약이 없습니다. 지금 시험이나 프레젠테이션을 예약하세요!
+          예약내역이 없습니다. [신입생 설명회 예약]를 클릭하여 예약을
+          진행해주세요.
         </p>
       ) : (
         <div className="card-container">
@@ -209,16 +231,15 @@ function ParentDashboard() {
               <p>시험등급: {booking.child.testGrade}</p>
               <p>교정: {booking?.testSlot?.campus}</p>
               <p>
-              날짜: {new Date(booking?.testSlot?.date).toLocaleDateString()}
+                날짜: {new Date(booking?.testSlot?.date).toLocaleDateString()}
               </p>
-              <p>
-시간: {booking?.testSlot?.startTime}</p>
+              <p>시간: {booking?.testSlot?.startTime}</p>
               <div className="booking-actions">
                 <button
                   className="button"
                   onClick={() => handleDelete(booking._id)}
                 >
-                 취소
+                  취소
                 </button>
               </div>
             </div>
@@ -231,22 +252,21 @@ function ParentDashboard() {
               style={{ backgroundColor: "#e0f7fa", border: "2px " }}
             >
               <h3>{presentation.name}</h3>
-              <p>위치: {presentation.location}</p>
-              <p>어린이: {presentation.childName}</p>
-              <p>시험등급: {presentation.testGrade}</p>
-              <p>날짜: {new Date(presentation.date).toLocaleDateString()}</p>
+              <h4>날짜: {new Date(presentation.date).toLocaleDateString() + ' ' + new Date(presentation.timeSlots[0].startTime).toLocaleTimeString()}</h4>
+
+              <p>장소 : {presentation.location}</p>
               <p>
-                시작 시간:{" "}
-                {new Date(
-                  presentation.timeSlots[0].startTime
-                ).toLocaleTimeString()}
+                학생(유아)명:
+                {presentation.childName}
               </p>
+              <p>2024년 예비 학년(연령): {presentation.testGrade}</p>
+             
               <div className="booking-actions">
                 <button
                   className="button-bookings"
                   onClick={() => handleTimeSlotChange(presentation._id)}
                 >
-                  시간대 변경
+                  예약시간변경
                 </button>
 
                 {new Date(presentation.date) - new Date() <=
@@ -276,7 +296,7 @@ function ParentDashboard() {
             presentations={presentations}
             closeModal={closeModal}
             childData={childData}
-            onBookingCreated={fetchBookings}
+            onBookingCreated={fetchUpdatedPresentations}
           />
         )}
         {activeModal === "editBooking" && (

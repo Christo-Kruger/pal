@@ -56,6 +56,7 @@ function ChildForm({ parentId }) {
       <form className="form" onSubmit={(e) => e.preventDefault()}>
         <h2 className="form-title">
 아동 세부정보</h2>
+<p className="text-red">(본인자매가 자녀가 아닌 경우, 예약은 무효 처리됩니다.)</p>
         <div className="form-field">
           <label className="form-label" htmlFor="name">
           이름:

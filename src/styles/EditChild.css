@@ -11,6 +11,7 @@ body, html {
     height: 100%;
     padding: 20px;
     box-sizing: border-box;
+
 }
 
 h3 {
@@ -23,6 +24,7 @@ h3 {
 .edit-child-box {
     display: flex;
     justify-content: center;
+    
 }
 
 
@@ -84,8 +86,12 @@ h3 {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
-    margin-left: 10px;
+   max-width: 300px;
+    min-width: 120px;
     
+}
+.button{
+    min-width: 300px;
 }
 
 .save-button {

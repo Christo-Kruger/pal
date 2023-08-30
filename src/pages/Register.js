@@ -37,9 +37,9 @@ function RegistrationForm() {
     if (response.ok) {
       const data = await response.json();
       localStorage.setItem("token", data.token);
-      
+
       if (data.role === "parent") {
-        setParentId(data._id);  // Assuming backend returns the user's _id
+        setParentId(data._id); // Assuming backend returns the user's _id
         setShowChildForm(true);
         setShowRegistrationForm(false);
       } else if (data.role === "admin") {
@@ -52,7 +52,6 @@ function RegistrationForm() {
     }
   };
 
-
   return (
     <div className="form-container">
       <div className="logo-container">
@@ -61,89 +60,91 @@ function RegistrationForm() {
         </Link>
       </div>
       {showRegistrationForm ? (
-      <form className="form" onSubmit={handleSubmit}>
-        <h1 className="form-title">회원가입</h1>
-        {error && <p className="error">{error}</p>}
-        <div className="form-field">
-          <label className="form-label" htmlFor="name">
-            
-이름:
-          </label>
-          <input
-            className="form-input"
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-field">
-          <label className="form-label" htmlFor="email">
-          이메일:
-          </label>
-          <input
-            className="form-input"
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-field">
-          <label className="form-label" htmlFor="password">
-          비밀번호:
-          </label>
-          <input
-            className="form-input"
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-field">
-          <label className="form-label" htmlFor="phone">
-          전화 번호
-          </label>
-          <input
-  className="form-input"
-  type="text"
-  id="phone"
-  value={phone}
-  onChange={(e) => setPhone(e.target.value)}
-  required
-  pattern="010[0-9]{8}"
-  title="Phone number must be in the format 010XXXXXXXX"
-/>
-        </div>
-        <label>
-        어느 캠퍼스에 관심이 있나요?
-          <select
-            value={campus}
-            onChange={(e) => setCampus(e.target.value)}
-            required
-          >
-            <option value="">
---옵션을 선택해주세요--</option>
-            <option value="Suji">Suji</option>
-            <option value="Dongtan">Dongtan</option>
-            <option value="Bundang">Bundang</option>
-          </select>
-        </label>
-        <div className="form-field">
-          <button className="form-button" type="submit" disabled={loading}>
-            {loading ? "Registering..." : "Register"}
-          </button>
-        </div>
-        <p className="link">
-        계정을 갖고있다면 <Link to="/login">여기에 로그인하세요</Link>
-        </p>
-      </form>
-       ) : null}
-   {showChildForm && <ChildForm parentId={parentId} />}
+        <form className="form" onSubmit={handleSubmit}>
+          <h1 className="form-title">회원가입</h1>
+          {error && <p className="error">{error}</p>}
+          <div className="form-field">
+            <label className="form-label" htmlFor="name">
+              학부모이름:
+            </label>
+            <input
+              className="form-input"
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-field">
+            <label className="form-label" htmlFor="email">
+              이메일:
+            </label>
+            <input
+              className="form-input"
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-field">
+            <label className="form-label" htmlFor="password">
+              비밀번호:
+            </label>
+            <input
+              className="form-input"
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-field">
+            <label className="form-label" htmlFor="phone">
+              전화번호
+            </label>
+            <input
+              className="form-input"
+              type="text"
+              id="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              pattern="010[0-9]{8}"
+              title="Phone number must be in the format 010XXXXXXXX"
+            />
+          </div>
+          <label>
+            캠퍼스 선택  </label>
+            <select
+              value={campus}
+              onChange={(e) => setCampus(e.target.value)}
+              required
+            >
+              <option value="">--옵션을 선택해주세요--</option>
+              <option value="Suji">Suji</option>
+              <option value="Dongtan">Dongtan</option>
+              <option value="Bundang">Bundang</option>
+            </select>
+        
+          <p className="text-red">
+            *입학 희망하는 캠퍼스를 선택해 주세요. 선택하신 캠퍼스로 설명회
+            예약이 진행되며, 캠퍼스 간 중복예약은 불가합니다.
+          </p>
+          <div className="form-field">
+            <button className="form-button" type="submit" disabled={loading}>
+              {loading ? "가입하기..." : "가입하기"}
+            </button>
+          </div>
+          <p className="link">
+            계정을 갖고있다면 <Link to="/login">여기에 로그인하세요</Link>
+          </p>
+        </form>
+      ) : null}
+      {showChildForm && <ChildForm parentId={parentId} />}
     </div>
   );
 }

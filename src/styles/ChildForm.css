@@ -9,7 +9,10 @@
   border: none; /* Remove border */
   background: none; /* Remove background */
 }
-
+.text-red{
+  color: red;
+  text-align: center;
+}
 .form {
 
   padding: 10px;
@@ -35,7 +38,7 @@
 }
 
 .form-input {
-  width: 100%;
+  width: 00%;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;

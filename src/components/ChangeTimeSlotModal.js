@@ -69,7 +69,7 @@ function ChangeTimeSlotModal({ closeModal, presentationId, oldSlotId, onTimeSlot
     <button className="close-button" onClick={closeModal}>X</button>
       <div className="change-time-slot-modal">
       
-        <h2>Change Time Slot</h2>
+        <h2>얘약시간변경</h2>
       <select
         value={selectedTimeSlot}
         onChange={(e) => setSelectedTimeSlot(e.target.value)}
@@ -87,7 +87,7 @@ function ChangeTimeSlotModal({ closeModal, presentationId, oldSlotId, onTimeSlot
         style={{ backgroundColor: "#007BFF", color: "white", padding: "10px 20px", marginRight: "10px" }}
         disabled={!selectedTimeSlot}
       >
-        Change Time Slot
+        예약시간변경
       </button>
   
     </div>
