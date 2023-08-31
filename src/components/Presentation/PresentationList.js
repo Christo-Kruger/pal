@@ -90,6 +90,7 @@ const PresentationList = () => {
           <tr>
             <th>Name</th>
             <th>Location</th>
+            <th>Campus</th>
             <th>Date</th>
             <th>Start Time</th>
             <th>End Time</th>
@@ -105,6 +106,7 @@ const PresentationList = () => {
                   <tr key={timeSlot._id}>
                     <td>{presentation.name}</td>
                     <td>{presentation.location}</td>
+                    <td>{presentation.campus}</td>
                     <td>{new Date(presentation.date).toLocaleDateString()}</td>
                     <td>{new Date(timeSlot.startTime).toLocaleTimeString()}</td>
                     <td>{new Date(timeSlot.endTime).toLocaleTimeString()}</td>

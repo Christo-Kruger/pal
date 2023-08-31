@@ -5,7 +5,7 @@ import Book from "../components/Test Slots/Book";
 import BookPresentationModal from "../components/BookPresentationModal";
 import EditBookingModal from "../components/EditBookingModal";
 import axios from "axios";
-import { getUserId, getAuthHeader, getAuthToken } from "../utils/auth";
+import { getUserId, getAuthHeader, getAuthToken, getUserCampus } from "../utils/auth";
 import "./ParentDashboard.css";
 import ChangeTimeSlotModal from "../components/ChangeTimeSlotModal";
 
@@ -21,6 +21,8 @@ function ParentDashboard() {
   const [error, setError] = useState(null);
   const [myPresentations, setMyPresentations] = useState([]);
   const [childData, setChildData] = useState([]);
+  const campus = getUserCampus()
+  
 
   const fetchBookings = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
@@ -91,7 +93,7 @@ function ParentDashboard() {
     const fetchPresentations = async () => {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.get(
-        `${backendURL}/api/presentations`,
+        `${backendURL}/api/presentations?campus=${campus}`,
         getAuthHeader()
       );
 
@@ -158,7 +160,7 @@ function ParentDashboard() {
   const fetchUpdatedPresentations = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
     const response = await axios.get(
-      `${backendURL}/api/presentations`,
+      `${backendURL}/api/presentations?campus=${campus}`,
       getAuthHeader()
     );
 
@@ -169,6 +171,25 @@ function ParentDashboard() {
     }
   };
 
+  const handleCancelPresentation = async (presentationId, timeSlotIndex) => {
+    if (window.confirm("Are you sure you want to cancel this reservation?")) {
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
+      const response = await axios.delete(
+        `${backendURL}/api/presentations/${presentationId}/attendees/${getUserId()}`,
+        getAuthHeader()
+      );
+  
+      if (response.status === 200) {
+        fetchMyPresentations(); // reload presentations
+        toast.success("Reservation successfully cancelled.");
+      } else {
+        toast.error("An error occurred while cancelling the reservation.");
+      }
+    }
+  };
+  
+  
+
   return (
     <div className="dashboard-container">
       {error && (
@@ -178,6 +199,7 @@ function ParentDashboard() {
       )}
 
       <h1 className="header"> J LEE 신입생 입학설명회 예약</h1>
+      <h4>{campus}</h4>
       <div className="header-text-new">
 
   <ol>
@@ -268,7 +290,12 @@ function ParentDashboard() {
                 >
                   예약시간변경
                 </button>
-
+                <button
+    className="button-bookings"
+    onClick={() => handleCancelPresentation(presentation._id)}
+  >
+    Cancel
+  </button>
                 {new Date(presentation.date) - new Date() <=
                   2 * 24 * 60 * 60 * 1000 && (
                   <button
