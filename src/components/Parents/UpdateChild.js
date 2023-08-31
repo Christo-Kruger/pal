@@ -197,7 +197,7 @@ function UpdateChild() {
               </select>
             </div>
             <div>
-              <label>2024년 예비 학년/연령
+              <label><strong>2024년 예비 학년/연령</strong>
 </label>
               <p>{child.testGrade}</p>
             </div>

@@ -27,7 +27,8 @@ function BookPresentationModal({
     presentationId,
     slotId,
     presentationName,
-    startTime
+    startTime,
+    date
   ) => {
     const presentation = presentations.find((p) => p._id === presentationId);
     const child = childData.find(
@@ -40,13 +41,14 @@ function BookPresentationModal({
 
     const presentationInfo = `
     설명회: ${presentationName}
-    예약 시간:  ${startTime}
-    학생(유아)명: ${child.name}
-    2024년 예비 학년/연령: ${child.testGrade}
+    날짜: ${date}
+    시간:  ${startTime}
+    학생명: ${child.name}
+    2024년 학년: ${child.testGrade}
 `;
     const confirmation = window.confirm(
-      `아래의 입학설명회 예약정보를 확인해주시기 바랍니다.
-      *예약 확인 후 변경 시 원하는 시간 예약이 어려울 수 있습니다.
+      `아래의 입학설명회 예약정보를 확인해주시기 바랍니다.\n <br>
+       ★ 예약 변경 시 원하는 시간 예약이 어려울 수 있습니다.
 
       \n${presentationInfo}`
     );
@@ -117,7 +119,7 @@ function BookPresentationModal({
               expandedPresentation === presentation._id ? "expanded" : ""
             }`}
           >
-            <h3>{presentation.name}</h3>
+            <h3><strong>{presentation.name}</strong></h3>
             <div className="presentation-meta">
               <div>
                 <h5>
@@ -161,7 +163,7 @@ function BookPresentationModal({
                         {moment(slot.startTime).format("HH:mm")}
                       </div>
                       <div className="slot-info">
-                        <button
+                        <button className="slotButton"
                           onClick={() =>
                             handleBooking(
                               presentation._id,

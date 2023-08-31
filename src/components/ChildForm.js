@@ -84,9 +84,14 @@ function ChildForm({ parentId }) {
           />
         </div>
         <div className="form-field">
+
           <label className="form-label" htmlFor="dateOfBirth">
             생년월일:
           </label>
+          <p className="text-red">
+            *생년월일을 기입 시 자동으로 학년선택이 되므로 정확하게 기입해주시기
+            바랍니다.
+          </p>
           <input
             className="form-input"
             type="date"
@@ -94,10 +99,7 @@ function ChildForm({ parentId }) {
             onChange={(e) => setDateOfBirth(e.target.value)}
             required
           />
-          <p className="text-red">
-            *생년월일을 기입 시 자동으로 학년선택이 되므로 정확하게 기입해주시기
-            바랍니다.
-          </p>
+          
         </div>
         <div className="form-field">
           <label className="form-label" htmlFor="gender">

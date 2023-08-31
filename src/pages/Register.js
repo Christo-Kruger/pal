@@ -120,21 +120,23 @@ function RegistrationForm() {
         
           <label>
             캠퍼스 선택  </label>
+            <p className="text-red">
+            *입학 희망하는 캠퍼스를 선택해 주세요. 선택하신 캠퍼스로 설명회
+            예약이 진행되며, 캠퍼스 간 중복예약은 불가합니다.
+          </p>
             <select
               value={campus}
               onChange={(e) => setCampus(e.target.value)}
               required
             >
+              
               <option value="">--옵션을 선택해주세요--</option>
               <option value="수지">수지</option>
               <option value="동탄">동탄</option>
               <option value="분당">분당</option>
             </select>
         
-          <p className="text-red">
-            *입학 희망하는 캠퍼스를 선택해 주세요. 선택하신 캠퍼스로 설명회
-            예약이 진행되며, 캠퍼스 간 중복예약은 불가합니다.
-          </p>
+         
           <div className="form-field">
             <button className="form-button" type="submit" disabled={loading}>
               {loading ? "가입하기..." : "가입하기"}

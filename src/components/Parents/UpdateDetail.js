@@ -9,6 +9,7 @@ import {
   getUserEmail,
   getUserCampus,
   getUserId,
+  getAuthHeader,
 } from "../../utils/auth";
 
 function UpdateDetail() {

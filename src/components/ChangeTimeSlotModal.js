@@ -35,7 +35,7 @@ function ChangeTimeSlotModal({ closeModal, presentationId, oldSlotId, onTimeSlot
     const oldTime = timeSlots.find(slot => slot._id === oldSlotId)?.startTime;
     const newTime = timeSlots.find(slot => slot._id === selectedTimeSlot)?.startTime;
   
-    const confirmChange = window.confirm(`Are you sure you want to change the timeslot from ${new Date(oldTime).toLocaleTimeString()} to ${new Date(newTime).toLocaleTimeString()}?`);
+    const confirmChange = window.confirm(`변경 시 실시간 예약에 따라 재변경이 어려울 수 있습니다. 시간 변경하시겠습니까? ${new Date(oldTime).toLocaleTimeString()} -> ${new Date(newTime).toLocaleTimeString()}?`);
   
     if (!confirmChange) {
       return;
@@ -70,18 +70,19 @@ function ChangeTimeSlotModal({ closeModal, presentationId, oldSlotId, onTimeSlot
       <div className="change-time-slot-modal">
       
         <h2>얘약시간변경</h2>
-      <select
-        value={selectedTimeSlot}
-        onChange={(e) => setSelectedTimeSlot(e.target.value)}
-        style={{ padding: "8px", borderRadius: "5px", border: "1px solid #ccc", marginBottom: "10px" }}
-      >
-        <option value="">Select a new time slot</option>
-        {timeSlots.map((timeSlot) => (
-          <option key={timeSlot._id} value={timeSlot._id}>
-            {new Date(timeSlot.startTime).toLocaleTimeString()}
-          </option>
-        ))}
-      </select>
+        <select
+  value={selectedTimeSlot}
+  onChange={(e) => setSelectedTimeSlot(e.target.value)}
+  style={{ padding: "8px", borderRadius: "5px", border: "1px solid #ccc", marginBottom: "10px" }}
+>
+  <option value="">Select a new time slot</option>
+  {timeSlots.map((timeSlot) => (
+    <option key={timeSlot._id} value={timeSlot._id}>
+      {new Date(timeSlot.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+    </option>
+  ))}
+</select>
+
       <button
         onClick={handleChangeTimeSlot}
         style={{ backgroundColor: "#007BFF", color: "white", padding: "10px 20px", marginRight: "10px" }}

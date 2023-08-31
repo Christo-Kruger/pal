@@ -97,7 +97,7 @@ function LoginForm() {
               className="toggle-password"
               onClick={() => setPasswordVisible(!passwordVisible)}
             >
-              {passwordVisible ? "숨다" : "보여주다"}
+              {passwordVisible ? "숨다" : "보기"}
             </div>
           </div>
         </div>
@@ -107,10 +107,10 @@ function LoginForm() {
           </button>
         </div>
         <p className="link">
-          등록되지 않은 경우 <Link to="/register">여기에서 등록하세요</Link>
+          아직 계정이 없으신가요? <Link to="/register">회원가입</Link>
         </p>
         <p className="link">
-        비밀번호를 잊어버렸다면 <Link to="/change-password">여기에서 변경하세요</Link>
+        비밀번호를 잊으셨나요? <Link to="/change-password">비밀번호 변경</Link>
       </p>
       </form>
     </div>

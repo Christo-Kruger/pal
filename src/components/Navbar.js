@@ -152,8 +152,11 @@ const Navbar = () => {
           <div
             style={{ padding: "1em 0", fontWeight: "bold", fontSize: "1.2em" }}
           >
-            안녕하세요, {userName}
+            {userName}님, 안녕하세요
           </div>
+          <Link to="/parent" style={styles.sidebarLink}>
+            예약 정보
+          </Link>
           <Link to="/update-child" style={styles.sidebarLink}>
             등록학생정보
           </Link>

@@ -5,7 +5,12 @@ import Book from "../components/Test Slots/Book";
 import BookPresentationModal from "../components/BookPresentationModal";
 import EditBookingModal from "../components/EditBookingModal";
 import axios from "axios";
-import { getUserId, getAuthHeader, getAuthToken, getUserCampus } from "../utils/auth";
+import {
+  getUserId,
+  getAuthHeader,
+  getAuthToken,
+  getUserCampus,
+} from "../utils/auth";
 import "./ParentDashboard.css";
 import ChangeTimeSlotModal from "../components/ChangeTimeSlotModal";
 
@@ -21,8 +26,7 @@ function ParentDashboard() {
   const [error, setError] = useState(null);
   const [myPresentations, setMyPresentations] = useState([]);
   const [childData, setChildData] = useState([]);
-  const campus = getUserCampus()
-  
+  const campus = getUserCampus();
 
   const fetchBookings = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
@@ -87,7 +91,7 @@ function ParentDashboard() {
 
   useEffect(() => {
     fetchMyPresentations();
-  }, [myPresentations.length]);
+  }, []);
 
   useEffect(() => {
     const fetchPresentations = async () => {
@@ -109,6 +113,7 @@ function ParentDashboard() {
 
   const closeModal = () => {
     setActiveModal(null);
+    fetchMyPresentations();
   };
 
   const handleDelete = async (id) => {
@@ -172,23 +177,26 @@ function ParentDashboard() {
   };
 
   const handleCancelPresentation = async (presentationId, timeSlotIndex) => {
-    if (window.confirm("Are you sure you want to cancel this reservation?")) {
+    if (
+      window.confirm(
+        `설명회 예약 취소 시 최초 예약 기록은 삭제됩니다. 정말 예약 취소하시겠습니까?  
+      ★  최초 예약 기록은 테스트 후 등록 순번에 영향이 있을 수 있습니다.`
+      )
+    ) {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.delete(
         `${backendURL}/api/presentations/${presentationId}/attendees/${getUserId()}`,
         getAuthHeader()
       );
-  
+
       if (response.status === 200) {
         fetchMyPresentations(); // reload presentations
-        toast.success("Reservation successfully cancelled.");
+        toast.success("설명회 예약 취소가 완료되었습니다.");
       } else {
-        toast.error("An error occurred while cancelling the reservation.");
+        toast.error("설명회 예약 취소가 정상적으로 완료되지 않았습니다. 다시 시도해주세요.");
       }
     }
   };
-  
-  
 
   return (
     <div className="dashboard-container">
@@ -199,19 +207,16 @@ function ParentDashboard() {
       )}
 
       <h1 className="header"> J LEE 신입생 입학설명회 예약</h1>
-      <h4>{campus}</h4>
+      <h4>{campus}캠퍼스</h4>
       <div className="header-text-new">
-
-  <ol>
-    <li>
-      형제, 있으실 경우 "학생추가"를 해주시기 바랍니다.
-    </li>
-    <li>
-      설명회 예약이 완료되면 학부모님께 예약확인 문자가 발송됩니다.
-    </li>
-  </ol>
-
-</div>
+        <ol>
+          <li>
+            입학 희망하는 형제,자매가 있으신 경우 "학생추가"를 해주시기
+            바랍니다.
+          </li>
+          <li>설명회 예약이 완료되면 학부모님께 예약확인 문자가 발송됩니다.</li>
+        </ol>
+      </div>
       <div className="button-containerPD">
         {/* <button
           className="button"
@@ -274,7 +279,14 @@ function ParentDashboard() {
               style={{ backgroundColor: "#e0f7fa", border: "2px " }}
             >
               <h3>{presentation.name}</h3>
-              <h4>날짜: {new Date(presentation.date).toLocaleDateString() + ' ' + new Date(presentation.timeSlots[0].startTime).toLocaleTimeString()}</h4>
+              <h4>
+                날짜:{" "}
+                {new Date(presentation.date).toLocaleDateString() +
+                  " " +
+                  new Date(
+                    presentation.timeSlots[0].startTime
+                  ).toLocaleTimeString()}
+              </h4>
 
               <p>장소 : {presentation.location}</p>
               <p>
@@ -282,7 +294,7 @@ function ParentDashboard() {
                 {presentation.childName}
               </p>
               <p>2024년 예비 학년(연령): {presentation.testGrade}</p>
-             
+
               <div className="booking-actions">
                 <button
                   className="button-bookings"
@@ -291,11 +303,11 @@ function ParentDashboard() {
                   예약시간변경
                 </button>
                 <button
-    className="button-bookings"
-    onClick={() => handleCancelPresentation(presentation._id)}
-  >
-    Cancel
-  </button>
+                  className="button-bookings"
+                  onClick={() => handleCancelPresentation(presentation._id)}
+                >
+                 취소
+                </button>
                 {new Date(presentation.date) - new Date() <=
                   2 * 24 * 60 * 60 * 1000 && (
                   <button
