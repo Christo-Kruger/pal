@@ -92,23 +92,18 @@ const AttendeeList = () => {
           `${process.env.REACT_APP_BACKEND_URL}/api/presentations/allAttendeesInTimeSlots`,
           getAuthHeader()
         );
-    
+
         if (mounted) {
-          const filteredPresentations = response.data.map(presentation => {
-            const newPresentation = { ...presentation };
-            newPresentation.timeSlots = presentation.timeSlots.map(slot => {
-              const newSlot = { ...slot };
-              newSlot.attendees = slot.attendees.map(attendee => {
-                const newAttendee = { ...attendee };
-                newAttendee.children = attendee.children.filter(child => child.ageGroup === presentation.ageGroup);
-                return newAttendee;
-              });
-              return newSlot;
-            });
-            return newPresentation;
+          const filteredPresentations = response.data.filter((presentation) => {
+            return presentation.timeSlots.some((slot) =>
+              slot.attendees.some(
+                (attendee) =>
+                  attendee.campus === userCampus || userRole === "superadmin"
+              )
+            );
           });
           setPresentations(filteredPresentations);
-    
+
           // Initialize checkedAttendees state
           const initialCheckedAttendees = {};
           filteredPresentations.forEach((presentation) => {
@@ -127,9 +122,6 @@ const AttendeeList = () => {
         }
       }
     };
-    
-
-    
 
     fetchData();
 
