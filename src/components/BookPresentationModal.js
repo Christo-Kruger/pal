@@ -41,8 +41,8 @@ function BookPresentationModal({
 
     const presentationInfo = `
     설명회: ${presentationName}
-    날짜: ${new Date(date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
-    시간:  ${new Date (startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+    날짜: ${new Date(presentation.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+    시간:  ${(startTime)}
     학생명: ${child.name}
     2024년 학년: ${child.testGrade}
 `;
