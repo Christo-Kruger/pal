@@ -287,10 +287,10 @@ function ParentDashboard() {
 
               <p>장소 : {presentation.location}</p>
               <p>
-                학생(유아)명:
+                학생명:
                 {presentation.childName}
               </p>
-              <p>2024년 예비 학년(연령): {presentation.testGrade}</p>
+              <p>2024년 학년: {presentation.testGrade}</p>
 
               <div className="booking-actions">
                 <button

@@ -15,18 +15,18 @@ function ResetPassword() {
         },
         body: JSON.stringify({ resetToken, newPassword }),
       });
-
-      const data = await response.json();
-
+  
       if (response.ok) {
         toast.success('Password has been successfully reset.');
       } else {
+        const data = await response.json();
         toast.error(data.error);
       }
     } catch (error) {
       toast.error('An error occurred while processing your request.');
     }
   };
+  
 
   return (
     <div style={styles.container}>

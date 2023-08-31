@@ -92,18 +92,23 @@ const AttendeeList = () => {
           `${process.env.REACT_APP_BACKEND_URL}/api/presentations/allAttendeesInTimeSlots`,
           getAuthHeader()
         );
-
+    
         if (mounted) {
-          const filteredPresentations = response.data.filter((presentation) => {
-            return presentation.timeSlots.some((slot) =>
-              slot.attendees.some(
-                (attendee) =>
-                  attendee.campus === userCampus || userRole === "superadmin"
-              )
-            );
+          const filteredPresentations = response.data.map(presentation => {
+            const newPresentation = { ...presentation };
+            newPresentation.timeSlots = presentation.timeSlots.map(slot => {
+              const newSlot = { ...slot };
+              newSlot.attendees = slot.attendees.map(attendee => {
+                const newAttendee = { ...attendee };
+                newAttendee.children = attendee.children.filter(child => child.ageGroup === presentation.ageGroup);
+                return newAttendee;
+              });
+              return newSlot;
+            });
+            return newPresentation;
           });
           setPresentations(filteredPresentations);
-
+    
           // Initialize checkedAttendees state
           const initialCheckedAttendees = {};
           filteredPresentations.forEach((presentation) => {
@@ -122,6 +127,9 @@ const AttendeeList = () => {
         }
       }
     };
+    
+
+    
 
     fetchData();
 
@@ -158,36 +166,39 @@ const AttendeeList = () => {
         slot.attendees &&
         slot.attendees.map((attendee) =>
           attendee.children &&
-          attendee.children.map((child, index) => (
-            <tr key={index}>
-              <td>{child.name}</td>
-              <td>{child.gender}</td>
-              <td>{child.testGrade}</td>
-              <td>{attendee.phone}</td>
-              <td>{attendee.campus}</td>
-              <td>{presentationItem.presentationName}</td>
-              <td>
-                {new Date(slot.startTime).toLocaleTimeString()}
-              </td>
-              <td>{new Date(attendee.bookedAt).toLocaleString()}</td>
-              <td>
-                <button onClick={() => openSmsModal(attendee.phone)}>
-                  Send SMS
-                </button>
-              </td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={checkedAttendees[attendee._id] || false}
-                  onChange={(e) => handleCheckboxChange(e, attendee._id)}
-                />
-              </td>
-            </tr>
-          ))
+          attendee.children
+            .filter((child) => child.ageGroup === presentationItem.ageGroup) // Filter children by age group
+            .map((child, index) => (
+              <tr key={index}>
+                <td>{child.name}</td>
+                <td>{child.gender}</td>
+                <td>{child.testGrade}</td>
+                <td>{attendee.phone}</td>
+                <td>{attendee.campus}</td>
+                <td>{presentationItem.presentationName}</td>
+                <td>
+                  {new Date(slot.startTime).toLocaleTimeString()}
+                </td>
+                <td>{new Date(attendee.bookedAt).toLocaleString()}</td>
+                <td>
+                  <button onClick={() => openSmsModal(attendee.phone)}>
+                    Send SMS
+                  </button>
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={checkedAttendees[attendee._id] || false}
+                    onChange={(e) => handleCheckboxChange(e, attendee._id)}
+                  />
+                </td>
+              </tr>
+            ))
         )
       )
     )}
 </tbody>
+
 
       </table>
       <SendSmsModal

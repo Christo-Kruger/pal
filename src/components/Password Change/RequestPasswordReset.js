@@ -14,19 +14,20 @@ function RequestPasswordReset({ onResetRequested }) {
         },
         body: JSON.stringify({ phoneNumber }),
       });
-
-      const data = await response.json();
-
+  
       if (response.ok) {
         toast.success('SMS has been sent. Please check your phone.');
         onResetRequested();
       } else {
+        const data = await response.json();
         toast.error(data.error);
       }
     } catch (error) {
+      console.error(error);
       toast.error('An error occurred while processing your request.');
     }
   };
+  
 
   return (
     <div style={styles.container}>

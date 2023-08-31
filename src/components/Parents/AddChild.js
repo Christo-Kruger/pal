@@ -89,6 +89,12 @@ function ChildForm({ parentId }) {
         <div className="form-field">
           <label className="form-label" htmlFor="dateOfBirth">
             생년월일:
+            <p className="text-red">
+            *생년월일을 기입 시 자동으로 학년선택이 되므로 정확하게 기입해주시기
+            바랍니다. <br>
+            *기입시 상단의 년도,날짜를 선택하여 주시기 바람니다.
+            </br>
+          </p>
           </label>
           <input
             className="form-input"
