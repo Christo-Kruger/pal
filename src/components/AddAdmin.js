@@ -95,16 +95,16 @@ function RegistrationForm() {
         </div>
         <label>
           Campus
-          <select
-            value={campus}
-            onChange={(e) => setCampus(e.target.value)}
-            required
-          >
-            <option value="">--Please choose an option--</option>
-            <option value="Suji">Suji</option>
-            <option value="Dongtan">Dongtan</option>
-            <option value="Bundang">Bundang</option>
-          </select>
+             <select
+              value={campus}
+              onChange={(e) => setCampus(e.target.value)}
+              required
+            >
+              <option value="">--옵션을 선택해주세요--</option>
+              <option value="수지">수지</option>
+              <option value="동탄">동탄</option>
+              <option value="분당">분당</option>
+            </select>
         </label>
         <label className="form-label" htmlFor="role">
           Role:
