@@ -94,4 +94,15 @@
   .form-input {
     width: 90%;
   }
+  .logo-image {
+    width: 250px;
+    height: auto;
+  }
+}
+
+@media screen and (max-width: 599px) {
+  .logo-image {
+    width: 150px;
+    height: auto;
+  }
 }

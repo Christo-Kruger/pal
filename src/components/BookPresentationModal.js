@@ -4,7 +4,6 @@ import { getAuthHeader, getUserId } from "../utils/auth";
 import { toast } from "react-toastify";
 import moment from "moment";
 import { MdDateRange, MdPlace, MdAccessTime } from "react-icons/md"; // icons for date, place, and time
-
 import "./BookPresentationModal.css";
 
 function BookPresentationModal({
@@ -44,8 +43,11 @@ function BookPresentationModal({
     예약 시간:  ${startTime}
     학생(유아)명: ${child.name}
     2024년 예비 학년/연령: ${child.testGrade}
-`;const confirmation = window.confirm(
+`;
+    const confirmation = window.confirm(
       `아래의 입학설명회 예약정보를 확인해주시기 바랍니다.
+      *예약 확인 후 변경 시 원하는 시간 예약이 어려울 수 있습니다.
+
       \n${presentationInfo}`
     );
 
@@ -100,12 +102,13 @@ function BookPresentationModal({
 
   return (
     <>
-      <div className="modal-header">
-        <h1> J LEE 어학원 설명회 예약</h1>
-        <button className="close-button" onClick={closeModal}>
-          &times; {/* This is the "x" symbol */}
-        </button>
-      </div>
+    <div className="book-presentation-modal-new">
+<div className="modal-header-new">
+  <h1 style={{ flex: 1, textAlign: 'center' }}>J LEE 어학원 설명회 예약</h1>
+  <button className="close-button" onClick={closeModal}>
+    &times;
+  </button>
+</div>
       <div className="presentation-grid">
         {presentations.map((presentation) => (
           <div
@@ -116,17 +119,20 @@ function BookPresentationModal({
           >
             <h3>{presentation.name}</h3>
             <div className="presentation-meta">
-              <span>
-                <MdDateRange />{" "}
+              <div>
                 <h5>
-                  일시:
+                  <MdDateRange /> 일시:{" "}
                   {new Date(presentation.date).toLocaleDateString()}
                 </h5>
-              </span>
-              <span>
-                <MdPlace /> <h5>장소: {presentation.location}</h5>
-              </span>
+              </div>
+              <div>
+                <h5>
+                  <MdPlace />
+                  장소: {presentation.location}
+                </h5>
+              </div>
             </div>
+
             <p>
               {expandedPresentation === presentation._id
                 ? presentation.description
@@ -181,6 +187,7 @@ function BookPresentationModal({
             </div>
           </div>
         ))}
+      </div>
       </div>
     </>
   );

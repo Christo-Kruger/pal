@@ -23,12 +23,18 @@
   margin: 0;
   font-size: calc(12px + 3vw);
   text-align: center;
+  
 }
 
-.header-text {
-  text-align: center;
+.header-text-new {
+  font-size: calc(10px + 1vw);
   margin: 20px;
-  font-size: 20px;
+  text-align: center;
+}
+
+.header-text-new li {
+    margin: 0;
+    padding: 0;
 }
 
 .no-booking {

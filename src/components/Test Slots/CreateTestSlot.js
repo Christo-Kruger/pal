@@ -135,9 +135,9 @@ const CreateTestSlot = ({ isOpen, onRequestClose }) => {
                 onChange={handleChange}
               >
                 <option value="">Select Campus</option>
-                <option value="Bundang">Bundang</option>
-                <option value="Dongtan">Dongtan</option>
-                <option value="Suji">Suji</option>
+                <option value="분당">분당</option>
+                <option value="동탄">동탄</option>
+                <option value="수지">수지</option>
               </select>
             )}
           </div>

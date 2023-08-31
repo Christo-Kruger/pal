@@ -33,8 +33,8 @@ function HomePage() {
           </button>
         </div>
         <p className="terms">
-        회원가입을 통해 다음에 동의하게 됩니다
-          <a
+        회원가입을 통해 다음에 동의하게 됩니다. <br></br>
+        <a
             href="/개인정보_보호정책_및_이용_약관.pdf"
             target="_blank"
             rel="noopener noreferrer"

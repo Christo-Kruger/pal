@@ -14,6 +14,8 @@ import Admin from './pages/Admin';
 import AddChild from '../src/components/Parents/AddChild';
 import UpdateDetail from '../src/components/Parents/UpdateDetail';
 import UpdateChild from '../src/components/Parents/UpdateChild';
+import ChangePassword from '../src/pages/ChangePassword'
+
 
 function App() {
   return (
@@ -30,7 +32,7 @@ function App() {
           <Route path="/add-child" element={<AddChild />} />
           <Route path="/update-details" element={<UpdateDetail />} />
           <Route path="/update-child" element={<UpdateChild />} />
-
+          <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/parent/*" element={<ParentProtectedRoute />} />
         </Routes>
       </HashRouter>

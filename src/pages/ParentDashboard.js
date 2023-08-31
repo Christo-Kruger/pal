@@ -178,18 +178,18 @@ function ParentDashboard() {
       )}
 
       <h1 className="header"> J LEE 신입생 입학설명회 예약</h1>
-      <div className="header-text">
-  
-      <ol>
-        <li>
-          형제, 있으실 경우 "학생추가"를 해주시기 바랍니다.
-        </li>
-        <li>
-          설명회 예약이 완료되면 학부모님께 예약확인 문자가 발송됩니다.
-        </li>
-      </ol>
-  
-  </div>
+      <div className="header-text-new">
+
+  <ol>
+    <li>
+      형제, 있으실 경우 "학생추가"를 해주시기 바랍니다.
+    </li>
+    <li>
+      설명회 예약이 완료되면 학부모님께 예약확인 문자가 발송됩니다.
+    </li>
+  </ol>
+
+</div>
       <div className="button-containerPD">
         {/* <button
           className="button"

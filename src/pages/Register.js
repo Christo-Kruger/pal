@@ -77,6 +77,21 @@ function RegistrationForm() {
             />
           </div>
           <div className="form-field">
+            <label className="form-label" htmlFor="phone">
+              전화번호
+            </label>
+            <input
+              className="form-input"
+              type="text"
+              id="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              pattern="010[0-9]{8}"
+              title="Phone number must be in the format 010XXXXXXXX"
+            />
+          </div>
+          <div className="form-field">
             <label className="form-label" htmlFor="email">
               이메일:
             </label>
@@ -102,21 +117,7 @@ function RegistrationForm() {
               required
             />
           </div>
-          <div className="form-field">
-            <label className="form-label" htmlFor="phone">
-              전화번호
-            </label>
-            <input
-              className="form-input"
-              type="text"
-              id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-              pattern="010[0-9]{8}"
-              title="Phone number must be in the format 010XXXXXXXX"
-            />
-          </div>
+        
           <label>
             캠퍼스 선택  </label>
             <select
@@ -125,9 +126,9 @@ function RegistrationForm() {
               required
             >
               <option value="">--옵션을 선택해주세요--</option>
-              <option value="Suji">Suji</option>
-              <option value="Dongtan">Dongtan</option>
-              <option value="Bundang">Bundang</option>
+              <option value="수지">수지</option>
+              <option value="동탄">동탄</option>
+              <option value="분당">분당</option>
             </select>
         
           <p className="text-red">

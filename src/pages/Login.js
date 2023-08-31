@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./LoginForm.css"
+import "./LoginForm.css";
 import { useAuth } from "../context/AuthContext";
 import Logo from "../media/logo.png";
 
@@ -8,7 +8,7 @@ function LoginForm() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,7 +16,7 @@ function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage('');
+    setErrorMessage("");
     setLoading(true);
 
     try {
@@ -27,16 +27,16 @@ function LoginForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ phone, password }),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         login(data.token);
-  
+
         localStorage.setItem("userRole", data.role);
         localStorage.setItem("userCampus", data.campus);
-  
+
         if (data.role === "parent") {
           navigate("/parent");
         } else if (data.role === "admin" || data.role === "superadmin") {
@@ -47,11 +47,11 @@ function LoginForm() {
       } else {
         const errorData = await response.json();
         console.error(errorData);
-        setErrorMessage("Invalid email or password");
+        setErrorMessage("Invalid phone or password");
       }
     } catch (error) {
       console.error(error);
-      setErrorMessage("Invalid email or password");
+      setErrorMessage("Invalid phone or password");
     } finally {
       setLoading(false);
     }
@@ -65,57 +65,53 @@ function LoginForm() {
         </Link>
       </div>
       <form className="form" onSubmit={handleSubmit}>
-        <h1 className="form-title">
-로그인</h1>
+        <h1 className="form-title">로그인</h1>
         {errorMessage && <div className="error-message">{errorMessage}</div>}
         <div className="form-field">
           <label className="form-label" htmlFor="email">
-            
-이메일:
+            전화번호
           </label>
           <input
             className="form-input"
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="tel"
+            id="phone"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             required
           />
         </div>
         <div className="form-field">
-    <label className="form-label" htmlFor="password">
-    비밀번호:
-    </label>
-    <div className="password-container">
-      <input
-        className="form-input"
-        type={passwordVisible ? "text" : "password"}
-        id="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <div 
-        className="toggle-password"
-        onClick={() => setPasswordVisible(!passwordVisible)}
-      >
-        {passwordVisible ? 
-"숨다" : 
-"보여주다"}
-      </div>
-    </div>
-  </div>
+          <label className="form-label" htmlFor="password">
+            비밀번호:
+          </label>
+          <div className="password-container">
+            <input
+              className="form-input"
+              type={passwordVisible ? "text" : "password"}
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <div
+              className="toggle-password"
+              onClick={() => setPasswordVisible(!passwordVisible)}
+            >
+              {passwordVisible ? "숨다" : "보여주다"}
+            </div>
+          </div>
+        </div>
         <div className="form-field">
           <button className="form-button" type="submit" disabled={loading}>
-            {loading ? 
-"로그인 중..." : 
-"로그인"}
+            {loading ? "로그인 중..." : "로그인"}
           </button>
         </div>
         <p className="link">
-         
-등록되지 않은 경우 <Link to="/register">여기에서 등록하세요</Link>
+          등록되지 않은 경우 <Link to="/register">여기에서 등록하세요</Link>
         </p>
+        <p className="link">
+        비밀번호를 잊어버렸다면 <Link to="/change-password">여기에서 변경하세요</Link>
+      </p>
       </form>
     </div>
   );
