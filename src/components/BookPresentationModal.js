@@ -41,13 +41,13 @@ function BookPresentationModal({
 
     const presentationInfo = `
     설명회: ${presentationName}
-    날짜: ${date}
-    시간:  ${startTime}
+    날짜: ${new Date(date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+    시간:  ${new Date (startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
     학생명: ${child.name}
     2024년 학년: ${child.testGrade}
 `;
     const confirmation = window.confirm(
-      `아래의 입학설명회 예약정보를 확인해주시기 바랍니다.\n <br>
+      `아래의 입학설명회 예약정보를 확인해주시기 바랍니다.\n
        ★ 예약 변경 시 원하는 시간 예약이 어려울 수 있습니다.
 
       \n${presentationInfo}`
@@ -124,7 +124,8 @@ function BookPresentationModal({
               <div>
                 <h5>
                   <MdDateRange /> 일시:{" "}
-                  {new Date(presentation.date).toLocaleDateString()}
+                  {new Date(presentation.date).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })}
+
                 </h5>
               </div>
               <div>

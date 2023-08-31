@@ -113,7 +113,8 @@ align-items: center;
 
 .slot-time {
 font-weight: bold;
-font-size: 1.5em;
+font-size: 24px;
+
 
 }
 
@@ -127,7 +128,8 @@ font-size: 1.5em;
   cursor: pointer;
   transition: background-color 0.3s;
   margin-left: 10px;
-  min-width: 100px;
+  min-width: 120px;
+  min-height: 40px;
 }
 
 .slot-info span {
@@ -164,5 +166,39 @@ cursor: pointer;
 @media (max-width: 400px) {
   .presentation-card, .presentation-meta, .time-slot {
     font-size: 0.7em;
+  }
+}
+
+/* Mobile view */
+@media (max-width: 768px) {
+  h5 {
+    font-size: 0.8rem;
+  }
+}
+
+/* Desktop view */
+@media (min-width: 769px) {
+  h5 {
+    font-size: 1rem;
+  }
+}
+
+/* Mobile view */
+@media (max-width: 768px) {
+  .slotButton {
+    font-size: 1.8em;
+    padding: 5px;
+    min-width: 100px;
+    min-height: 40px;
+  }
+}
+
+/* Desktop view */
+@media (min-width: 769px) {
+  .slotButton {
+    font-size: 1.5em;
+    padding: 5px 10px;
+    min-width: 120px;
+    min-height: 40px;
   }
 }

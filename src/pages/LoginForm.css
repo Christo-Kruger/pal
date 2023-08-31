@@ -55,8 +55,10 @@
 
 .toggle-password {
   margin-left: 10px;
+  min-width: 50px;
   cursor: pointer;
   color: #007bff;
+  
 }
 
 

@@ -47,11 +47,11 @@ function LoginForm() {
       } else {
         const errorData = await response.json();
         console.error(errorData);
-        setErrorMessage("Invalid phone or password");
+        setErrorMessage("전화번호 또는 비밀번호를 확인해 주시기 바랍니다.");
       }
     } catch (error) {
       console.error(error);
-      setErrorMessage("Invalid phone or password");
+      setErrorMessage("전화번호 또는 비밀번호를 확인해 주시기 바랍니다.");
     } finally {
       setLoading(false);
     }

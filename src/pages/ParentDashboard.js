@@ -281,11 +281,8 @@ function ParentDashboard() {
               <h3>{presentation.name}</h3>
               <h4>
                 날짜:{" "}
-                {new Date(presentation.date).toLocaleDateString() +
-                  " " +
-                  new Date(
-                    presentation.timeSlots[0].startTime
-                  ).toLocaleTimeString()}
+                {new Date(presentation.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) + " " + new Date(presentation.timeSlots[0].startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+
               </h4>
 
               <p>장소 : {presentation.location}</p>
