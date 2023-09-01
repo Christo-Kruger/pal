@@ -106,7 +106,7 @@ function BookPresentationModal({
     <>
     <div className="book-presentation-modal-new">
 <div className="modal-header-new">
-  <h1 style={{ flex: 1, textAlign: 'center' }}>J LEE 어학원 설명회 예약</h1>
+  <h1 style={{ flex: 1, textAlign: 'center' }}>J LEE 설명회 예약</h1>
   <button className="close-button" onClick={closeModal}>
     &times;
   </button>
