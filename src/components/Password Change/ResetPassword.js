@@ -4,9 +4,11 @@ import { toast } from 'react-toastify';
 function ResetPassword() {
   const [resetToken, setResetToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleResetPassword = async () => {
     try {
+      setLoading(true);
       const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await fetch(`${backendURL}/api/users/reset-password`, {
         method: 'POST',
@@ -25,6 +27,8 @@ function ResetPassword() {
       }
     } catch (error) {
       toast.error('인증코드가 발송되지 않았습니다. 다시한번 실행하여주시기 바랍니다.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,8 +49,8 @@ function ResetPassword() {
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
       />
-      <button style={styles.button} onClick={handleResetPassword}>
-        변경하기
+      <button style={styles.button} onClick={handleResetPassword} disabled={loading}>
+        {loading ? "변경하기..." : "변경하기"}
       </button>
     </div>
   );

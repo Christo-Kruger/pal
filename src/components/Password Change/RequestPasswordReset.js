@@ -3,9 +3,11 @@ import { toast } from 'react-toastify';
 
 function RequestPasswordReset({ onResetRequested }) {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleRequestPasswordReset = async () => {
     try {
+      setLoading(true);
       const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await fetch(`${backendURL}/api/users/forgot-password`, {
         method: 'POST',
@@ -25,6 +27,8 @@ function RequestPasswordReset({ onResetRequested }) {
     } catch (error) {
       console.error(error);
       toast.error('인증코드가 발송되지 않았습니다. 다시한번 실행하여주시기 바랍니다.');
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -38,8 +42,8 @@ function RequestPasswordReset({ onResetRequested }) {
         value={phoneNumber}
         onChange={(e) => setPhoneNumber(e.target.value)}
       />
-      <button style={styles.button} onClick={handleRequestPasswordReset}>
-        비밀번호 변경
+      <button style={styles.button} onClick={handleRequestPasswordReset} disabled={loading}>
+        {loading ? "비밀번호 변경..." : "비밀번호 변경"}
       </button>
     </div>
   );

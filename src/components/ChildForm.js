@@ -9,9 +9,11 @@ function ChildForm({ parentId }) {
   const [previousSchool, setPreviousSchool] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [gender, setGender] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSave = async () => {
+    setLoading(true);
     const isSuccess = await saveChild();
     if (isSuccess) {
       navigate("/parent", { replace: true });
@@ -19,6 +21,7 @@ function ChildForm({ parentId }) {
   };
 
   const handleAddAnotherChild = async () => {
+    setLoading(true);
     const isSuccess = await saveChild();
     if (isSuccess) {
       resetForm();
@@ -38,6 +41,8 @@ function ChildForm({ parentId }) {
       },
       getAuthHeader()
     );
+
+    setLoading(false);
 
     if (response.status === 201) {
       console.log("Child created:", response.data);
@@ -84,14 +89,13 @@ function ChildForm({ parentId }) {
           />
         </div>
         <div className="form-field">
-
           <label className="form-label" htmlFor="dateOfBirth">
             생년월일:
           </label>
           <p className="text-red">
             *생년월일을 기입 시 자동으로 학년선택이 되므로 정확하게 기입해주시기
             바랍니다. 
-           
+
             *기입시 상단의 년도,날짜를 선택하여 주시기 바람니다.
           
           </p>
@@ -106,7 +110,7 @@ function ChildForm({ parentId }) {
         </div>
         <div className="form-field">
           <label className="form-label" htmlFor="gender">
-            성별: :
+            성별:
           </label>
           <select
             className="form-input"
@@ -119,14 +123,11 @@ function ChildForm({ parentId }) {
             <option value="female">여성</option>
           </select>
         </div>
-        <button className="form-button" onClick={handleSave}>
-          등록
+        <button className="form-button" onClick={handleSave} disabled={loading}>
+          {loading ? "등록..." : "등록"}
         </button>
-        <button
-          className="form-button secondary"
-          onClick={handleAddAnotherChild}
-        >
-          학생 추가
+        <button className="form-button secondary" onClick={handleAddAnotherChild} disabled={loading}>
+          {loading ? "학생 추가..." : "학생 추가"}
         </button>
       </form>
     </div>
