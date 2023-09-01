@@ -12,6 +12,32 @@ function EditParentModal({ isOpen, onRequestClose, onParentUpdated, parent }) {
     }))
   });
 
+
+  const handleChildDelete = async (index) => {
+    try {
+      const child = editedParent.children[index];
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/child/${child._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        toast.success("Child deleted successfully");
+        setEditedParent(prevState => ({
+          ...prevState,
+          children: prevState.children.filter((_, i) => i !== index)
+        }));
+      } else {
+        toast.error("Failed to delete child");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete child");
+    }
+  };
+
   const handleSave = async () => {
     try {
       const response = await fetch(
@@ -147,6 +173,7 @@ function EditParentModal({ isOpen, onRequestClose, onParentUpdated, parent }) {
                     
                     <div className="child-actions">
                         <button className="save-button" onClick={() => handleChildSave(index)}>Save Child</button>
+                        <button className="delete-button" onClick={() => handleChildDelete(index)}>Delete Child</button>
                     </div>
                 </div>
             ))}

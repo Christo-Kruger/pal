@@ -27,15 +27,18 @@ const AttendeeList = () => {
 
         if (mounted) {
           const filteredAttendees = response.data.filter(
-            (attendee) => attendee.campus === userCampus || userRole === "superadmin"
+            (attendee) =>
+              attendee.campus === userCampus || userRole === "superadmin"
           );
 
           setAttendees(filteredAttendees);
+          console.log("Filtered Attendees:", filteredAttendees);
 
           // Initialize checkedAttendees state
           const initialCheckedAttendees = {};
           filteredAttendees.forEach((attendee) => {
-            initialCheckedAttendees[attendee._id] = attendee.attendedPresentation;
+            initialCheckedAttendees[attendee._id] =
+              attendee.attendedPresentation;
           });
           setCheckedAttendees(initialCheckedAttendees);
         }
@@ -71,11 +74,13 @@ const AttendeeList = () => {
         `${BACKEND_URL}/api/presentations/exportToExcel`,
         {
           ...getAuthHeader(),
-          responseType: 'blob',
+          responseType: "blob",
         }
       );
-  
-      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -135,43 +140,47 @@ const AttendeeList = () => {
     }));
   };
 
- 
-      return (
+  return (
     <div className="attendee-list">
       <button onClick={handleExport}>Export to Excel</button>
 
       <table>
         <thead>
           <tr>
-            <th>Parent Name</th>
+            <th>No.</th>
+            <th>Parent</th>
             <th>Email</th>
             <th>Phone Number</th>
             <th>Campus</th>
             <th>Child Name</th>
-            <th>Child Test Grade</th>
-            <th>Presentation Booked</th>
-            <th>Booking Time</th>
-            <th>Booking Creation Time</th>
+            <th>DOB</th>
+            <th>Gender</th>
+            <th>School</th>
+            <th>Grade</th>
+            <th>Presentation</th>
+            <th>Booked Time</th>
+            <th>Booking Created</th>
             <th>Action</th>
             <th>Attendance</th>
           </tr>
         </thead>
 
         <tbody>
-        {attendees &&
-    attendees.map((attendee, index) => (
-      <tr key={index}>
+          {attendees &&
+            attendees.map((attendee, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
                 <td>{attendee.name}</td>
                 <td>{attendee.email}</td>
                 <td>{attendee.phone}</td>
                 <td>{attendee.campus}</td>
                 <td>{attendee.childName}</td>
+                <td>{new Date(attendee.dateOfBirth).toLocaleDateString()}</td>
+                <td>{attendee.childGender}</td>
+                <td>{attendee.previousSchool}</td>
                 <td>{attendee.childTestGrade}</td>
                 <td>{attendee.presentationName}</td>
-                <td>
-                  {new Date(attendee.startTime).toLocaleTimeString()} -{" "}
-                  {new Date(attendee.endTime).toLocaleTimeString()}
-                </td>
+                <td>{new Date(attendee.startTime).toLocaleTimeString()}</td>
 
                 <td>{new Date(attendee.bookedAt).toLocaleString()}</td>
                 <td>
@@ -183,9 +192,7 @@ const AttendeeList = () => {
                   <input
                     type="checkbox"
                     checked={checkedAttendees[attendee._id] || false}
-                    onChange={(e) =>
-                      handleCheckboxChange(e, attendee._id)
-                    }
+                    onChange={(e) => handleCheckboxChange(e, attendee._id)}
                   />
                 </td>
               </tr>
