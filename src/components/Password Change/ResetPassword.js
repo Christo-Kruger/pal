@@ -18,6 +18,7 @@ function ResetPassword() {
   
       if (response.ok) {
         toast.success('Password has been successfully reset.');
+        window.location = './login'; // Redirect to login page
       } else {
         const data = await response.json();
         toast.error(data.error);
@@ -26,7 +27,7 @@ function ResetPassword() {
       toast.error('An error occurred while processing your request.');
     }
   };
-  
+
 
   return (
     <div style={styles.container}>
