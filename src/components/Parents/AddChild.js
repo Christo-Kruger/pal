@@ -90,11 +90,11 @@ function ChildForm({ parentId }) {
           <label className="form-label" htmlFor="dateOfBirth">
             생년월일:
             <p className="text-red">
-            *생년월일을 기입 시 자동으로 학년선택이 되므로 정확하게 기입해주시기
-            바랍니다. <br>
-            *기입시 상단의 년도,날짜를 선택하여 주시기 바람니다.
-            </br>
-          </p>
+              *생년월일을 기입 시 자동으로 학년선택이 되므로 정확하게
+              기입해주시기 바랍니다.
+              <br />
+              *기입시 상단의 년도,날짜를 선택하여 주시기 바람니다.
+            </p>
           </label>
           <input
             className="form-input"
@@ -106,8 +106,7 @@ function ChildForm({ parentId }) {
         </div>
         <div className="form-field">
           <label className="form-label" htmlFor="gender">
-          성별:
-
+            성별:
           </label>
           <select
             className="form-input"
@@ -121,13 +120,13 @@ function ChildForm({ parentId }) {
           </select>
         </div>
         <button className="form-button" onClick={handleSave}>
-        저장 
+          저장
         </button>
         <button
           className="form-button secondary"
           onClick={handleAddAnotherChild}
         >
-         다른학생 추가하기
+          다른학생 추가하기
         </button>
       </form>
     </div>

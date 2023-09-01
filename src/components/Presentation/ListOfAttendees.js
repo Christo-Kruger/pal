@@ -4,28 +4,82 @@ import SendSmsModal from "../SendSmsModal";
 import { toast } from "react-toastify";
 import { getAuthHeader } from "../../utils/auth";
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
 const AttendeeList = () => {
   const [presentations, setPresentations] = useState([]);
   const [isSmsModalOpen, setIsSmsModalOpen] = useState(false);
   const [selectedPhoneNumber, setSelectedPhoneNumber] = useState(null);
+  const [checkedAttendees, setCheckedAttendees] = useState({});
   const userCampus = localStorage.getItem("userCampus");
   const userRole = localStorage.getItem("userRole");
-  const [checkedAttendees, setCheckedAttendees] = useState({});
+  const [attendees, setAttendees] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/api/presentations/allAttendeesInTimeSlots`,
+          getAuthHeader()
+        );
+
+        if (mounted) {
+          const filteredAttendees = response.data.filter(
+            (attendee) => attendee.campus === userCampus || userRole === "superadmin"
+          );
+
+          setAttendees(filteredAttendees);
+
+          // Initialize checkedAttendees state
+          const initialCheckedAttendees = {};
+          filteredAttendees.forEach((attendee) => {
+            initialCheckedAttendees[attendee._id] = attendee.attendedPresentation;
+          });
+          setCheckedAttendees(initialCheckedAttendees);
+        }
+      } catch (error) {
+        if (mounted) {
+          console.error("Error fetching data: ", error);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const initializeCheckedAttendees = (filteredPresentations) => {
+    const initialCheckedAttendees = {};
+    filteredPresentations.forEach((presentation) => {
+      presentation.timeSlots.forEach((slot) => {
+        slot.attendees.forEach((attendee) => {
+          initialCheckedAttendees[attendee._id] = attendee.attendedPresentation;
+        });
+      });
+    });
+    setCheckedAttendees(initialCheckedAttendees);
+  };
 
   const handleExport = async () => {
     try {
-      // Here we make a request to our backend to trigger the CSV export.
-
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/presentations/exportToExcel`,
-        getAuthHeader()
+        `${BACKEND_URL}/api/presentations/exportToExcel`,
+        {
+          ...getAuthHeader(),
+          responseType: 'blob',
+        }
       );
-
-      const blob = new Blob([response.data], { type: "text/csv" }); // Modified MIME type for CSV
+  
+      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "attendees_data.csv"); // Modified file extension to .csv
+      link.setAttribute("download", "attendees_data.xlsx");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -47,101 +101,54 @@ const AttendeeList = () => {
 
   const handleCheckboxChange = (e, userId) => {
     const isChecked = e.target.checked;
-
-    // Update local state
     setCheckedAttendees((prevState) => ({
       ...prevState,
       [userId]: isChecked,
     }));
-
-    // Send an update to the backend
     markAttended(userId, isChecked);
   };
 
   const markAttended = async (userId, isChecked) => {
     try {
       const response = await axios.patch(
-        `${process.env.REACT_APP_BACKEND_URL}/api/users/${userId}/attendedPresentation`,
+        `${BACKEND_URL}/api/users/${userId}/attendedPresentation`,
         { attended: isChecked }
       );
 
       if (response.status !== 200) {
-        // Revert checkbox state in case of an error
-        setCheckedAttendees((prevState) => ({
-          ...prevState,
-          [userId]: !isChecked,
-        }));
-
+        revertCheckboxState(userId, isChecked);
         alert("There was an error updating the attendance status.");
       } else {
-        // Display a toast when successful
         toast.success("Attendance status updated successfully!");
       }
     } catch (error) {
+      revertCheckboxState(userId, isChecked);
       console.error("Error marking attendance: ", error);
       alert("Error marking attendance. Please try again.");
     }
   };
 
-  useEffect(() => {
-    let mounted = true;
+  const revertCheckboxState = (userId, isChecked) => {
+    setCheckedAttendees((prevState) => ({
+      ...prevState,
+      [userId]: !isChecked,
+    }));
+  };
 
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/presentations/allAttendeesInTimeSlots`,
-          getAuthHeader()
-        );
-
-        if (mounted) {
-          const filteredPresentations = response.data.filter((presentation) => {
-            return presentation.timeSlots.some((slot) =>
-              slot.attendees.some(
-                (attendee) =>
-                  attendee.campus === userCampus || userRole === "superadmin"
-              )
-            );
-          });
-          setPresentations(filteredPresentations);
-
-          // Initialize checkedAttendees state
-          const initialCheckedAttendees = {};
-          filteredPresentations.forEach((presentation) => {
-            presentation.timeSlots.forEach((slot) => {
-              slot.attendees.forEach((attendee) => {
-                initialCheckedAttendees[attendee._id] =
-                  attendee.attendedPresentation;
-              });
-            });
-          });
-          setCheckedAttendees(initialCheckedAttendees);
-        }
-      } catch (error) {
-        if (mounted) {
-          console.error("Error fetching data: ", error);
-        }
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  return (
+ 
+      return (
     <div className="attendee-list">
       <button onClick={handleExport}>Export to Excel</button>
 
       <table>
         <thead>
           <tr>
-            <th>Children Names</th>
-            <th>Gender</th>
-            <th>Children Test Grades</th>
+            <th>Parent Name</th>
+            <th>Email</th>
             <th>Phone Number</th>
             <th>Campus</th>
+            <th>Child Name</th>
+            <th>Child Test Grade</th>
             <th>Presentation Booked</th>
             <th>Booking Time</th>
             <th>Booking Creation Time</th>
@@ -151,44 +158,39 @@ const AttendeeList = () => {
         </thead>
 
         <tbody>
-  {presentations &&
-    presentations.map((presentationItem) =>
-      presentationItem.timeSlots &&
-      presentationItem.timeSlots.map((slot) =>
-        slot.attendees &&
-        slot.attendees.map((attendee) =>
-          attendee.children &&
-          attendee.children.map((child, index) => (
-            <tr key={index}>
-              <td>{child.name}</td>
-              <td>{child.gender}</td>
-              <td>{child.testGrade}</td>
-              <td>{attendee.phone}</td>
-              <td>{attendee.campus}</td>
-              <td>{presentationItem.presentationName}</td>
-              <td>
-                {new Date(slot.startTime).toLocaleTimeString()}
-              </td>
-              <td>{new Date(attendee.bookedAt).toLocaleString()}</td>
-              <td>
-                <button onClick={() => openSmsModal(attendee.phone)}>
-                  Send SMS
-                </button>
-              </td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={checkedAttendees[attendee._id] || false}
-                  onChange={(e) => handleCheckboxChange(e, attendee._id)}
-                />
-              </td>
-            </tr>
-          ))
-        )
-      )
-    )}
-</tbody>
+        {attendees &&
+    attendees.map((attendee, index) => (
+      <tr key={index}>
+                <td>{attendee.name}</td>
+                <td>{attendee.email}</td>
+                <td>{attendee.phone}</td>
+                <td>{attendee.campus}</td>
+                <td>{attendee.childName}</td>
+                <td>{attendee.childTestGrade}</td>
+                <td>{attendee.presentationName}</td>
+                <td>
+                  {new Date(attendee.startTime).toLocaleTimeString()} -{" "}
+                  {new Date(attendee.endTime).toLocaleTimeString()}
+                </td>
 
+                <td>{new Date(attendee.bookedAt).toLocaleString()}</td>
+                <td>
+                  <button onClick={() => openSmsModal(attendee.phone)}>
+                    Send SMS
+                  </button>
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={checkedAttendees[attendee._id] || false}
+                    onChange={(e) =>
+                      handleCheckboxChange(e, attendee._id)
+                    }
+                  />
+                </td>
+              </tr>
+            ))}
+        </tbody>
       </table>
       <SendSmsModal
         isOpen={isSmsModalOpen}
