@@ -16,7 +16,7 @@ function RequestPasswordReset({ onResetRequested }) {
       });
   
       if (response.ok) {
-        toast.success('SMS has been sent. Please check your phone.');
+        toast.success('인증코드를 문자로 발송하였습니다.');
         onResetRequested();
       } else {
         const data = await response.json();
@@ -24,7 +24,7 @@ function RequestPasswordReset({ onResetRequested }) {
       }
     } catch (error) {
       console.error(error);
-      toast.error('An error occurred while processing your request.');
+      toast.error('인증코드가 발송되지 않았습니다. 다시한번 실행하여주시기 바랍니다.');
     }
   };
   
@@ -39,7 +39,7 @@ function RequestPasswordReset({ onResetRequested }) {
         onChange={(e) => setPhoneNumber(e.target.value)}
       />
       <button style={styles.button} onClick={handleRequestPasswordReset}>
-        Request Password Reset
+        비밀번호 변경
       </button>
     </div>
   );

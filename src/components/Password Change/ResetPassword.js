@@ -17,14 +17,14 @@ function ResetPassword() {
       });
   
       if (response.ok) {
-        toast.success('Password has been successfully reset.');
+        toast.success('비밀번호가 변경되었습니다.');
         window.location = './login'; // Redirect to login page
       } else {
         const data = await response.json();
         toast.error(data.error);
       }
     } catch (error) {
-      toast.error('An error occurred while processing your request.');
+      toast.error('인증코드가 발송되지 않았습니다. 다시한번 실행하여주시기 바랍니다.');
     }
   };
 
@@ -34,19 +34,19 @@ function ResetPassword() {
       <input
         style={styles.input}
         type="text"
-        placeholder="Reset Token"
+        placeholder="인증코드"
         value={resetToken}
         onChange={(e) => setResetToken(e.target.value)}
       />
       <input
         style={styles.input}
         type="password"
-        placeholder="New Password"
+        placeholder="새로운 비밀번호"
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
       />
       <button style={styles.button} onClick={handleResetPassword}>
-        Reset Password
+        변경하기
       </button>
     </div>
   );
