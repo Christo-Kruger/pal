@@ -48,7 +48,7 @@ function RegistrationForm() {
     } else {
       const errorData = await response.json();
       console.error(errorData);
-      setError(errorData.message || "An error occurred");
+      setError(errorData.message || '이미 가입되어있습니다. 비밀번호 확인해주시기 바랍니다.');
     }
   };
 
