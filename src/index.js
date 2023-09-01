@@ -6,10 +6,13 @@ import reportWebVitals from './reportWebVitals';
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Modal from "react-modal"; // Import Modal here
+import { inject } from '@vercel/analytics';
+ 
+
 
 Modal.setAppElement("#root"); // Set the appElement here
 
-
+inject()
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
