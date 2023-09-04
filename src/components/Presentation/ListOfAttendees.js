@@ -14,6 +14,8 @@ const AttendeeList = () => {
   const userCampus = localStorage.getItem("userCampus");
   const userRole = localStorage.getItem("userRole");
   const [attendees, setAttendees] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState({ criteria: '', order: '' });
 
   useEffect(() => {
     let mounted = true;
@@ -113,6 +115,15 @@ const AttendeeList = () => {
     markAttended(userId, isChecked);
   };
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleSortChange = (event) => {
+    const [criteria, order] = event.target.value.split("-");
+    setSortBy({ criteria, order });
+  };
+
   const markAttended = async (userId, isChecked) => {
     try {
       const response = await axios.patch(
@@ -144,6 +155,23 @@ const AttendeeList = () => {
     <div className="attendee-list">
       <button onClick={handleExport}>Export to Excel</button>
 
+      <input
+        type="text"
+        placeholder="Search by Phone, Name or Child Name"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        
+      />
+  <select
+  
+  value={sortBy ? `${sortBy.criteria}-${sortBy.order}` : ''}
+  onChange={handleSortChange}
+>
+  <option value="">Sort by</option>
+  <option value="date-asc">Date Ascending</option>
+  <option value="date-desc">Date Descending</option>
+</select>
+
       <table>
         <thead>
           <tr>
@@ -166,8 +194,29 @@ const AttendeeList = () => {
         </thead>
 
         <tbody>
-          {attendees &&
-            attendees.map((attendee, index) => (
+  {attendees &&
+    attendees
+      .filter((attendee) => {
+        if (!searchTerm) return true;
+        return (
+          attendee.phone.includes(searchTerm) ||
+          attendee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          attendee.childName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      })
+      .sort((a, b) => {
+        if (sortBy.criteria === "date") {
+          return sortBy.order === "asc"
+            ? new Date(a.bookedAt) - new Date(b.bookedAt)
+            : new Date(b.bookedAt) - new Date(a.bookedAt);
+        } else if (sortBy.criteria === "campus") {
+          return sortBy.order === "asc"
+            ? a.campus.localeCompare(b.campus)
+            : b.campus.localeCompare(a.campus);
+        }
+        return 0;
+      })
+      .map((attendee, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{attendee.name}</td>

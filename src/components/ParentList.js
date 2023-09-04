@@ -30,7 +30,7 @@ function ParentList() {
   }, [userRole, userCampus]);
 
   const filteredParents = Array.isArray(parents) 
-? parents.filter(parent => parent.children.some(child => child.name.toLowerCase().includes(searchTerm.toLowerCase())))
+? parents.filter(parent => parent.children.some(child => child?.name?.includes(searchTerm)))
 : [];
 
   return (

@@ -166,8 +166,8 @@ function EditParentModal({ isOpen, onRequestClose, onParentUpdated, parent }) {
                             value={child.gender}
                             onChange={e => handleChildChange(index, 'gender', e.target.value)}
                         >
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
                         </select>
                     </div>
                     
