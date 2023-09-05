@@ -118,6 +118,7 @@ font-size: 24px;
 
 }
 
+
 .slotButton{
   background-color: #007BFF;
   color: #fff;
@@ -130,6 +131,12 @@ font-size: 24px;
   margin-left: 10px;
   min-width: 120px;
   min-height: 40px;
+}
+
+.slotButton.disabled-slot {
+  background-color: #d1d1d1;
+  cursor: not-allowed;
+  color: #fff; /* this ensures the text remains white */
 }
 
 .slot-info span {
@@ -190,6 +197,25 @@ cursor: pointer;
     padding: 5px;
     min-width: 100px;
     min-height: 40px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .slotButton.disabled-slot {
+      font-size: 1.8em;
+      padding: 5px;
+      min-width: 100px;
+      min-height: 40px;
+  }
+}
+
+@media (min-width: 769px) {
+  .slotButton.disabled-slot {
+      font-size: 1.5em;
+      padding: 5px 10px;
+      min-width: 120px;
+      min-height: 40px;
   }
 }
 
