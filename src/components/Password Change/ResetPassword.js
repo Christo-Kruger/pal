@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import { useHistory } from 'react-router-dom';  // Import useHistory
 
 function ResetPassword() {
   const [resetToken, setResetToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const history = useHistory();  // Initialize useHistory
 
   const handleResetPassword = async () => {
     try {
@@ -20,7 +23,7 @@ function ResetPassword() {
   
       if (response.ok) {
         toast.success('비밀번호가 변경되었습니다.');
-        window.location = '#/login'; // Redirect to login page
+        history.push('/login');  // Use history.push() to redirect to the login page
       } else {
         const data = await response.json();
         toast.error(data.error);
