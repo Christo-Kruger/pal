@@ -20,7 +20,7 @@ function ResetPassword() {
   
       if (response.ok) {
         toast.success('비밀번호가 변경되었습니다.');
-        window.location = '/login'; // Redirect to login page
+        window.location = '#/login'; // Redirect to login page
       } else {
         const data = await response.json();
         toast.error(data.error);
