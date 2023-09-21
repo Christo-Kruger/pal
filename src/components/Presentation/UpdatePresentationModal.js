@@ -4,26 +4,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Modal from "react-modal";
 
-const KST_OFFSET_HOURS = 9; // Korea is UTC +9 hours
-
-const toKoreanTime = (isoTime) => {
-  const date = new Date(isoTime);
-  date.setUTCHours(date.getUTCHours() + KST_OFFSET_HOURS);
-  return date;
-};
-
-const toUTCTime = (date) => {
-  date.setUTCHours(date.getUTCHours() - KST_OFFSET_HOURS);
-  return date;
-};
-
-const formatTime = (isoTime) => {
-  const date = toKoreanTime(isoTime);
-  const hours = date.getUTCHours().toString().padStart(2, "0");
-  const minutes = date.getUTCMinutes().toString().padStart(2, "0");
-  return `${hours}:${minutes}`;
-};
-
 const UpdatePresentationModal = ({
   presentationId,
   isOpen,
@@ -67,14 +47,15 @@ const UpdatePresentationModal = ({
     const newTimeSlots = [...timeSlots];
     if (field === "startTime" || field === "endTime") {
       const [hours, minutes] = value.split(":");
-      const newDate = toKoreanTime(newTimeSlots[index][field]);
-      newDate.setUTCHours(parseInt(hours), parseInt(minutes));
-      newTimeSlots[index][field] = toUTCTime(newDate).toISOString();
+      const newDate = new Date(newTimeSlots[index][field]);
+      newDate.setUTCHours(parseInt(hours) - 9, parseInt(minutes)); // Convert input (KST) back to UTC
+      newTimeSlots[index][field] = newDate.toISOString();
     } else {
       newTimeSlots[index][field] = value;
     }
     setTimeSlots(newTimeSlots);
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,6 +80,15 @@ const UpdatePresentationModal = ({
   if (!presentation) {
     return null;
   }
+
+  const formatTime = (isoTime) => {
+    const date = new Date(isoTime);
+    date.setHours(date.getUTCHours() + 9); // Convert to KST
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
+  
 
   return (
     <Modal
