@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { useHistory } from 'react-router-dom';  // Import useHistory
+import { useNavigate } from 'react-router-dom';  // Import useHistory
 
 function ResetPassword() {
   const [resetToken, setResetToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const history = useHistory();  // Initialize useHistory
+  const history = useNavigate();  // Initialize useHistory
 
   const handleResetPassword = async () => {
     try {
