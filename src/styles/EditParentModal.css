@@ -8,11 +8,13 @@
     --success: #4CAF50;
     --error: #f44336;
 }
+
 .content {
     margin: 0;
     padding: 0;
     overflow-y: auto;
 }
+
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -36,6 +38,10 @@
 }
 
 .edit-parent-modal {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-dark);
+    border-radius: 8px;
+    padding: 20px;
     overflow-y: auto;
     max-height: 80vh;
 }
@@ -48,24 +54,6 @@
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-}
-
-.actions {
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.edit-parent-modal {
-    font-family: Arial, sans-serif;
-    background-color: var(--background-dark);
-    border-radius: 8px;
-    padding: 20px;
-}
-
-.edit-child {
-    display: flex;
-    justify-content: center;
 }
 
 .input-group {
@@ -108,7 +96,8 @@
 }
 
 .save-button,
-.cancel-button {
+
+.delete-button {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -127,24 +116,39 @@
     color: var(--text-light);
 }
 
-.cancel-button {
+
+
+.delete-button:hover {
+    background-color: #e53725;
+    color: var(--text-light);
+}
+
+.delete-button {
     background-color: var(--error);
     color: var(--text-light);
 }
 
-.cancel-button:hover {
-    background-color: #e33326;
-    color: var(--text-light);
+.child-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.child-actions button {
+    margin: 0;
+    margin-left: 5px;
 }
 
 @media (max-width: 768px) {
-    .actions {
+    .actions,
+    .child-actions {
         flex-direction: column;
         align-items: flex-end;
     }
 
     .save-button,
-    .cancel-button {
+
+    .delete-button {
         width: 100%;
         margin-top: 10px;
     }

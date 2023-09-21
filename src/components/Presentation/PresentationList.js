@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { getAuthHeader, getUserRole } from "../../utils/auth";
 import UpdatePresentationModal from "./UpdatePresentationModal";
 import SendSmsModal from "../SendSmsModal"; // Adjust the path if necessary.
+import { ProgressBar } from "react-loader-spinner"; // Import the spinner
 
 
 const PresentationList = () => {
@@ -13,6 +14,7 @@ const PresentationList = () => {
   const [selectedPresentationId, setSelectedPresentationId] = useState(null);
   const [isSmsModalOpen, setSmsModalOpen] = useState(false);
   const [currentPhoneNumbers, setCurrentPhoneNumbers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleEdit = (presentationId) => {
     setSelectedPresentationId(presentationId);
@@ -33,19 +35,22 @@ const PresentationList = () => {
 };
 
 
-  const fetchPresentations = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/presentations/presentations`,
-        {
-          headers: getAuthHeader(),
-        }
-      );
-      setPresentations(response.data);
-    } catch (error) {
-      toast.error("Error fetching presentations.");
-    }
-  };
+const fetchPresentations = async () => {
+  try {
+    setIsLoading(true); // Begin loading
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/api/presentations/presentations`,
+      {
+        headers: getAuthHeader(),
+      }
+    );
+    setPresentations(response.data);
+    setIsLoading(false); // End loading
+  } catch (error) {
+    toast.error("Error fetching presentations.");
+    setIsLoading(false); // End loading on error as well
+  }
+};
 
   useEffect(() => {
     fetchPresentations();
@@ -83,8 +88,20 @@ const PresentationList = () => {
   };
 
   return (
-    <div>
-      <h2>Presentation List</h2>
+     <div>
+    <h2>Presentation List</h2>
+    {isLoading ? (
+      // Display the ProgressBar when loading
+      <div style={{ textAlign: "center", margin: "2rem 0" }}>
+        <ProgressBar
+          color="#00BFFF"
+          height={100}
+          width={100}
+        />
+      </div>
+    ) : (
+      <>
+      
       <table>
         <thead>
           <tr>
@@ -139,6 +156,8 @@ const PresentationList = () => {
         onRequestClose={() => setSmsModalOpen(false)}
         phoneNumbers={currentPhoneNumbers}
       />
+            </>
+    )}
     </div>
   );
 };

@@ -94,6 +94,11 @@ function BookPresentationModal({
     }
   };
 
+  useEffect(() => {
+    setPresentations(initialPresentations);
+ }, [initialPresentations]);
+ 
+
   return (
     <div className="book-presentation-modal-new">
       <div className="modal-header-new">
