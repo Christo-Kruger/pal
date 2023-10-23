@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import { DataGrid } from "@mui/x-data-grid";
 import "react-toastify/dist/ReactToastify.css";
 import { getAuthHeader, getUserRole } from "../../utils/auth";
 import UpdatePresentationModal from "./UpdatePresentationModal";
-import SendSmsModal from "../SendSmsModal"; // Adjust the path if necessary.
-import { ProgressBar } from "react-loader-spinner"; // Import the spinner
+import SendSmsModal from "../SendSmsModal"; 
+import { ProgressBar } from "react-loader-spinner";
 
 
 const PresentationList = () => {
@@ -87,64 +88,61 @@ const fetchPresentations = async () => {
     return `${totalAttendees}/${maxCapacity}`;
   };
 
+  
+  const rows = presentations.flatMap(presentation =>
+    presentation.timeSlots.map((timeSlot) => ({
+      id: timeSlot._id,
+      name: presentation.name,
+      location: presentation.location,
+      campus: presentation.campus,
+      date: new Date(presentation.date).toLocaleDateString(),
+      startTime: new Date(timeSlot.startTime).toLocaleTimeString(),
+      endTime: new Date(timeSlot.endTime).toLocaleTimeString(),
+      attendees: calculateAttendeesInfo(timeSlot),
+      presentationId: presentation._id
+    }))
+  );
+
+  const columns = [
+    { field: "name", headerName: "Name", width: 150 },
+    { field: "location", headerName: "Location", width: 150 },
+    { field: "campus", headerName: "Campus", width: 150 },
+    { field: "date", headerName: "Date", width: 150 },
+    { field: "startTime", headerName: "Start Time", width: 150 },
+    { field: "endTime", headerName: "End Time", width: 150 },
+    { field: "attendees", headerName: "Attendees", width: 150 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 350,
+      renderCell: (params) => (
+        <>
+          <button onClick={() => handleDelete(params.row.presentationId)}>
+            Delete
+          </button>
+          <button onClick={() => handleEdit(params.row.presentationId)}>
+            Edit
+          </button>
+          <button onClick={() => handleSendSMS(params.row.presentationId)}>
+            Send SMS
+          </button>
+        </>
+      ),
+    },
+  ];
+
   return (
-     <div>
-    <h2>Presentation List</h2>
-    {isLoading ? (
-      // Display the ProgressBar when loading
-      <div style={{ textAlign: "center", margin: "2rem 0" }}>
-        <ProgressBar
-          color="#00BFFF"
-          height={100}
-          width={100}
-        />
-      </div>
-    ) : (
-      <>
-      
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Location</th>
-            <th>Campus</th>
-            <th>Date</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Attendees</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {presentations.map((presentation) => (
-            <React.Fragment key={presentation._id}>
-              {presentation.timeSlots &&
-                presentation.timeSlots.map((timeSlot) => (
-                  <tr key={timeSlot._id}>
-                    <td>{presentation.name}</td>
-                    <td>{presentation.location}</td>
-                    <td>{presentation.campus}</td>
-                    <td>{new Date(presentation.date).toLocaleDateString()}</td>
-                    <td>{new Date(timeSlot.startTime).toLocaleTimeString()}</td>
-                    <td>{new Date(timeSlot.endTime).toLocaleTimeString()}</td>
-                    <td>{calculateAttendeesInfo(timeSlot)}</td>
-                    <td>
-                      <button onClick={() => handleDelete(presentation._id)}>
-                        Delete
-                      </button>
-                      <button onClick={() => handleEdit(presentation._id)}>
-                        Edit
-                      </button>
-                      <button onClick={() => handleSendSMS(presentation._id)}>
-                        Send SMS
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
+    <div>
+      <h2>Presentation List</h2>
+      {isLoading ? (
+        <div style={{ textAlign: "center", margin: "2rem 0" }}>
+          <ProgressBar color="#00BFFF" height={100} width={100} />
+        </div>
+      ) : (
+        <div style={{ height: 600, width: "100%" }}>
+          <DataGrid rows={rows} columns={columns} pageSize={5} />
+        </div>
+      )}
       <UpdatePresentationModal
         presentationId={selectedPresentationId}
         isOpen={isModalOpen}
@@ -156,8 +154,6 @@ const fetchPresentations = async () => {
         onRequestClose={() => setSmsModalOpen(false)}
         phoneNumbers={currentPhoneNumbers}
       />
-            </>
-    )}
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { getAuthHeader} from "../../utils/auth";
+import { DataGrid } from "@mui/x-data-grid";
+import { getAuthHeader } from "../../utils/auth";
 import SendSmsModal from "../../components/SendSmsModal";
 
 const BookingList = () => {
@@ -117,73 +118,114 @@ const BookingList = () => {
         fetchBookings();
       }, [userCampus, userRole]);
 
-  return (
-    <div>
-              <SendSmsModal
-        key={smsMode}
-        isOpen={smsMode}
-        onRequestClose={() => {
-          setSmsMode(false);
-          setSelectedPhoneNumbers([]);  // Add these two lines
-          setSelectedAttendees([]);  // to clear the selected phone numbers and attendees
-        }}
-        phoneNumber={
-          selectedPhoneNumbers.length > 0 ? selectedPhoneNumbers[0] : ""
+      const columns = [
+        {
+          field: 'childName',
+          headerName: 'Child',
+          width: 150,
+          valueGetter: (params) => params.row.child?.name
+        },
+        {
+          field: 'testGrade',
+          headerName: 'Test Grade',
+          width: 120,
+          valueGetter: (params) => params.row.child?.testGrade
+        },
+        {
+          field: 'dob',
+          headerName: 'DOB',
+          width: 120,
+          valueGetter: (params) => params.row.child ? new Date(params.row.child.dateOfBirth).toLocaleDateString() : ""
+        },
+        {
+          field: 'gender',
+          headerName: 'Gender',
+          width: 100,
+          valueGetter: (params) => params.row.child?.gender
+        },
+        {
+          field: 'campus',
+          headerName: 'Campus',
+          width: 130,
+          valueGetter: (params) => params.row.testSlot?.campus
+        },
+        {
+          field: 'testSlot',
+          headerName: 'Test Slot',
+          width: 200,
+          valueGetter: (params) => params.row.testSlot ? `${params.row.testSlot.startTime} - ${params.row.testSlot.endTime}` : ""
+        },
+        {
+          field: 'date',
+          headerName: 'Date',
+          width: 120,
+          valueGetter: (params) => params.row.testSlot ? new Date(params.row.testSlot.date).toLocaleDateString() : ""
+        },
+        {
+          field: 'parentPhone',
+          headerName: 'Parent Number',
+          width: 150,
+          valueGetter: (params) => params.row.parent?.phone
+        },
+        {
+          field: 'actions',
+          headerName: 'Actions',
+          width: 200,
+          renderCell: (params) => (
+            <select
+              onChange={(e) => handleSelectBookingChange(e, params.row)}
+            >
+              <option value="">Select an action</option>
+              <option value="cancel">Cancel</option>
+              <option value="paid">Paid</option>
+              <option value="sms">Send SMS</option>
+            </select>
+          )
+        },
+        {
+          field: 'paid',
+          headerName: 'Paid',
+          width: 90,
+          valueGetter: (params) => params.row.paid ? "Yes" : "No"
         }
-        phoneNumbers={[
-          ...selectedPhoneNumbers,
-          ...selectedAttendees.map((attendee) => attendee.phone),
-        ]}
-      />
-      <h2>Booking List</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Child</th>
-            <th>Test Grade</th>
-            <th>DOB</th>
-            <th>Gender</th>
-            <th>Campus</th>
-            <th>Test Slot</th>
-            <th>Date</th>
-            <th>Parent Number</th>
-            <th>Actions</th>
-            <th>Paid</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bookings.map((booking) => (
-            <tr key={booking._id}>
-              <td>{booking.child && booking.child.name}</td>
-              <td>{booking.child && booking.child.testGrade}</td>
-              <td>{booking.child && new Date(booking.child.dateOfBirth).toLocaleDateString()}</td>
-              <td>{booking.child && booking.child.gender}</td>
-              <td>{booking.testSlot && booking.testSlot.campus}</td>
-              <td>
-                {booking.testSlot &&
-                  `${booking.testSlot.startTime} - ${booking.testSlot.endTime}`}
-              </td>
+      ];
+      const NoRowsOverlay = () => {
+        return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>No data</div>;
+      };
+      
+    
+      return (
+        <div>
+          <SendSmsModal
+            key={smsMode}
+            isOpen={smsMode}
+            onRequestClose={() => {
+              setSmsMode(false);
+              setSelectedPhoneNumbers([]);
+              setSelectedAttendees([]);
+            }}
+            phoneNumber={
+              selectedPhoneNumbers.length > 0 ? selectedPhoneNumbers[0] : ""
+            }
+            phoneNumbers={[
+              ...selectedPhoneNumbers,
+              ...selectedAttendees.map((attendee) => attendee.phone),
+            ]}
+          />
+          <h2>Test Takers</h2>
+          <div style={{ height: 600, width: '100%' }}>
+            <DataGrid 
+              rows={bookings} 
+              columns={columns} 
+              pageSize={10} 
+              rowsPerPageOptions={[10]}
+              noRowsOverlay={<NoRowsOverlay />}
+              getRowId={(row) => row._id}
 
-              <td>{booking.testSlot && new Date(booking.testSlot.date).toLocaleDateString()}</td>
-
-              <td>{booking.parent && booking.parent.phone}</td>
-              <td>
-              <select
-                      onChange={(e) => handleSelectBookingChange(e, booking)}
-                    >
-                      <option value="">Select an action</option>
-                      <option value="cancel">Cancel</option>
-                      <option value="paid">Paid</option>
-                      <option value="sms">Send SMS</option>
-                    </select>
-              </td>
-              <td>{booking && booking.paid ? "Yes" : "No"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-export default BookingList;
+            />
+          </div>
+        </div>
+      );
+    };
+    
+    export default BookingList;

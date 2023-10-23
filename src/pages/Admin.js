@@ -1,4 +1,16 @@
 import React, { useState, useEffect } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Drawer,
+  List,
+  ListItem,
+  IconButton,
+  ListItemText,
+} from "@material-ui/core";
+import MenuIcon from "@material-ui/icons/Menu";
 import CreatePresentationModal from "../components/Presentation/CreatePresentationModal";
 import UpdatePresentationModal from "../components/Presentation/UpdatePresentationModal";
 import PresentationList from "../components/Presentation/PresentationList";
@@ -8,13 +20,16 @@ import TestList from "../components/Test Slots/TestSlotList";
 import BookingList from "../components/Test Slots/BookingList";
 import AttendeeList from "../components/Presentation/ListOfAttendees";
 import AddAdmin from "../components/AddAdmin";
-import EditAdmins from "../components/EditAdmin";  // You'll need to import this component
-import BookingPriorityModal from "../components/Test Slots/BookingPriorityModal";
+import EditAdmins from "../components/EditAdmin"; // You'll need to import this component
+import Settings from "../components/Admin/Settings/Settings";
 import BookingCalendar from "../components/Test Slots/BookingCalendar";
 import ParentList from "../components/ParentList";
 import QRScannerModal from "../components/Admin/QRScannerModal";
-import "../styles/Admin.css";
+import CreateGroup from "../components/Admin/Group Creatation/CreateGroup";
+import Groups from "../components/Admin/Group Creatation/Groups";
+import ParentChildList from "../components/Admin/Group Creatation/ParentChildList";
 
+import "../styles/Admin.css";
 
 const Admin = () => {
   const [selectedPresentationId, setSelectedPresentationId] = useState(null);
@@ -22,12 +37,11 @@ const Admin = () => {
   const [activeComponent, setActiveComponent] = useState(null);
   const [showCalendar, setShowCalendar] = useState(true);
   const [userRole, setUserRole] = useState("");
-
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
- 
 
   useEffect(() => {
-    const role = localStorage.getItem('userRole');
+    const role = localStorage.getItem("userRole");
     if (role) {
       setUserRole(role);
     }
@@ -45,31 +59,42 @@ const Admin = () => {
     setActiveComponent(component);
   };
 
-const handleCreatePresentationOpen = () => {
+  const handleCreatePresentationOpen = () => {
     setActiveComponentAndHideCalendar("createPresentation");
-};
+  };
+  const handleDrawerToggle = () => {
+    setDrawerOpen((prev) => !prev);
+  };
 
-const handleCreateBookingPriorityOpen = () => {
-    setActiveComponentAndHideCalendar("createBookingPriority");
-};
+  const handleShowCreateGroup = () => {
+    setActiveComponentAndHideCalendar("createGroup");
+  };
 
-const handleBookingListOpen = () => {
-    setActiveComponentAndHideCalendar("bookingList");
-};
+  const handleShowGroups = () => {
+    setActiveComponentAndHideCalendar("viewGroups");
+  }
 
-const handleCreateTestOpen = () => {
+  const handleShowParentChild = () =>{
+    setActiveComponentAndHideCalendar("parentChildList");
+  }
+
+  const handleSettings = () => {
+    setActiveComponentAndHideCalendar("settings");
+  };
+
+  const handleCreateTestOpen = () => {
     setActiveComponentAndHideCalendar("createTest");
-};
+  };
 
-const handleEditPresentation = (presentationId) => {
+  const handleEditPresentation = (presentationId) => {
     setSelectedPresentationId(presentationId);
     setActiveComponentAndHideCalendar("updatePresentation");
-};
+  };
 
-const handleEditTest = (testId) => {
+  const handleEditTest = (testId) => {
     setSelectedTestId(testId);
     setActiveComponentAndHideCalendar("updateTest");
-};
+  };
 
   const handleModalClose = () => {
     setActiveComponent(null);
@@ -80,31 +105,30 @@ const handleEditTest = (testId) => {
     setActiveComponentAndHideCalendar("QRScanner");
   };
 
-  
   const handleShowPresentationList = () => {
     setActiveComponentAndHideCalendar("presentationList");
   };
-  
+
   const handleShowTestList = () => {
     setActiveComponentAndHideCalendar("testList");
   };
-  
+
   const handleShowBookingList = () => {
     setActiveComponentAndHideCalendar("bookingList");
   };
-  
+
   const handleShowAttendeeList = () => {
     setActiveComponentAndHideCalendar("attendeeList");
   };
-  
+
   const handleShowParentList = () => {
     setActiveComponentAndHideCalendar("viewParents");
   };
-  
+
   const handleShowAddAdmin = () => {
     setActiveComponentAndHideCalendar("addAdmin");
   };
-  
+
   const handleShowEditAdmins = () => {
     setActiveComponentAndHideCalendar("editAdmins");
   };
@@ -113,64 +137,171 @@ const handleEditTest = (testId) => {
     setIsQRScannerOpen(false);
     setActiveComponent(null);
   };
-  
 
   return (
     <div className="admin-dashboard">
-      <h1>Admin Dashboard</h1>
-      <button className="nav-button" onClick={handleOpenQRScanner}>
-  Open QR Scanner
-</button>
-      
-      <div className="filter-container">
-      <button className="nav-button" onClick={toggleCalendarVisibility}>
-          {showCalendar ? "Hide Calendar" : "Show Calendar"}
-        </button>
-  
-        <button className="nav-button" onClick={handleCreateTestOpen}>
-          Create Test
-        </button>
-        <button className="nav-button" onClick={handleShowPresentationList}>
-  Presentations
-</button>
-<button className="nav-button" onClick={handleShowTestList}>
-  Tests
-</button>
-<button className="nav-button" onClick={handleShowBookingList}>
-  Test Takers
-</button>
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton edge="start" color="inherit" onClick={handleDrawerToggle}>
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" style={{ flexGrow: 1 }}>
+            Admin Dashboard
+          </Typography>
+          <Button color="inherit" onClick={handleOpenQRScanner}>
+            Open QR Scanner
+          </Button>
+        </Toolbar>
+      </AppBar>
 
-<button className="nav-button" onClick={handleShowAttendeeList}>
-  Attendees
-</button>
-<button className="nav-button" onClick={handleShowParentList}>
-  Parents
-</button>
-        <button className="nav-button" onClick={handleCreateBookingPriorityOpen}>
-        Set Booking Priority Times
-      </button>
-      {userRole === "superadmin" && (
-          <>
-            <button className="nav-button" onClick={handleCreatePresentationOpen}>
-              Create Presentation
-            </button>
-            <button className="nav-button" onClick={handleShowAddAdmin}>
-  Add Admin
-</button>
-<button className="nav-button" onClick={handleShowEditAdmins}>
-  View/Edit Admins
-</button>
+      <Drawer anchor="left" open={drawerOpen} onClose={handleDrawerToggle}>
+        <List>
+          {/* Calendar Operations */}
+          <ListItem
+            button
+            onClick={() => {
+              toggleCalendarVisibility();
+              handleDrawerToggle();
+            }}
+          >
+            <ListItemText
+              primary={showCalendar ? "Hide Calendar" : "Show Calendar"}
+            />
+          </ListItem>
 
-          </>
-        )}
-      </div>
+          {/* Test Operations */}
+          <ListItem
+            button
+            onClick={() => {
+              handleCreateTestOpen();
+              handleDrawerToggle();
+            }}
+          >
+            <ListItemText primary="Create Test" />
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              handleShowTestList();
+              handleDrawerToggle();
+            }}
+          >
+            <ListItemText primary="Tests" />
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              handleShowBookingList();
+              handleDrawerToggle();
+            }}
+          >
+            <ListItemText primary="Test Takers" />
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              handleSettings();
+              handleDrawerToggle();
+            }}
+          >
+            <ListItemText primary="Settings" />
+          </ListItem>
 
-        {showCalendar && <BookingCalendar />}
+          {/* Presentation Operations */}
+          <ListItem
+            button
+            onClick={() => {
+              handleCreatePresentationOpen();
+              handleDrawerToggle();
+            }}
+          >
+            <ListItemText primary="Create Presentation" />
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              handleShowPresentationList();
+              handleDrawerToggle();
+            }}
+          >
+            <ListItemText primary="Presentations" />
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              handleShowAttendeeList();
+              handleDrawerToggle();
+            }}
+          >
+            <ListItemText primary="Attendees" />
+          </ListItem>
 
-      
-      {activeComponent === "createBookingPriority" && (
-        <BookingPriorityModal isOpen={true} onRequestClose={handleModalClose} />
-      )}
+          {/* Miscellaneous */}
+          <ListItem
+            button
+            onClick={() => {
+              handleShowParentList();
+              handleDrawerToggle();
+            }}
+          >
+            <ListItemText primary="Parents" />
+          </ListItem>
+
+          {/* Admin Operations */}
+          {userRole === "superadmin" && (
+            <>
+              <ListItem
+                button
+                onClick={() => {
+                  handleShowAddAdmin();
+                  handleDrawerToggle();
+                }}
+              >
+                <ListItemText primary="Add Admin" />
+              </ListItem>
+              <ListItem
+                button
+                onClick={() => {
+                  handleShowEditAdmins();
+                  handleDrawerToggle();
+                }}
+              >
+                <ListItemText primary="View/Edit Admins" />
+              </ListItem>
+
+              <ListItem
+                button
+                onClick={() => {
+                  handleShowCreateGroup();
+                  handleDrawerToggle();
+                }}
+              >
+                <ListItemText primary="Create Groups" />
+              </ListItem>
+              <ListItem
+                button
+                onClick={() => {
+                  handleShowGroups();
+                  handleDrawerToggle();
+                }}
+              >
+                <ListItemText primary="View Groups" />
+              </ListItem>
+              <ListItem
+                button
+                onClick={() => {
+                  handleShowParentChild();
+                  handleDrawerToggle();
+                }}
+              >
+                <ListItemText primary="View Parent Child" />
+              </ListItem>
+            </>
+          )}
+        </List>
+      </Drawer>
+
+      {showCalendar && <BookingCalendar />}
 
       {activeComponent === "createPresentation" && (
         <CreatePresentationModal
@@ -204,7 +335,16 @@ const handleEditTest = (testId) => {
       {activeComponent === "addAdmin" && <AddAdmin />}
       {activeComponent === "editAdmins" && <EditAdmins />}
       {activeComponent === "viewParents" && <ParentList />}
-      <QRScannerModal isOpen={activeComponent === "QRScanner"} onRequestClose={handleCloseQRScanner} />
+      {activeComponent === "createGroup" && <CreateGroup />}
+      {activeComponent === "viewGroups" && <Groups />}
+      {activeComponent === "parentChildList" && <ParentChildList />}
+      {activeComponent === "settings" && <Settings />}
+
+
+      <QRScannerModal
+        isOpen={activeComponent === "QRScanner"}
+        onRequestClose={handleCloseQRScanner}
+      />
     </div>
   );
 };

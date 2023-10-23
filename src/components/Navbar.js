@@ -155,8 +155,8 @@ const Navbar = () => {
             {userName}님, 안녕하세요
           </div>
           <Link to="/parent" style={styles.sidebarLink} onClick={() => setIsSidebarOpen(false)}>
-  예약 정보
-</Link>
+            예약 정보
+          </Link>
           <Link to="/update-child" style={styles.sidebarLink}>
             등록학생정보
           </Link>

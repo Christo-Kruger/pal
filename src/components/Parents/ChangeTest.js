@@ -8,7 +8,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import {
-  getAuthHeader,
+  getUserId,
   getUserRole,
   getAttendedPresentation,
 } from "../../utils/auth";
@@ -16,7 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 import MyTestBooking from "../Parents/MyTestBooking";
 
 
-const TimeSlotList = ({ onClose, childData }) => {
+const ChangeTest = ({ onClose, childData, bookingId }) => {
   const userCampus = localStorage.getItem("userCampus");
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -26,6 +26,8 @@ const TimeSlotList = ({ onClose, childData }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [groupIsEligible, setGroupIsEligible] = useState(true);
+  const child = childData
+
 
   useEffect(() => {
     if (bookings.length > 0) {
@@ -40,10 +42,8 @@ const TimeSlotList = ({ onClose, childData }) => {
     if (childData) fetchTimeSlots(childData);
   }, [childData]);
 
-  const handleBook = async (timeSlot) => {
-    handleBookSlot(timeSlot.testSlotId, timeSlot._id, childData._id);
-  };
 
+  
   const determineUserEligibility = () => {
     const userRole = getUserRole();
     const attendedPresentation = getAttendedPresentation();
@@ -65,10 +65,11 @@ const TimeSlotList = ({ onClose, childData }) => {
   };
 
   const handleConfirmBook = () => {
-    handleBook(selectedSlot);
+    if (selectedSlot) {
+      updateBooking(selectedSlot.testSlotId, selectedSlot._id);
+    }
     handleCloseDialog();
   };
-
   const fetchTimeSlots = async (childData) => {
     // Log
     console.log("Fetching time slots with parameters:", {
@@ -110,35 +111,34 @@ const TimeSlotList = ({ onClose, childData }) => {
     }
   };
   
-  
-  const handleBookSlot = async (testSlotId, timeSlotId, childId) => {
-    if (!isEligibleForBooking) {
-      toast.error("지금은 예약할 수 없습니다.");
-      return;
-    }
+  const updateBooking = async (testSlotId, timeSlotId) => {
     try {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
-      const headersObj = getAuthHeader();
-      const response = await axios.post(
-        `${backendURL}/api/bookings`,
-        { testSlotId, timeSlotId, childId },
-        headersObj
-      );
-      if (response.data && response.data.booking) {
-        if (response.data.smsSent) {
-          toast.success("예약이 성공적으로 완료되었습니다! SMS가 전송되었습니다.");
-        } else {
-          toast.warn("예약이 성공적으로 완료되었습니다! However, SMS sending failed.");
+      const user = getUserId();
+
+  
+      const response = await axios.patch(
+        `${backendURL}/api/bookings/${bookingId}`,
+        {
+          testSlotId,
+          timeSlotId,
+          user,
+        },
+        {
+  
         }
-        onClose();
-      } else {
-        toast.error("예약에 실패했습니다. 나중에 다시 시도하세요.");
-      }
+      );
+      toast.success('Booking updated successfully.');
+      onClose();  // Close the modal or navigate to another page
     } catch (error) {
-      console.error(error);
+      console.error('Error updating booking:', error.response?.data || error);
+      toast.error('Error updating booking.');
     }
   };
+  
+ 
 
+  
   const uniqueDates = [
     ...new Set(
       timeSlots.map((slot) => new Date(slot.date).toLocaleDateString())
@@ -152,15 +152,15 @@ const TimeSlotList = ({ onClose, childData }) => {
     <div className="time-slot-list">
       {childHasBooking ? <MyTestBooking /> : null}
       <div className="child-data" style={{ background: "#eeeeee", display: "flex", justifyContent: "space-between" }}>
-        <p>아동 이름: {childData.name}</p>
-        <p>아동 학년: {childData.testGrade}</p>
+        <p>아동 이름: {child.name}</p>
+        <p>아동 학년: {child.testGrade}</p>
       </div>
       <div className="date-selector">
         <select
           onChange={(e) => setSelectedDate(e.target.value)}
           value={selectedDate}
         >
-          <option value="" disabled>
+          <option value="">
             Select a date
           </option>
           {uniqueDates.map((date) => (
@@ -210,4 +210,4 @@ const TimeSlotList = ({ onClose, childData }) => {
   );
 }
   
-export default TimeSlotList;
+export default ChangeTest;

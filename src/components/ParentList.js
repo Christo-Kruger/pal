@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import EditParentModal from './EditParentModal';
 import { ProgressBar } from "react-loader-spinner";
+import { DataGrid } from "@mui/x-data-grid";
 
 
 function ParentList() {
@@ -48,75 +49,67 @@ function ParentList() {
 ? parents.filter(parent => parent.children.some(child => child?.name?.includes(searchTerm)))
 : [];
 
-  return (
-    <div>
-    <h2>Parent List</h2>
+const rows = filteredParents.map(parent => ({
+  id: parent._id,
+  email: parent.email,
+  phone: parent.phone,
+  campus: parent.campus,
+  childrenNames: parent.children.map(child => child.name).join(', '),
+  testGrades: parent.children.map(child => child.testGrade).join(', '),
+}));
 
+const columns = [
+  { field: "email", headerName: "Email", width: 200 },
+  { field: "phone", headerName: "Phone", width: 150 },
+  { field: "campus", headerName: "Campus", width: 150 },
+  { field: "childrenNames", headerName: "Children's Names", width: 250 },
+  { field: "testGrades", headerName: "Test Grades", width: 250 },
+  {
+    field: "action",
+    headerName: "Action",
+    width: 150,
+    renderCell: (params) => (
+      <button onClick={() => {
+        const parentToEdit = filteredParents.find(parent => parent._id === params.id);
+        setEditingParent(parentToEdit);
+        setIsModalOpen(true);
+      }}>Edit</button>
+    ),
+  },
+];
+
+return (
+  <div>
+    <h2>Parent List</h2>
     {isLoading ? (
       <div style={{ textAlign: "center", margin: "2rem 0" }}>
-        <ProgressBar
-          color="#00BFFF"
-          height={100}
-          width={100}
-        />
+        <ProgressBar color="#00BFFF" height={100} width={100} />
       </div>
     ) : (
       <>
-
-      <div>
-        <input 
-          type="text" 
-          placeholder="Search by child name..." 
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-      
-      <table>
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Campus</th>
-            <th>Children's Names</th>
-            <th>Test Grades</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredParents.map(parent => (
-            <tr key={parent._id}>
-              <td>{parent.email}</td>
-              <td>{parent.phone}</td>
-              <td>{parent.campus}</td>
-              <td>
-                {parent.children.map(child => child.name).join(', ')}
-              </td>
-              <td>
-                {parent.children.map(child => child.testGrade).join(', ')}
-              </td>
-              <td>
-                <button onClick={() => { setEditingParent(parent); setIsModalOpen(true); }}>Edit</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {
-        editingParent && 
-        <EditParentModal 
+        <div>
+          <input 
+            type="text" 
+            placeholder="Search by child name..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div style={{ height: 600, width: '100%' }}>
+          <DataGrid rows={rows} columns={columns} pageSize={5} />
+        </div>
+        {editingParent && 
+          <EditParentModal 
             isOpen={isModalOpen} 
             onRequestClose={() => { setEditingParent(null); setIsModalOpen(false); }} 
             onParentUpdated={handleParentUpdated} 
             parent={editingParent} 
-        />
-      }
-       </>
+          />
+        }
+      </>
     )}
   </div>
-  );
-
+);
 }
 
 export default ParentList;

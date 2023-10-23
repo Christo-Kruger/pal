@@ -33,16 +33,16 @@
   margin-bottom: 20px;
 }
 
-.button-container {
-  display: flex;
+.buttons-container {
+  display: flexbox;
   justify-content: center;
   margin-bottom: 20px;
-  flex-direction: row; /* Changed from column to row */
+  flex-direction: column; /* Changed from column to row */
   gap: 20px; /* Add a gap between buttons */
   width: 90%;
 }
 
-.button-container button {
+.buttons-container button {
   font-size: 18px;
   border-radius: 5px;
   background-color: #007bff;

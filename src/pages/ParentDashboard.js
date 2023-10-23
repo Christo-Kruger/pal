@@ -1,9 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Modal from "react-modal";
-import { MdFileDownload } from "react-icons/md";
-import Book from "../components/Test Slots/Book";
-import BookPresentationModal from "../components/BookPresentationModal";
-import EditBookingModal from "../components/EditBookingModal";
 import axios from "axios";
 import {
   getUserId,
@@ -12,21 +7,19 @@ import {
   getUserCampus,
 } from "../utils/auth";
 import "./ParentDashboard.css";
-import ChangeTimeSlotModal from "../components/ChangeTimeSlotModal";
-
 import { MdError } from "react-icons/md";
-import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import ChildCard from "../components/Parents/ChildCard";
+import CircularProgress from '@mui/material/CircularProgress';
 
 function ParentDashboard() {
-  const [activeModal, setActiveModal] = useState(null);
   const [bookings, setBookings] = useState([]);
-  const [editingBooking, setEditingBooking] = useState(null);
-  const [presentations, setPresentations] = useState([]);
   const [error, setError] = useState(null);
   const [myPresentations, setMyPresentations] = useState([]);
   const [childData, setChildData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // New loading state
   const campus = getUserCampus();
+  const [qrCodeData, setQrCodeData] = useState({});
+
 
   const fetchBookings = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
@@ -90,113 +83,40 @@ function ParentDashboard() {
   };
 
   useEffect(() => {
-    fetchMyPresentations();
-  }, []);
-
-  useEffect(() => {
-    const fetchPresentations = async () => {
-      const backendURL = process.env.REACT_APP_BACKEND_URL;
-      const response = await axios.get(
-        `${backendURL}/api/presentations?campus=${campus}`,
-        getAuthHeader()
-      );
-
-      if (response.status === 200) {
-        setPresentations(response.data);
-      } else {
-        setError("Error fetching presentations");
-      }
+    const fetchData = async () => {
+      setIsLoading(true); // Set loading to true before fetching
+      await fetchMyPresentations();
+      setIsLoading(false); // Set loading to false after fetching
     };
-
-    fetchPresentations();
+    fetchData();
   }, []);
 
-  const closeModal = () => {
-    setActiveModal(null);
-    fetchMyPresentations();
-  };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("정말로 이 예약을 삭제하시겠습니까?")) {
-      const backendURL = process.env.REACT_APP_BACKEND_URL;
-      const response = await axios.delete(
-        `${backendURL}/api/bookings/${id}`,
-        getAuthHeader()
-      );
-
-      if (response.status === 200) {
-        setBookings((prevBookings) =>
-          prevBookings.filter((booking) => booking._id !== id)
-        );
-        toast.success("예약이 성공적으로 삭제되었습니다.");
-      } else {
-        toast.error("예약을 삭제하는 중에 오류가 발생했습니다.");
-      }
-    }
-  };
-
-  const handleTimeSlotChange = (presentationId) => {
-    const presentation = myPresentations.find((p) => p._id === presentationId);
-    setEditingBooking(presentation);
-    setActiveModal("changeTimeSlot");
-  };
-
-  const isEmptyState = bookings.length === 0;
-
-  const downloadQRCode = async () => {
+  const fetchQRCode = async (userId) => {
     try {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
-      const userId = getUserId();
-      const response = await fetch(`${backendURL}/api/users/${userId}/qrcode`);
-      const qrCodePDFBlob = await response.blob();
+      const response = await fetch(`${backendURL}/api/users/${userId}/qrCode`);
 
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(qrCodePDFBlob);
-      link.download = "qrcode.pdf"; // Change the file name to .pdf
-      link.click();
-
-      URL.revokeObjectURL(link.href);
-    } catch (error) {
-      console.error("Error downloading QR code PDF:", error);
-      toast.error("QR 코드 PDF를 다운로드하는 중에 오류가 발생했습니다.");
-    }
-  };
-
-  const fetchUpdatedPresentations = async () => {
-    const backendURL = process.env.REACT_APP_BACKEND_URL;
-    const response = await axios.get(
-      `${backendURL}/api/presentations?campus=${campus}`,
-      getAuthHeader()
-    );
-
-    if (response.status === 200) {
-      setPresentations(response.data);
-    } else {
-      setError("Error fetching updated presentations");
-    }
-  };
-
-  const handleCancelPresentation = async (presentationId, timeSlotIndex) => {
-    if (
-      window.confirm(
-        `설명회 예약 취소 시 최초 예약 기록은 삭제됩니다. 정말 예약 취소하시겠습니까?  
-      ★  최초 예약 기록은 테스트 후 등록 순번에 영향이 있을 수 있습니다.`
-      )
-    ) {
-      const backendURL = process.env.REACT_APP_BACKEND_URL;
-      const response = await axios.delete(
-        `${backendURL}/api/presentations/${presentationId}/attendees/${getUserId()}`,
-        getAuthHeader()
-      );
-
-      if (response.status === 200) {
-        fetchMyPresentations(); // reload presentations
-        toast.success("설명회 예약 취소가 완료되었습니다.");
-      } else {
-        toast.error("설명회 예약 취소가 정상적으로 완료되지 않았습니다. 다시 시도해주세요.");
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
+      const data = await response.json();
+      return data.qrCodeDataURL;
+    } catch (error) {
+      console.error("Failed fetching QR code:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchUserQRCode = async () => {
+      const userId = getUserId(); // Assuming the user ID is consistent with the logged-in user
+      const qrDataUrl = await fetchQRCode(userId);
+      setQrCodeData(qrDataUrl); // We directly set the data URL since only one QR is expected
+    };
+
+    fetchUserQRCode();
+  }, []);
 
   return (
     <div className="dashboard-container">
@@ -205,7 +125,6 @@ function ParentDashboard() {
           <MdError /> {error}
         </p>
       )}
-
       <h1 className="header"> J LEE 신입생 입학설명회 예약</h1>
       <h4>{campus}캠퍼스</h4>
       <div className="header-text-new">
@@ -217,141 +136,13 @@ function ParentDashboard() {
           <li>설명회 예약이 완료되면 학부모님께 예약확인 문자가 발송됩니다.</li>
         </ol>
       </div>
-      <div className="button-containerPD">
-        {/* <button
-          className="button"
-          onClick={() => setActiveModal("booking")}
-          aria-label="Book a Test"
-        >
-          시험 예약
-        </button> */}
-        <button
-          className="button"
-          onClick={() => setActiveModal("presentation")}
-          aria-label="Book Presentation"
-        >
-          신입생 설명회 예약
-        </button>
-
-        <Link to="/add-child">
-          <button className="button" aria-label="Add Child">
-            학생 추가
-          </button>
-        </Link>
-      </div>
-
-      {isEmptyState && myPresentations.length === 0 ? (
-        <p className="no-booking">
-          예약내역이 없습니다. [신입생 설명회 예약]를 클릭하여 예약을
-          진행해주세요.
-        </p>
+      {isLoading ? (
+        <CircularProgress /> // Show CircularProgress when loading
       ) : (
-        <div className="card-container">
-          {bookings.map((booking) => (
-            <div
-              key={booking._id}
-              className="booking-card"
-              style={{ backgroundColor: "#f0f0f0", border: "2px solid #ccc" }}
-            >
-              <h3>{booking.child.name}</h3>
-              <p>이전 학교: {booking.child.previousSchool}</p>
-              <p>시험등급: {booking.child.testGrade}</p>
-              <p>교정: {booking?.testSlot?.campus}</p>
-              <p>
-                날짜: {new Date(booking?.testSlot?.date).toLocaleDateString()}
-              </p>
-              <p>시간: {booking?.testSlot?.startTime}</p>
-              <div className="booking-actions">
-                <button
-                  className="button"
-                  onClick={() => handleDelete(booking._id)}
-                >
-                  취소
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {myPresentations.map((presentation) => (
-            <div
-              key={presentation._id}
-              className="presentation-card"
-              style={{ backgroundColor: "#e0f7fa", border: "2px " }}
-            >
-              <h3>{presentation.name}</h3>
-              <h4>
-                날짜:{" "}
-                {new Date(presentation.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) + " " + new Date(presentation.timeSlots[0].startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-
-              </h4>
-
-              <p>장소 : {presentation.location}</p>
-              <p>
-                학생명:
-                {presentation.childName}
-              </p>
-              <p>2024년 학년: {presentation.testGrade}</p>
-
-              <div className="booking-actions">
-                <button
-                  className="button-bookings"
-                  onClick={() => handleTimeSlotChange(presentation._id)}
-                >
-                  예약시간변경
-                </button>
-                <button
-                  className="button-bookings"
-                  onClick={() => handleCancelPresentation(presentation._id)}
-                >
-                 취소
-                </button>
-                {new Date(presentation.date) - new Date() <=
-                  2 * 24 * 60 * 60 * 1000 && (
-                  <button
-                    className="button-bookings"
-                    onClick={() => downloadQRCode()}
-                    aria-label="Download QR Code"
-                  >
-                    <MdFileDownload /> QR 다운로드
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+    
+          <ChildCard />
+      
       )}
-
-      <Modal
-        isOpen={activeModal !== null}
-        onRequestClose={closeModal}
-        contentLabel="Dynamic Modal"
-      >
-        {activeModal === "booking" && <Book closeModal={closeModal} />}
-        {activeModal === "presentation" && (
-          <BookPresentationModal
-            presentations={presentations}
-            closeModal={closeModal}
-            childData={childData}
-            onBookingCreated={fetchUpdatedPresentations}
-          />
-        )}
-        {activeModal === "editBooking" && (
-          <EditBookingModal
-            closeModal={closeModal}
-            booking={editingBooking}
-            onBookingUpdated={fetchBookings}
-          />
-        )}
-
-        {activeModal === "changeTimeSlot" && (
-          <ChangeTimeSlotModal
-            closeModal={closeModal}
-            presentationId={editingBooking._id}
-            oldSlotId={editingBooking.oldSlotId}
-            onTimeSlotChanged={fetchMyPresentations}
-          />
-        )}
-      </Modal>
     </div>
   );
 }
