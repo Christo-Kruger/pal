@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
 import {
-  getAuthHeader,
+  getUserId,
   getUserRole,
   getAttendedPresentation,
 } from "../../utils/auth";
+import { useAuth } from "../../context/AuthContext";
 import "react-toastify/dist/ReactToastify.css";
 import MyTestBooking from "../Parents/MyTestBooking";
 
-
-const TimeSlotList = ({ onClose, childData }) => {
-  const userCampus = localStorage.getItem("userCampus");
+const ChangeTest = ({ onClose, childData, bookingId, oldTimeSlot }) => {
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [isEligibleForBooking, setIsEligibleForBooking] = useState(false);
@@ -26,6 +25,8 @@ const TimeSlotList = ({ onClose, childData }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [groupIsEligible, setGroupIsEligible] = useState(true);
+  const child = childData;
+  const { token } = useAuth();
 
   useEffect(() => {
     if (bookings.length > 0) {
@@ -40,14 +41,10 @@ const TimeSlotList = ({ onClose, childData }) => {
     if (childData) fetchTimeSlots(childData);
   }, [childData]);
 
-  const handleBook = async (timeSlot) => {
-    handleBookSlot(timeSlot.testSlotId, timeSlot._id, childData._id);
-  };
-
   const determineUserEligibility = () => {
     const userRole = getUserRole();
     const attendedPresentation = getAttendedPresentation();
-    if (userRole === "parent" && attendedPresentation === true ) {
+    if (userRole === "parent" && attendedPresentation === true) {
       setIsEligibleForBooking(true);
     } else {
       setIsEligibleForBooking(false);
@@ -64,17 +61,12 @@ const TimeSlotList = ({ onClose, childData }) => {
     setSelectedSlot(null);
   };
 
-  const handleConfirmBook = () => {
-    handleBook(selectedSlot);
-    handleCloseDialog();
-  };
-
   const fetchTimeSlots = async (childData) => {
     // Log
     console.log("Fetching time slots with parameters:", {
       group: childData.group, // Check if this value is what you expect
     });
-  
+
     try {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
       const response = await axios.get(`${backendURL}/api/timeSlots`, {
@@ -85,11 +77,11 @@ const TimeSlotList = ({ onClose, childData }) => {
 
       // Check for group eligibility here
       if (response.data.length === 0) {
-        setGroupIsEligible(false);  // Set group as not eligible
+        setGroupIsEligible(false); // Set group as not eligible
       } else {
-        setGroupIsEligible(true);  // Set group as eligible
+        setGroupIsEligible(true); // Set group as eligible
       }
-    
+
       const sortedSlots = [];
       response.data.forEach((testSlot) => {
         testSlot.timeSlots.forEach((timeSlot) => {
@@ -101,7 +93,7 @@ const TimeSlotList = ({ onClose, childData }) => {
           sortedSlots.push(timeSlot);
         });
       });
-    
+
       setTimeSlots(sortedSlots);
       // Log
       console.log("Time Slots:", sortedSlots);
@@ -109,34 +101,61 @@ const TimeSlotList = ({ onClose, childData }) => {
       console.error("Error fetching time slots:", error);
     }
   };
-  
-  
-  const handleBookSlot = async (testSlotId, timeSlotId, childId) => {
-    if (!isEligibleForBooking) {
-      toast.error("지금은 예약할 수 없습니다.");
-      return;
-    }
+
+  const updateBooking = async (testSlotId, timeSlotId, oldTimeSlot) => {
+    // Initial log to make sure this function gets called
+    console.log("updateBooking called");
+
     try {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
-      const headersObj = getAuthHeader();
-      const response = await axios.post(
-        `${backendURL}/api/bookings`,
-        { testSlotId, timeSlotId, childId },
-        headersObj
+
+      // Log parameters before making the axios call
+      console.log(
+        "testSlotId:",
+        testSlotId,
+        "timeSlotId:",
+        timeSlotId,
+        "bookingId:",
+        bookingId,
+        "oldTimeSlotId:",
+        oldTimeSlot
       );
-      if (response.data && response.data.booking) {
-        if (response.data.smsSent) {
-          toast.success("예약이 성공적으로 완료되었습니다! SMS가 전송되었습니다.");
-        } else {
-          toast.warn("예약이 성공적으로 완료되었습니다! However, SMS sending failed.");
+
+      const response = await axios.patch(
+        `${backendURL}/api/bookings/${bookingId}`,
+        {
+          testSlotId,
+          timeSlotId,
+          user: getUserId(),
+          oldTimeSlot,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-        onClose();
-      } else {
-        toast.error("예약에 실패했습니다. 나중에 다시 시도하세요.");
+      );
+
+      // Log the response data
+      console.log("Response:", response.data);
+      console.log("Updated testSlot:", response.data.booking.testSlot);
+
+      toast.success("Booking updated successfully.");
+      if (typeof onClose === "function") {
+        onClose(); // Close the modal or navigate to another page
       }
     } catch (error) {
-      console.error(error);
+      // Log any caught errors
+      console.log("An error occurred:", error);
+      console.error("Error updating booking:", error.response?.data || error);
+      toast.error("Error updating booking.");
     }
+  };
+  const handleConfirmBook = () => {
+    if (selectedSlot) {
+      updateBooking(selectedSlot.testSlotId, selectedSlot._id, oldTimeSlot);
+    }
+    handleCloseDialog();
   };
 
   const uniqueDates = [
@@ -151,18 +170,23 @@ const TimeSlotList = ({ onClose, childData }) => {
   return (
     <div className="time-slot-list">
       {childHasBooking ? <MyTestBooking /> : null}
-      <div className="child-data" style={{ background: "#eeeeee", display: "flex", justifyContent: "space-between" }}>
-        <p>아동 이름: {childData.name}</p>
-        <p>아동 학년: {childData.testGrade}</p>
+      <div
+        className="child-data"
+        style={{
+          background: "#eeeeee",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <p>아동 이름: {child.name}</p>
+        <p>아동 학년: {child.testGrade}</p>
       </div>
       <div className="date-selector">
         <select
           onChange={(e) => setSelectedDate(e.target.value)}
           value={selectedDate}
         >
-          <option value="" disabled>
-            Select a date
-          </option>
+          <option value="">Select a date</option>
           {uniqueDates.map((date) => (
             <option key={date} value={date}>
               {date}
@@ -194,9 +218,13 @@ const TimeSlotList = ({ onClose, childData }) => {
                 key={slot._id}
                 className="book-button"
                 onClick={() => handleOpenDialog(slot)}
-                disabled={!isEligibleForBooking || slot.status === 'Fully Booked'}
+                disabled={
+                  !isEligibleForBooking || slot.status === "Fully Booked"
+                }
               >
-                {slot.status === 'Fully Booked' ? 'Fully Booked' : slot.startTime}
+                {slot.status === "Fully Booked"
+                  ? "Fully Booked"
+                  : slot.startTime}
               </button>
             ))
           ) : (
@@ -208,6 +236,6 @@ const TimeSlotList = ({ onClose, childData }) => {
       </div>
     </div>
   );
-}
-  
-export default TimeSlotList;
+};
+
+export default ChangeTest;

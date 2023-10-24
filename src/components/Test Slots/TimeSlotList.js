@@ -160,7 +160,7 @@ const TimeSlotList = ({ onClose, childData }) => {
           onChange={(e) => setSelectedDate(e.target.value)}
           value={selectedDate}
         >
-          <option value="" disabled>
+          <option value="">
             Select a date
           </option>
           {uniqueDates.map((date) => (

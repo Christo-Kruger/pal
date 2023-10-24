@@ -24,7 +24,7 @@ function HomePage() {
           <h1>J LEE 신입생 설명회 예약</h1>
           <h5>회원가입 후 예약을 진행하여 주시기 바랍니다</h5>
         </div>
-        <div className="button-container">
+        <div className="buttons-container">
           <button className="login-button" onClick={handleLogin}>
             로그인
           </button>

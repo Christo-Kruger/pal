@@ -15,6 +15,7 @@ import AddChild from '../src/components/Parents/AddChild';
 import UpdateDetail from '../src/components/Parents/UpdateDetail';
 import UpdateChild from '../src/components/Parents/UpdateChild';
 import ChangePassword from '../src/pages/ChangePassword'
+
 ;
 
 function App() {

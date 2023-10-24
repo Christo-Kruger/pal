@@ -3,12 +3,14 @@ import axios from "axios";
 import SendSmsModal from "../SendSmsModal";
 import { toast } from "react-toastify";
 import { getAuthHeader } from "../../utils/auth";
-import {  ProgressBar } from "react-loader-spinner"; // Import the spinner
+import { ProgressBar } from "react-loader-spinner";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AttendeeList = () => {
-  const [presentations, setPresentations] = useState([]);
   const [isSmsModalOpen, setIsSmsModalOpen] = useState(false);
   const [selectedPhoneNumber, setSelectedPhoneNumber] = useState(null);
   const [checkedAttendees, setCheckedAttendees] = useState({});
@@ -16,7 +18,6 @@ const AttendeeList = () => {
   const userRole = localStorage.getItem("userRole");
   const [attendees, setAttendees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState({ criteria: 'date', order: 'desc' });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +38,7 @@ const AttendeeList = () => {
           );
 
           setAttendees(filteredAttendees);
-          console.log("Filtered Attendees:", filteredAttendees);
+       
 
           // Initialize checkedAttendees state
           const initialCheckedAttendees = {};
@@ -63,6 +64,43 @@ const AttendeeList = () => {
     };
   }, []);
 
+  const filteredRows = attendees
+    .filter((attendee) => {
+      if (!searchTerm) return true;
+      return (
+        attendee.phone.includes(searchTerm) ||
+        attendee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        attendee.childName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    })
+    .map((attendee, index) => ({
+      id: index + 1,
+      _id: attendee._id,
+      name: attendee.name,
+      email: attendee.email,
+      phone: attendee.phone,
+      campus: attendee.campus,
+      childName: attendee.childName,
+      dateOfBirth: new Date(attendee.dateOfBirth).toLocaleDateString("en-US", {
+        month: "2-digit",
+        day: "2-digit",
+        year: "numeric",
+      }),
+      childGender: attendee.childGender,
+      previousSchool: attendee.previousSchool,
+      childTestGrade: attendee.childTestGrade,
+      presentationName: attendee.presentationName,
+      startTime: new Date(attendee.startTime).toLocaleTimeString(),
+      bookedAt:
+        new Date(attendee.bookedAt).toLocaleDateString("en-US", {
+          month: "2-digit",
+          day: "2-digit",
+          year: "numeric",
+        }) +
+        " " +
+        new Date(attendee.bookedAt).toLocaleTimeString(),
+    }));
+    
   const initializeCheckedAttendees = (filteredPresentations) => {
     const initialCheckedAttendees = {};
     filteredPresentations.forEach((presentation) => {
@@ -124,11 +162,6 @@ const AttendeeList = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleSortChange = (event) => {
-    const [criteria, order] = event.target.value.split("-");
-    setSortBy({ criteria, order });
-  };
-
   const markAttended = async (userId, isChecked) => {
     try {
       const response = await axios.patch(
@@ -155,27 +188,69 @@ const AttendeeList = () => {
       [userId]: !isChecked,
     }));
   };
+
+
+  const columns = [
+    { field: "id", headerName: "No.", width: 70 },
+    { field: "name", headerName: "Parent", width: 130 },
+    { field: "email", headerName: "Email", width: 200 },
+    { field: "phone", headerName: "Phone Number", width: 150 },
+    { field: "campus", headerName: "Campus", width: 130 },
+    { field: "childName", headerName: "Child Name", width: 150 },
+    { field: "dateOfBirth", headerName: "DOB", width: 130 },
+    { field: "childGender", headerName: "Gender", width: 120 },
+    { field: "previousSchool", headerName: "School", width: 150 },
+    { field: "childTestGrade", headerName: "Grade", width: 120 },
+    { field: "presentationName", headerName: "Presentation", width: 150 },
+    { field: "startTime", headerName: "Booked Time", width: 150 },
+    { field: "bookedAt", headerName: "Booking Created", width: 180 },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 150,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => openSmsModal(params.row.phone)}
+        >
+          Send SMS
+        </Button>
+      ),
+    },
+    {
+      field: "attendance",
+      headerName: "Attendance",
+      width: 150,
+      renderCell: (params) => (
+        <input
+          type="checkbox"
+          checked={checkedAttendees[params.row._id] || false}
+          onChange={(e) => handleCheckboxChange(e, params.row._id)}
+        />
+      ),
+    },
+  ];
+
   return (
-    <div className="attendee-list">
+    <div className="attendee-list" style={{ marginTop: "2rem" }}>
       <button onClick={handleExport}>Export to Excel</button>
-  
-      <input
-        type="text"
-        placeholder="Search by Phone, Name or Child Name"
+      <TextField
+        label="Search"
+        variant="outlined"
         value={searchTerm}
         onChange={handleSearchChange}
+        style={{ marginBottom: "20px", width: "300px" }}
+        InputProps={{
+          style: { padding: "10px" },
+        }}
+        InputLabelProps={{
+          shrink: true,
+        }}
       />
-      <select
-        value={`${sortBy.criteria}-${sortBy.order}`}
-        onChange={handleSortChange}
-      >
-        <option value="">Sort by</option>
-        <option value="date-asc">Date Ascending</option>
-        <option value="date-desc">Date Descending</option>
-      </select>
-  
+
       {isLoading ? (
-        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+        <div style={{ textAlign: "center", marginTop: "2rem" }}>
           <ProgressBar
             type="ThreeDots"
             color="#00BFFF"
@@ -184,78 +259,18 @@ const AttendeeList = () => {
           />
         </div>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>No.</th>
-              <th>Parent</th>
-              <th>Email</th>
-              <th>Phone Number</th>
-              <th>Campus</th>
-              <th>Child Name</th>
-              <th>DOB</th>
-              <th>Gender</th>
-              <th>School</th>
-              <th>Grade</th>
-              <th>Presentation</th>
-              <th>Booked Time</th>
-              <th>Booking Created</th>
-              <th>Action</th>
-              <th>Attendance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {attendees &&
-              attendees
-                .filter((attendee) => {
-                  if (!searchTerm) return true;
-                  return (
-                    attendee.phone.includes(searchTerm) ||
-                    attendee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    attendee.childName.toLowerCase().includes(searchTerm.toLowerCase())
-                  );
-                })
-                .sort((a, b) => {
-                  if (sortBy.criteria === "date") {
-                    return sortBy.order === "asc"
-                      ? new Date(a.bookedAt) - new Date(b.bookedAt)
-                      : new Date(b.bookedAt) - new Date(a.bookedAt);
-                  }
-                  // Additional sorting criteria can be added here
-                  return 0;
-                })
-                .map((attendee, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{attendee.name}</td>
-                    <td>{attendee.email}</td>
-                    <td>{attendee.phone}</td>
-                    <td>{attendee.campus}</td>
-                    <td>{attendee.childName}</td>
-                    <td>{new Date(attendee.dateOfBirth).toLocaleDateString()}</td>
-                    <td>{attendee.childGender}</td>
-                    <td>{attendee.previousSchool}</td>
-                    <td>{attendee.childTestGrade}</td>
-                    <td>{attendee.presentationName}</td>
-                    <td>{new Date(attendee.startTime).toLocaleTimeString()}</td>
-                    <td>{new Date(attendee.bookedAt).toLocaleString()}</td>
-                    <td>
-                      <button onClick={() => openSmsModal(attendee.phone)}>Send SMS</button>
-                    </td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        checked={checkedAttendees[attendee._id] || false}
-                        onChange={(e) => handleCheckboxChange(e, attendee._id)}
-                      />
-                    </td>
-                  </tr>
-                ))
-            }
-          </tbody>
-        </table>
+        <div style={{ height: 600, width: "100%" }}>
+          <DataGrid
+            rows={filteredRows}
+            columns={columns}
+            pageSize={10}
+            components={{
+              Toolbar: GridToolbar,
+            }}
+          />
+        </div>
       )}
-  
+
       <SendSmsModal
         isOpen={isSmsModalOpen}
         onRequestClose={closeSmsModal}
@@ -263,7 +278,6 @@ const AttendeeList = () => {
       />
     </div>
   );
-  
 };
 
 export default AttendeeList;

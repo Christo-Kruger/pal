@@ -11,7 +11,7 @@ export function getUserRole() {
 
   try {
     const decodedToken = jwtDecode(token);
-    console.log(decodedToken)
+   
     return decodedToken.role; // Access the 'role' property from the decoded token
   } catch (error) {
     console.error('Error decoding token', error);
@@ -42,7 +42,7 @@ export function getAttendedPresentation() {
 
   try {
     const decodedToken = jwtDecode(token);
-    console.log(decodedToken)
+    
     return decodedToken.attendedPresentation; // Access the 'attendedPresentation' property from the decoded token
   } catch (error) {
     console.error('Error decoding token', error);
@@ -124,7 +124,7 @@ export function getUserCampus() {
 
   try {
     const decodedToken = jwtDecode(token);
-    console.log(decodedToken); // log the entire decoded token
+  
     return decodedToken.campus; 
   } catch (error) {
     console.error('Error decoding token', error);
@@ -148,3 +148,6 @@ export function getUserEmail() {
     return null;
   }
 }
+
+//Get Child ageGroup
+

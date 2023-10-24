@@ -1,4 +1,7 @@
 /* TestSlotList.css */
+.more-ages:hover {
+  cursor: pointer;
+}
 
 /* Style for the table */
 table {

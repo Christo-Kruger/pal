@@ -1,26 +1,38 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { getAuthHeader, getUserId } from "../utils/auth";
 import { toast } from "react-toastify";
 import moment from "moment";
-import { MdDateRange, MdPlace, MdAccessTime } from "react-icons/md";
-
+import {
+  getUserId,
+  getAuthHeader,
+  getAuthToken,
+  getUserCampus,
+} from "../utils/auth";
+import BookPresentations from "../components/Parents/BookPresentations";
+import MyPresentations from "../components/Parents/MyPresentations";
 import "./BookPresentationModal.css";
 
 function BookPresentationModal({
   presentations: initialPresentations,
   closeModal,
   childData,
-  onBookingCreated,
 }) {
-  const [presentations, setPresentations] = useState(initialPresentations);
+  const [presentations, setPresentations] = useState(
+    initialPresentations || []
+  );
   const [expandedPresentation, setExpandedPresentation] = useState(null);
+  const [myPresentations, setMyPresentations] = useState(null);
+  const [error, setError] = useState(null);
+  const [localChildData, setLocalChildData] = useState(childData);
+  const [qrCodeData, setQrCodeData] = useState({});
+  const campus = getUserCampus();
+  const [canBookCampus, setCanBookCampus] = useState(false);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       // Add fetch presentations function here to get updates every 5 seconds
-    }, 5000);
-
+    }, 59000);
+   
     return () => clearInterval(intervalId);
   }, []);
 
@@ -31,18 +43,22 @@ function BookPresentationModal({
     startTime
   ) => {
     const presentation = presentations.find((p) => p._id === presentationId);
-    const child = childData.find(
-      (child) => child.ageGroup === presentation.ageGroup
-    );
-    if (!child) {
+
+    // No need to find the child from the array, as childData is now a single object
+    const child = childData;
+
+    if (!child || child.ageGroup !== presentation.ageGroup) {
       toast.error("이 연령대에는 자녀가 없습니다.");
       return;
     }
-
     const presentationInfo = `
     설명회: ${presentationName}
-    날짜: ${new Date(presentation.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
-    시간:  ${(startTime)}
+    날짜: ${new Date(presentation.date).toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })}
+    시간:  ${startTime}
     학생명: ${child.name}
     2024년 학년: ${child.testGrade}
     `;
@@ -64,8 +80,6 @@ function BookPresentationModal({
       );
 
       if (response.status === 200) {
-        onBookingCreated(response.data);
-
         const presentationIndex = presentations.findIndex(
           (p) => p._id === presentationId
         );
@@ -75,14 +89,22 @@ function BookPresentationModal({
 
         const updatedPresentations = [...presentations];
 
-        updatedPresentations[presentationIndex].timeSlots[slotIndex].attendees.push(getUserId());
+        updatedPresentations[presentationIndex].timeSlots[
+          slotIndex
+        ].attendees.push(getUserId());
         setPresentations(updatedPresentations);
 
         closeModal();
         toast.success("예약 성공했어요!");
       }
     } catch (err) {
-      toast.error(err.response.data.message || "이미 예약하셨네요!");
+      console.log("Error:", err);
+      if (err.response && err.response.data) {
+        toast.error(err.response.data.message || "이미 예약하셨네요!");
+      } else {
+        // This means the request didn't even reach the server.
+        toast.error("An unknown error occurred.");
+      }
     }
   };
 
@@ -95,82 +117,171 @@ function BookPresentationModal({
   };
 
   useEffect(() => {
-    setPresentations(initialPresentations);
- }, [initialPresentations]);
- 
+    if (initialPresentations) {
+      setPresentations(initialPresentations);
 
-  return (
-    <div className="book-presentation-modal-new">
-      <div className="modal-header-new">
-        <h1 style={{ flex: 1, textAlign: "center" }}>J LEE 설명회 예약</h1>
-        <button className="close-button" onClick={closeModal}>
-          &times;
-        </button>
-      </div>
-      <div className="presentation-grid">
-        {presentations.map((presentation) => (
-          <div
-            key={presentation._id}
-            className={`presentation-card ${
-              expandedPresentation === presentation._id ? "expanded" : ""
-            }`}
-          >
-            <h3><strong>{presentation.name}</strong></h3>
-            <div className="presentation-meta">
-              <h5><MdDateRange /> 일시: {new Date(presentation.date).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })}</h5>
-              <h5><MdPlace /> 장소: {presentation.location}</h5>
-            </div>
-            <p>{expandedPresentation === presentation._id ? presentation.description : `${presentation.description.substring(0, 100)}...`}</p>
-            {presentation.description.length > 100 && (
-              <button className="view-more" onClick={() => toggleExpandCard(presentation._id)}>
-                {expandedPresentation === presentation._id ? "간단히 보기" : "더보기"}
-              </button>
-            )}
-            <h4><MdAccessTime /> 시간</h4>
-            <div className="time-slots">
-              {presentation.timeSlots ? (
-                presentation.timeSlots.map((slot) => {
-                  const userHasBooked = slot.attendees.includes(getUserId());
-                  return (
-                    <div className="time-slot" onClick={() => {
-                      if (slot.attendees.length >= slot.maxAttendees) {
-                          toast.error("이미 완전히 예약되었습니다.");
-                      }
-                  }}>
-                      <div className="slot-time">{moment(slot.startTime).format("HH:mm")}</div>
-                      <div className="slot-info">
-                          <button
-    className={`slotButton${slot.attendees.length >= slot.maxAttendees || userHasBooked ? ' disabled-slot' : ''}`}
-    onClick={(e) => {
-        e.stopPropagation();
-        if (!(slot.attendees.length >= slot.maxAttendees || userHasBooked)) {
-            handleBooking(
-                presentation._id,
-                slot._id,
-                presentation.name,
-                moment(slot.startTime).format("HH:mm")
-            );
+    } else {
+
+    }
+  }, [initialPresentations]);
+
+  const fetchMyPresentations = async () => {
+    const backendURL = process.env.REACT_APP_BACKEND_URL;
+    const userId = getUserId();
+    const token = getAuthToken();
+
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+
+    const [presentationResponse, childrenResponse] = await Promise.all([
+      axios.get(`${backendURL}/api/presentations/myBookings`, config),
+      axios.get(`${backendURL}/api/users/${userId}/children`, config),
+    ]);
+
+    if (
+      presentationResponse.status === 200 &&
+      childrenResponse.status === 200
+    ) {
+      const myChildren = childrenResponse.data;
+      setLocalChildData(myChildren); // update localChildData state variable
+
+      const presentationsWithChildName = presentationResponse.data.map(
+        (presentation) => {
+          const childrenInSameAgeGroup = myChildren.filter(
+            (child) => child.ageGroup === presentation.ageGroup
+          );
+          const childNames = childrenInSameAgeGroup
+            .map((child) => child.name)
+            .join(", ");
+          const childTestGrades = childrenInSameAgeGroup
+            .map((child) => child.testGrade)
+            .join(", ");
+          return {
+            ...presentation,
+            childName: childNames,
+            testGrade: childTestGrades,
+            oldSlotId: presentation.timeSlots[0]._id,
+          };
         }
-    }}
-    disabled={slot.attendees.length >= slot.maxAttendees || userHasBooked}
->
-    {slot.attendees.length >= slot.maxAttendees ? '예약마감' : '예약'}
-</button>
-                      </div>
-                  </div>
-                  
-                  
-                  );
-                })
-              ) : (
-                <p>이 프리젠테이션에 사용할 수 있는 시간이 없습니다.</p>
-              )}
-            </div>
-          </div>
-        ))}
+      );
+      setMyPresentations(presentationsWithChildName);
+    } else {
+      setError("Error fetching my presentations");
+    }
+  };
+
+  useEffect(() => {
+    fetchMyPresentations();
+  }, []);
+
+
+
+  const handleCancelPresentation = async (presentationId, timeSlotIndex) => {
+    if (
+      window.confirm(
+        `설명회 예약 취소 시 최초 예약 기록은 삭제됩니다. 정말 예약 취소하시겠습니까?  
+      ★  최초 예약 기록은 테스트 후 등록 순번에 영향이 있을 수 있습니다.`
+      )
+    ) {
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
+      const response = await axios.delete(
+        `${backendURL}/api/presentations/${presentationId}/attendees/${getUserId()}`,
+        getAuthHeader()
+      );
+
+      if (response.status === 200) {
+        fetchMyPresentations(); // reload presentations
+        toast.success("설명회 예약 취소가 완료되었습니다.");
+      } else {
+        toast.error(
+          "설명회 예약 취소가 정상적으로 완료되지 않았습니다. 다시 시도해주세요."
+        );
+      }
+    }
+  };
+  const fetchQRCode = async (userId) => {
+    try {
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${backendURL}/api/users/${userId}/qrCode`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.qrCodeDataURL;
+    } catch (error) {
+      console.error("Failed fetching QR code:", error);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch campuses and check if the user's campus can book
+    const fetchCampuses = async () => {
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
+      try {
+        const response = await axios.get(`${backendURL}/api/campus`); // Replace with your campus API endpoint
+        const campuses = response.data;
+        const userCampus = campuses.find(c => c.name === campus);
+        
+        if (userCampus && userCampus.canBook) {
+          setCanBookCampus(true);
+        }
+      } catch (err) {
+        console.error("Error fetching campuses:", err);
+      }
+    };
+
+    fetchCampuses();
+  }, [campus]);
+
+  useEffect(() => {
+    const fetchUserQRCode = async () => {
+      const userId = getUserId(); // Assuming the user ID is consistent with the logged-in user
+      const qrDataUrl = await fetchQRCode(userId);
+      setQrCodeData(qrDataUrl); // We directly set the data URL since only one QR is expected
+    };
+
+    fetchUserQRCode();
+  }, []);
+
+  const filteredMyPresentations = myPresentations
+    ? myPresentations.filter((p) => p.ageGroup === childData.ageGroup)
+    : [];
+
+    return (
+      <div className="book-presentation-modal-new">
+        <div className="modal-header-new">
+          <h1 style={{ flex: 1, textAlign: "center" }}>J LEE 설명회 예약</h1>
+          <button className="close-button" onClick={closeModal}>
+            &times;
+          </button>
+        </div>
+        {filteredMyPresentations.length > 0 ? (
+          <MyPresentations
+            myPresentations={filteredMyPresentations}
+            handleCancelPresentation={handleCancelPresentation}
+            qrCodeData={qrCodeData}
+          />
+        ) : (
+          <>
+            {canBookCampus ? (
+              <BookPresentations
+                presentations={presentations}
+                toggleExpandCard={toggleExpandCard}
+                expandedPresentation={expandedPresentation}
+                handleBooking={handleBooking}
+                getUserId={getUserId}
+                toast={toast}
+                moment={moment}
+              />
+            ) : (
+              <p>You are not eligible to book right now.</p>
+            )}
+          </>
+        )}
       </div>
-    </div>
-  );
+    );
+    
 }
 
 export default BookPresentationModal;

@@ -1,54 +1,76 @@
 .form-container {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .label-input-group {
-    margin-bottom: 15px;
-  }
-  
-  .label-input-group label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  input[type="text"],
-  input[type="date"],
-  input[type="time"],
-  input[type="number"],
-  select {
-    width: 300px;
-    padding: 10px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  button {
-    padding: 10px 15px;
-    background-color: #007BFF;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 20px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
-  .testslot-modal {
-    padding: 20px;
-    width: 80%;
-    max-width: 600px;
-    background: #ffffff;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+.label-input-group {
+  margin-bottom: 15px;
+}
+
+.label-input-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="time"],
+input[type="number"],
+select {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 0 auto; /* Center the input */
+}
+
+button {
+  padding: 10px 15px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: block;
+  
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.testslot-modal {
+  padding: 20px;
+  width: 80%; /* You can adjust this as per your preference */
+  height: 100%;
+  max-width: 600px;
+  background: #ffffff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow-y: auto;
 }
 
 .overlay {
-    background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.6);
 }
+
+.checkbox-label {
+  display: block;
+  margin: 0.5rem 0;
+}
+
+.checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* This creates two equal-width columns */
+  gap: 0.8rem; /* Spacing between rows and columns */
+}
+
