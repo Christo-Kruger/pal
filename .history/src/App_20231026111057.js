@@ -4,6 +4,7 @@ import ParentProtectedRoute from './components/ParentProtectedRoute';
 import HomePage from './pages/HomePage';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Navbar from './components/Navbar';
 import { AuthProvider } from './context/AuthContext';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -23,7 +24,7 @@ function App() {
       <ToastContainer />
       {/* Use HashRouter instead of BrowserRouter */}
       <HashRouter>
-        {/* <Navbar /> */}
+        <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<Register />} />

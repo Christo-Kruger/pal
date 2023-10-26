@@ -4,7 +4,7 @@ import ChangeTimeSlotModal from "../Presentation/ChangeTimeSlotModal";
 const MyPresentations = ({
   myPresentations,
   handleCancelPresentation,
-  setActiveModal,
+  qrCodeData,
 }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [editingBooking, setEditingBooking] = useState(null);
@@ -43,18 +43,16 @@ const MyPresentations = ({
           <p>장소 : {presentation.location}</p>
           <p>학생명: {presentation.childName}</p>
           <p>2024년 학년: {presentation.testGrade}</p>
-          <div className="booking-actions" style={{ display: "flex", justifyContent: "center" }}>
+          <div className="booking-actions">
             <button
               className="button-bookings"
               onClick={() => handleTimeSlotChange(presentation._id)}
-              style={{ width: "170px" }}
             >
               예약시간변경
             </button>
             <button
               className="button-bookings"
               onClick={() => handleCancelPresentation(presentation._id)}
-              style={{ width: "170px" }}
             >
               취소
             </button>
@@ -68,9 +66,9 @@ const MyPresentations = ({
               height: "100%",
             }}
           >
-            {presentation.myQrCode && (
+            {qrCodeData && (
               <img
-                src={`data:image/png;base64,${presentation.myQrCode}`}
+                src={`data:image/png;base64,${qrCodeData}`}
                 alt="User QR Code"
               />
             )}
@@ -83,7 +81,7 @@ const MyPresentations = ({
           presentationId={editingBooking?._id}
           oldSlotId={editingBooking?.oldSlotId}
           onTimeSlotChanged={() => {
-            setModalVisible(false);
+            setModalVisible(false); // Close the modal
           }}
           closeModal={() => {
             setModalVisible(false);
@@ -93,7 +91,6 @@ const MyPresentations = ({
       )}
     </div>
   );
-  
 };
 
 export default MyPresentations;

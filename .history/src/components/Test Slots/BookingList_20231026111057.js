@@ -126,12 +126,6 @@ const BookingList = () => {
           valueGetter: (params) => params.row.child?.name
         },
         {
-          field: 'group',
-          headerName: 'Group',
-          width: 120,
-          valueGetter: (params) => params.row.child?.group?.name || "N/A"
-        },
-        {
           field: 'testGrade',
           headerName: 'Test Grade',
           width: 120,
@@ -158,8 +152,8 @@ const BookingList = () => {
         {
           field: 'testSlot',
           headerName: 'Test Slot',
-          width: 100,
-          valueGetter: (params) => params.row.testSlot && params.row.testSlot.timeSlots && params.row.testSlot.timeSlots.length > 0 ? params.row.testSlot.timeSlots[0].startTime : "N/A"
+          width: 200,
+          valueGetter: (params) => params.row.testSlot ? `${params.row.testSlot.startTime} - ${params.row.testSlot.endTime}` : ""
         },
         {
           field: 'date',
@@ -195,11 +189,9 @@ const BookingList = () => {
           valueGetter: (params) => params.row.paid ? "Yes" : "No"
         }
       ];
-      
       const NoRowsOverlay = () => {
         return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>No data</div>;
       };
-      
       
     
       return (

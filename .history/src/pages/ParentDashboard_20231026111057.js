@@ -6,14 +6,10 @@ import {
   getAuthToken,
   getUserCampus,
 } from "../utils/auth";
-// import "./ParentDashboard.css";
+import "./ParentDashboard.css";
 import { MdError } from "react-icons/md";
 import ChildCard from "../components/Parents/ChildCard";
-import CircularProgress from "@mui/material/CircularProgress";
-import ParentNav from "./ParentNav";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Typography from "@mui/material/Typography";
-
+import CircularProgress from '@mui/material/CircularProgress';
 
 function ParentDashboard() {
   const [bookings, setBookings] = useState([]);
@@ -23,6 +19,7 @@ function ParentDashboard() {
   const [isLoading, setIsLoading] = useState(true); // New loading state
   const campus = getUserCampus();
   const [qrCodeData, setQrCodeData] = useState({});
+
 
   const fetchBookings = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
@@ -94,6 +91,7 @@ function ParentDashboard() {
     fetchData();
   }, []);
 
+
   const fetchQRCode = async (userId) => {
     try {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
@@ -122,32 +120,28 @@ function ParentDashboard() {
 
   return (
     <div className="dashboard-container">
-      <ParentNav />
-      <Breadcrumbs aria-label="breadcrumb">
-        <Typography color="textPrimary">Home</Typography>
-      </Breadcrumbs>
-
       {error && (
         <p className="error-message" role="alert">
           <MdError /> {error}
         </p>
       )}
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <h1 className="header"> J LEE 신입생 입학설명회 예약</h1>
-        <h4>{campus}캠퍼스</h4>
-        <div className="header-text-new">
-          <p>
-            1. 입학 희망하는 형제,자매가 있으신 경우 "학생추가"를 해주시기
+      <h1 className="header"> J LEE 신입생 입학설명회 예약</h1>
+      <h4>{campus}캠퍼스</h4>
+      <div className="header-text-new">
+        <ol>
+          <li>
+            입학 희망하는 형제,자매가 있으신 경우 "학생추가"를 해주시기
             바랍니다.
-          </p>
-
-          <p>2. 설명회 예약이 완료되면 학부모님께 예약확인 문자가 발송됩니다</p>
-        </div>
+          </li>
+          <li>설명회 예약이 완료되면 학부모님께 예약확인 문자가 발송됩니다.</li>
+        </ol>
       </div>
       {isLoading ? (
         <CircularProgress /> // Show CircularProgress when loading
       ) : (
-        <ChildCard />
+    
+          <ChildCard />
+      
       )}
     </div>
   );

@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import "../../styles/EditChild.css";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import CircularProgress from "@mui/material/CircularProgress";
-import TextField from "@mui/material/TextField";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import Button from "@mui/material/Button";
-import ParentNav from "../../pages/ParentNav";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Typography from "@mui/material/Typography";
-
-
+import backArrow from "../../styles/back_arrow.png";
 
 function UpdateChild() {
   const { token } = useAuth();
@@ -143,99 +136,86 @@ function UpdateChild() {
   }
 
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-    >
-      <div style={{ width: "100%" }}>
-        <ParentNav />
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link color="inherit" to="/parent">
-            Parent
-          </Link>
-          <Typography color="textPrimary">Update Child</Typography>
-        </Breadcrumbs>
+    <div className="container">
+      <div className="top-left-arrow">
+        <Link to="/parent">
+          <img src={backArrow} alt="Back to Parent Page" />
+        </Link>
       </div>
-      <h3 style={{ marginTop: "20px" }}>학생정보 편집</h3>
+      <h3>학생정보 편집</h3>
       <Link to="/add-child">
-        <Button
-          style={{ minWidth: "300px" }}
-          variant="contained"
-          color="primary"
-        >
-          학생 추가
-        </Button>
+        <button className="button" aria-label="Add Child">
+        학생 추가
+
+        </button>
       </Link>
       <div className="edit-child-box">
         {editedChildren.map((child, index) => (
           <div key={child.id || index} className="child-details-card">
-            <h5>학생(유아) {index + 1}</h5>
-
-            <TextField
-              label="학생(유아) 한글명"
-              value={child.name}
-              onChange={(e) => handleChildChange(index, "name", e.target.value)}
-              fullWidth
-            />
-
-            <TextField
-              label="현재 재원중인 기관명:"
-              value={child.previousSchool}
-              onChange={(e) =>
-                handleChildChange(index, "previousSchool", e.target.value)
-              }
-              fullWidth
-            />
-
-            <TextField
-              label="생년월일:"
-              type="date"
-              value={child.dateOfBirth}
-              onChange={(e) =>
-                handleChildChange(index, "dateOfBirth", e.target.value)
-              }
-              InputLabelProps={{
-                shrink: true,
-              }}
-              fullWidth
-            />
-
-            <Select
-              label="성별:"
-              value={child.gender}
-              onChange={(e) =>
-                handleChildChange(index, "gender", e.target.value)
-              }
-              fullWidth
-            >
-              <MenuItem value="male">남성</MenuItem>
-              <MenuItem value="female">여성</MenuItem>
-            </Select>
-
+            <h5>학생(유아)
+{index + 1}</h5>
+            <div className="child-input">
+              <label>학생(유아) 한글명</label>
+              <input
+                value={child.name}
+                onChange={(e) =>
+                  handleChildChange(index, "name", e.target.value)
+                }
+              />
+            </div>
+            <div className="child-input">
+              <label>현재 재원중인 기관명:
+</label>
+              <input
+                value={child.previousSchool}
+                onChange={(e) =>
+                  handleChildChange(index, "previousSchool", e.target.value)
+                }
+              />
+            </div>
+            <div className="child-input">
+              <label>생년월일:</label>
+              <input
+                type="date"
+                value={child.dateOfBirth}
+                onChange={(e) =>
+                  handleChildChange(index, "dateOfBirth", e.target.value)
+                }
+              />
+            </div>
+            <div className="child-input">
+              <label>성별:
+</label>
+              <select
+                value={child.gender}
+                onChange={(e) =>
+                  handleChildChange(index, "gender", e.target.value)
+                }
+              >
+                <option value="male">남성</option>
+                <option value="female">여성</option>
+              </select>
+            </div>
             <div>
-              <label>
-                <strong>2024년 예비 학년/연령</strong>
-              </label>
+              <label><strong>2024년 예비 학년/연령</strong>
+</label>
               <p>{child.testGrade}</p>
             </div>
-
             <div className="child-actions">
-              <Button
-                variant="contained"
-                color="primary"
+              <button
+                className="save-button"
                 onClick={() => handleChildSave(index)}
                 disabled={isSaving}
               >
                 {isSaving ? "저장..." : "저장"}
-              </Button>
-
-              <Button
-                variant="contained"
-                color="secondary"
+              </button>
+              <button
+                className="delete-button"
                 onClick={() => handleChildDelete(index, child._id)}
                 disabled={isSaving}
               >
                 삭제
-              </Button>
+              </button>
             </div>
           </div>
         ))}

@@ -24,6 +24,7 @@ function BookPresentationModal({
   const [myPresentations, setMyPresentations] = useState(null);
   const [error, setError] = useState(null);
   const [localChildData, setLocalChildData] = useState(childData);
+  const [qrCodeData, setQrCodeData] = useState({});
   const campus = getUserCampus();
   const [canBookCampus, setCanBookCampus] = useState(false);
 
@@ -128,21 +129,21 @@ function BookPresentationModal({
     const backendURL = process.env.REACT_APP_BACKEND_URL;
     const userId = getUserId();
     const token = getAuthToken();
-  
+
     const config = { headers: { Authorization: `Bearer ${token}` } };
-  
+
     const [presentationResponse, childrenResponse] = await Promise.all([
       axios.get(`${backendURL}/api/presentations/myBookings`, config),
       axios.get(`${backendURL}/api/users/${userId}/children`, config),
     ]);
-  
+
     if (
       presentationResponse.status === 200 &&
       childrenResponse.status === 200
     ) {
       const myChildren = childrenResponse.data;
       setLocalChildData(myChildren); // update localChildData state variable
-  
+
       const presentationsWithChildName = presentationResponse.data.map(
         (presentation) => {
           const childrenInSameAgeGroup = myChildren.filter(
@@ -159,23 +160,16 @@ function BookPresentationModal({
             childName: childNames,
             testGrade: childTestGrades,
             oldSlotId: presentation.timeSlots[0]._id,
-            myQrCode: presentation.myQrCode, // include the QR code
-            myAttendance: presentation.myAttendance
           };
         }
-        
       );
       setMyPresentations(presentationsWithChildName);
-      
     } else {
       setError("Error fetching my presentations");
-      
     }
   };
 
-  
   useEffect(() => {
-    
     fetchMyPresentations();
   }, []);
 
@@ -204,6 +198,21 @@ function BookPresentationModal({
       }
     }
   };
+  const fetchQRCode = async (userId) => {
+    try {
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(`${backendURL}/api/users/${userId}/qrCode`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.qrCodeDataURL;
+    } catch (error) {
+      console.error("Failed fetching QR code:", error);
+    }
+  };
 
   useEffect(() => {
     // Fetch campuses and check if the user's campus can book
@@ -225,7 +234,15 @@ function BookPresentationModal({
     fetchCampuses();
   }, [campus]);
 
+  useEffect(() => {
+    const fetchUserQRCode = async () => {
+      const userId = getUserId(); // Assuming the user ID is consistent with the logged-in user
+      const qrDataUrl = await fetchQRCode(userId);
+      setQrCodeData(qrDataUrl); // We directly set the data URL since only one QR is expected
+    };
 
+    fetchUserQRCode();
+  }, []);
 
   const filteredMyPresentations = myPresentations
     ? myPresentations.filter((p) => p.ageGroup === childData.ageGroup)
@@ -243,7 +260,7 @@ function BookPresentationModal({
           <MyPresentations
             myPresentations={filteredMyPresentations}
             handleCancelPresentation={handleCancelPresentation}
-           
+            qrCodeData={qrCodeData}
           />
         ) : (
           <>

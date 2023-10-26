@@ -1,0 +1,46 @@
+/* .modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    padding: 2em;
+    border-radius: 10px;
+    text-align: center;
+    width: 70%;
+    position: relative;
+  }
+  
+  .close-modal {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    font-size: 1.5em;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .paused-text, .qr-info {
+    margin-top: 1em;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 1em;
+  }
+  
+  .qr-info p {
+    margin: 0.5em;
+  }
+  
+   */

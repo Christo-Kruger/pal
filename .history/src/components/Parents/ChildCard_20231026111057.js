@@ -11,7 +11,6 @@ import axios from "axios";
 import TestBooking from "./TestBooking";
 import { getAuthHeader, getUserCampus } from "../../utils/auth";
 import BookPresentationModal from "../BookPresentationModal";
-import BasicPres from "./BasicPres";
 
 function ChildCard() {
   const { token } = useAuth();
@@ -70,6 +69,7 @@ function ChildCard() {
           }
         );
         if (response.ok) {
+
           const data = await response.json();
           console.log("Fetched child data???:", data);
           setChildren(data);
@@ -127,23 +127,23 @@ function ChildCard() {
   }, [updateDimensions]);
 
   const cardStyle = {
-    minWidth: windowWidth <= 768 ? "auto" : 400,
-    maxWidth: windowWidth <= 768 ? "100%" : 500,
+    minWidth: windowWidth <= 768 ? 'auto' : 400,
+    maxWidth: windowWidth <= 768 ? '100%' : 500,
     margin: "16px",
     backgroundColor: "lightblue",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
+    alignItems: "center"
   };
 
   return (
-    <div
-      className="container"
-      style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", maxWidth:"10px" }}
-    >
+    <div className="container" style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
       <div className="edit-child-box">
         {editedChildren.map((child, index) => (
-          <Card key={child.id || index} sx={cardStyle}>
+          <Card
+            key={child.id || index}
+            sx={cardStyle}
+          >
             <CardContent
               style={{
                 display: "flex",
@@ -154,25 +154,25 @@ function ChildCard() {
             >
               <Typography variant="h5" component="div">
                 {child.name}
-              </Typography>{" "}
-              <Typography variant="h6">{child.testGrade}</Typography>
-              <BasicPres childData={child}
-          
-              />
+              </Typography>
+              <Typography variant="body2">
+                <strong>2024년 예비 학년/연령</strong>
+              </Typography>
+              <Typography variant="body2">{child.testGrade}</Typography>
               <Button
                 variant="contained"
                 style={{ marginTop: "16px", width: "270px" }}
                 onClick={() => handleClickOpen("Briefing", child)}
               >
-                Manage Presentation
+                My Presentations
               </Button>
-              {/* <Button
+              <Button
                 variant="contained"
                 style={{ marginTop: "16px", width: "270px" }}
                 onClick={() => handleClickOpen("Entrance", child)}
               >
                 Entrance Test Reservation
-              </Button> */}
+              </Button>
             </CardContent>
           </Card>
         ))}
@@ -181,17 +181,13 @@ function ChildCard() {
           <DialogContent>
             {modalType === "Briefing" ? (
               <BookPresentationModal
-                closeModal={handleClose}
+                closeModal={handleClose}  
                 childData={selectedChild}
                 presentations={presentations}
               />
             ) : (
               <DialogContentText
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  width: "100%",
-                }}
+                style={{ display: "flex", justifyContent: "center", width: "100%" }}
               >
                 <TestBooking
                   closeModal={handleClose}
