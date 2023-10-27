@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { getAuthHeader } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
-import { Button, CircularProgress, Container, FormControl, FormLabel, Paper, TextField, Typography } from "@material-ui/core";
+import { Button, CircularProgress, Container, FormControl, FormLabel, Paper, TextField, Typography, MenuItem } from "@material-ui/core";
 
 function ChildForm({ parentId }) {
   const [name, setName] = useState("");
@@ -117,20 +117,22 @@ function ChildForm({ parentId }) {
             />
           </FormControl>
           <FormControl component="fieldset" fullWidth style={{ marginTop: "20px" }}>
-            <FormLabel component="legend">성별:</FormLabel>
-            <TextField
-              id="gender"
-              select
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              required
-              variant="outlined"
-            >
-              <option value="">성별을 선택하세요</option>
-              <option value="male">남성</option>
-              <option value="female">여성</option>
-            </TextField>
-          </FormControl>
+      <FormLabel component="legend">성별:</FormLabel>
+      <TextField
+        id="gender"
+        select
+        value={gender}
+        onChange={(e) => setGender(e.target.value)}
+        required
+        variant="outlined"
+      >
+        <MenuItem value="">
+          <em>성별을 선택하세요</em>
+        </MenuItem>
+        <MenuItem value="male">남성</MenuItem>
+        <MenuItem value="female">여성</MenuItem>
+      </TextField>
+    </FormControl>
           <Button onClick={handleSave} color="primary" variant="contained" disabled={loading} style={{ marginTop: "20px" }}>
             {loading ? <CircularProgress size={24} /> : "등록"}
           </Button>

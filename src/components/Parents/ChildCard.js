@@ -9,9 +9,12 @@ import DialogContentText from "@mui/material/DialogContentText";
 import Button from "@mui/material/Button";
 import axios from "axios";
 import TestBooking from "./TestBooking";
-import { getAuthHeader, getUserCampus } from "../../utils/auth";
+import { getAuthHeader, getUserCampus, getUserId } from "../../utils/auth";
 import BookPresentationModal from "../BookPresentationModal";
 import BasicPres from "./BasicPres";
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import DialogTitle from '@mui/material/DialogTitle';
 
 function ChildCard() {
   const { token } = useAuth();
@@ -31,13 +34,15 @@ function ChildCard() {
     const fetchPresentations = async () => {
       try {
         const backendURL = process.env.REACT_APP_BACKEND_URL;
-        // Add childAgeGroup to the query parameters
+        const userId = getUserId()
+        
+        // Add userId, campus, and childAgeGroup to the query parameters
         const response = await axios.get(
-          `${backendURL}/api/presentations?campus=${campus}&ageGroup=${childAgeGroup}`,
+          `${backendURL}/api/presentations?campus=${campus}&ageGroup=${childAgeGroup}&userId=${userId}`,
           getAuthHeader()
         );
         console.log("Response", response);
-
+  
         if (response.status === 200) {
           setPresentations(response.data);
         } else {
@@ -47,17 +52,12 @@ function ChildCard() {
         setError("Error fetching presentations");
       }
     };
-
+  
     // Execute fetchPresentations only if childAgeGroup is available
     if (childAgeGroup) {
       fetchPresentations();
     }
-  }, [childAgeGroup]); // Add childAgeGroup to the dependency array
-
-  useEffect(() => {
-    // This will log the presentations once they are fetched
-    console.log("Presentations Data in ChildCard:", presentations);
-  }, [presentations]);
+  }, [childAgeGroup]);
 
   useEffect(() => {
     const fetchChildren = async () => {
@@ -177,30 +177,42 @@ function ChildCard() {
           </Card>
         ))}
 
-        <Dialog open={open} onClose={handleClose}>
-          <DialogContent>
-            {modalType === "Briefing" ? (
-              <BookPresentationModal
-                closeModal={handleClose}
-                childData={selectedChild}
-                presentations={presentations}
-              />
-            ) : (
-              <DialogContentText
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  width: "100%",
-                }}
-              >
-                <TestBooking
-                  closeModal={handleClose}
-                  childData={selectedChild}
-                />
-              </DialogContentText>
-            )}
-          </DialogContent>
-        </Dialog>
+     
+<Dialog open={open} onClose={handleClose}>
+  
+    <IconButton
+      edge="end"
+      color="inherit"
+      onClick={handleClose}
+      aria-label="close"
+      style={{ position: 'absolute', right: 7, top: 2 }}
+    >
+      <CloseIcon />
+    </IconButton>
+
+    <DialogContent style={{ minWidth: '350px' }}>
+    {modalType === "Briefing" ? (
+      <BookPresentationModal
+        closeModal={handleClose}
+        childData={selectedChild}
+        presentations={presentations}
+      />
+    ) : (
+      <DialogContentText
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
+        <TestBooking
+          closeModal={handleClose}
+          childData={selectedChild}
+        />
+      </DialogContentText>
+    )}
+  </DialogContent>
+</Dialog>
       </div>
     </div>
   );

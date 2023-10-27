@@ -45,7 +45,7 @@ const BookPresentations = ({ presentations, toggleExpandCard, expandedPresentati
                 <div
                   className="time-slot"
                   onClick={() => {
-                    if (slot.attendees.length >= slot.maxAttendees) {
+                    if (slot.attendeeCount>= slot.maxAttendees) {
                       toast.error('이미 완전히 예약되었습니다.');
                     }
                   }}
@@ -56,7 +56,7 @@ const BookPresentations = ({ presentations, toggleExpandCard, expandedPresentati
                   <div className="slot-info">
                     <button
                       className={`slotButton${
-                        slot.attendees.length >= slot.maxAttendees || slot.attendees.includes(getUserId())
+                        slot.attendeeCount >= slot.maxAttendees || slot.isUserAttending
                           ? ' disabled-slot'
                           : ''
                       }`}
@@ -70,10 +70,10 @@ const BookPresentations = ({ presentations, toggleExpandCard, expandedPresentati
                         );
                       }}
                       disabled={
-                        slot.attendees.length >= slot.maxAttendees || slot.attendees.includes(getUserId())
+                        slot.attendeeCount>= slot.maxAttendees || slot.isUserAttending
                       }
                     >
-                      {slot.attendees.length >= slot.maxAttendees
+                      {slot.attendeeCount >= slot.maxAttendees
                         ? '예약마감'
                         : '예약'}
                     </button>

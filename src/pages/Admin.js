@@ -44,12 +44,13 @@ import BookingCalendar from "../components/Test Slots/BookingCalendar";
 import AddAdmin from "../components/AddAdmin";
 import EditAdmins from "../components/EditAdmin";
 import Settings from "../components/Admin/Settings/Settings";
+import CanBook from "../components/Admin/Settings/CanBook";
 import QRScannerModal from "../components/Admin/QRScannerModal";
 import CreateGroup from "../components/Admin/Group Creatation/CreateGroup";
 import Groups from "../components/Admin/Group Creatation/Groups";
 import ParentChildList from "../components/Admin/Group Creatation/ParentChildList";
 import ParentList from "../components/ParentList"; // Included
-import GroupMembers from "../components/Admin/Group Creatation/GroupMembers"
+import GroupMembers from "../components/Admin/Group Creatation/GroupMembers";
 
 // Structure Components
 import LogoutButton from "../components/Structure/LogoutButton";
@@ -57,7 +58,7 @@ import Logo from "../components/Structure/Logo";
 
 // Styles
 import "../styles/Admin.css";
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/core/styles";
 
 // Define styles
 const drawerWidth = 240;
@@ -129,8 +130,7 @@ const Admin = () => {
 
   const handleShowGroupMembers = () => {
     setActiveComponentAndHideCalendar("viewGroupMembers");
-
-  }
+  };
 
   const handleShowParentChild = () => {
     setActiveComponentAndHideCalendar("parentChildList");
@@ -138,6 +138,11 @@ const Admin = () => {
 
   const handleSettings = () => {
     setActiveComponentAndHideCalendar("settings");
+  };
+
+  //handleCanBook
+  const handleCanBook = () => {
+    setActiveComponentAndHideCalendar("canBook");
   };
 
   const handleCreateTestOpen = () => {
@@ -189,18 +194,12 @@ const Admin = () => {
 
   const handleShowEditAdmins = () => {
     setActiveComponentAndHideCalendar("editAdmins");
-  }
-
-
-
-
+  };
 
   const handleCloseQRScanner = () => {
     setIsQRScannerOpen(false);
     setActiveComponent(null);
   };
-
-
 
   return (
     <div className="admin-dashboard">
@@ -417,8 +416,8 @@ const Admin = () => {
                     }}
                   >
                     <ListItemText primary="Add To Group" />
-                    </ListItem>
-                    <ListItem
+                  </ListItem>
+                  <ListItem
                     button
                     onClick={() => {
                       handleShowGroupMembers();
@@ -451,6 +450,17 @@ const Admin = () => {
                         >
                           <ListItemText primary="Manage Campuses" />
                         </ListItem>
+
+                        <ListItem
+                          button
+                          onClick={() => {
+                            handleCanBook();
+                            handleDrawerToggle();
+                          }}
+                        >
+                          <ListItemText primary="Manage Can Book" />
+                        </ListItem>
+
                         <ListItem
                           button
                           onClick={() => {
@@ -518,6 +528,7 @@ const Admin = () => {
         {activeComponent === "parentChildList" && <ParentChildList />}
         {activeComponent === "settings" && <Settings />}
         {activeComponent === "viewGroupMembers" && <GroupMembers />}
+        {activeComponent === "canBook" && <CanBook />}
         <QRScannerModal
           isOpen={activeComponent === "QRScanner"}
           onRequestClose={handleCloseQRScanner}

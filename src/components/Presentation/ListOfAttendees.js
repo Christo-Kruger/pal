@@ -7,6 +7,7 @@ import { ProgressBar } from "react-loader-spinner";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { CircularProgress } from "@mui/material";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -19,35 +20,42 @@ const AttendeeList = () => {
   const [attendees, setAttendees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const limit = 100; // Limit is set to 100 as per your requirement
 
   useEffect(() => {
     let mounted = true;
     setIsLoading(true);
+    console.log(`Fetching page ${page}...`);
 
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/presentations/allAttendeesInTimeSlots`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/presentations/allAttendeesInTimeSlots?limit=${limit}&page=${page}`,
           getAuthHeader()
         );
+        console.log("Response Data:", response.data); // Debugging line
 
-        if (mounted) {
-          const filteredAttendees = response.data.filter(
-            (attendee) =>
-              attendee.campus === userCampus || userRole === "superadmin"
-          );
+        if (Array.isArray(response.data.data)) {
+          if (mounted) {
+            const filteredAttendees = response.data.data.filter(
+              (attendee) =>
+                attendee.campus === userCampus || userRole === "superadmin"
+            );
+            setAttendees(filteredAttendees);
 
-          setAttendees(filteredAttendees);
-       
-
-          // Initialize checkedAttendees state
-          const initialCheckedAttendees = {};
-          filteredAttendees.forEach((attendee) => {
-            initialCheckedAttendees[attendee._id] =
-              attendee.attendedPresentation;
-          });
-          setCheckedAttendees(initialCheckedAttendees);
-          setIsLoading(false);
+            // Initialize checkedAttendees state
+            const initialCheckedAttendees = {};
+            filteredAttendees.forEach((attendee) => {
+              initialCheckedAttendees[attendee._id] =
+                attendee.attendedPresentation;
+            });
+            setCheckedAttendees(initialCheckedAttendees);
+            setIsLoading(false);
+          }
+        } else {
+          console.error("Response data is not an array"); // Debugging line
+          setIsLoading(false); // Set isLoading to false when data is not an array
         }
       } catch (error) {
         if (mounted) {
@@ -56,13 +64,12 @@ const AttendeeList = () => {
         }
       }
     };
-
     fetchData();
 
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [page, userCampus, userRole]);
 
   const filteredRows = attendees
     .filter((attendee) => {
@@ -100,7 +107,7 @@ const AttendeeList = () => {
         " " +
         new Date(attendee.bookedAt).toLocaleTimeString(),
     }));
-    
+
   const initializeCheckedAttendees = (filteredPresentations) => {
     const initialCheckedAttendees = {};
     filteredPresentations.forEach((presentation) => {
@@ -188,8 +195,41 @@ const AttendeeList = () => {
       [userId]: !isChecked,
     }));
   };
+  function CustomToolbar() {
+    const handleNext = () => {
+      setPage((prevPage) => prevPage + 1);
+    };
 
+    const handlePrevious = () => {
+      if (page > 1) {
+        setPage((prevPage) => prevPage - 1);
+      }
+    };
 
+    return (
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div>
+          <GridToolbar />
+        </div>
+        <div style={{paddingTop:"10px"}}>
+          <button onClick={handlePrevious}>Previous</button>
+          <button onClick={handleNext}>Next</button>
+          <button onClick={handleExport}>Export to Excel</button>{" "}
+          <TextField
+            label="Search"
+            variant="outlined"
+            style={{
+              width: "300px",
+            }}
+            InputProps={{
+              style: { height: "40px" },
+            }}
+            // Add your onChange, value and other props
+          />
+        </div>
+      </div>
+    );
+  }
   const columns = [
     { field: "id", headerName: "No.", width: 70 },
     { field: "name", headerName: "Parent", width: 130 },
@@ -233,47 +273,29 @@ const AttendeeList = () => {
   ];
 
   return (
-    <div className="attendee-list" style={{ marginTop: "2rem" }}>
-      <button onClick={handleExport}>Export to Excel</button>
-      <TextField
-        label="Search"
-        variant="outlined"
-        value={searchTerm}
-        onChange={handleSearchChange}
-        style={{ marginBottom: "20px", width: "300px" }}
-        InputProps={{
-          style: { padding: "10px" },
-        }}
-        InputLabelProps={{
-          shrink: true,
-        }}
-      />
-
+    <div className="attendee-list" style={{ marginTop: "100px" }}>
       {isLoading ? (
         <div style={{ textAlign: "center", marginTop: "2rem" }}>
-          <ProgressBar
-            type="ThreeDots"
-            color="#00BFFF"
-            height={100}
-            width={100}
-          />
+          <CircularProgress />
         </div>
       ) : (
-        <div style={{ height: 600, width: "100%" }}>
+        <div style={{ height: 750, width: "100%" }}>
           <DataGrid
             rows={filteredRows}
             columns={columns}
             pageSize={10}
             components={{
-              Toolbar: GridToolbar,
+              Toolbar: CustomToolbar,
+              Footer: () => null,
             }}
+
           />
         </div>
       )}
 
       <SendSmsModal
         isOpen={isSmsModalOpen}
-        onRequestClose={closeSmsModal}
+        onRequestClose={() => setIsSmsModalOpen(false)}
         phoneNumbers={[selectedPhoneNumber]}
       />
     </div>

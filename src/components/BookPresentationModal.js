@@ -11,6 +11,7 @@ import {
 import BookPresentations from "../components/Parents/BookPresentations";
 import MyPresentations from "../components/Parents/MyPresentations";
 import "./BookPresentationModal.css";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function BookPresentationModal({
   presentations: initialPresentations,
@@ -26,12 +27,24 @@ function BookPresentationModal({
   const [localChildData, setLocalChildData] = useState(childData);
   const campus = getUserCampus();
   const [canBookCampus, setCanBookCampus] = useState(false);
+  const [canBookForChild, setCanBookForChild] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Initialize to true to indicate loading
+  const [pendingFetches, setPendingFetches] = useState(3);
+  console.log("Initial pendingFetches:", pendingFetches);
 
   useEffect(() => {
+    console.log("useEffect is running");
+    console.log("Pending Fetches:", pendingFetches);
+    if (pendingFetches === 0) {
+      setIsLoading(false);
+    }
+  }, [pendingFetches]);
+  useEffect(() => {
+    console.log("useEffect is running");
     const intervalId = setInterval(() => {
       // Add fetch presentations function here to get updates every 5 seconds
     }, 59000);
-   
+
     return () => clearInterval(intervalId);
   }, []);
 
@@ -116,11 +129,10 @@ function BookPresentationModal({
   };
 
   useEffect(() => {
+    console.log("useEffect is running");
     if (initialPresentations) {
       setPresentations(initialPresentations);
-
     } else {
-
     }
   }, [initialPresentations]);
 
@@ -128,58 +140,60 @@ function BookPresentationModal({
     const backendURL = process.env.REACT_APP_BACKEND_URL;
     const userId = getUserId();
     const token = getAuthToken();
-  
+
     const config = { headers: { Authorization: `Bearer ${token}` } };
-  
-    const [presentationResponse, childrenResponse] = await Promise.all([
-      axios.get(`${backendURL}/api/presentations/myBookings`, config),
-      axios.get(`${backendURL}/api/users/${userId}/children`, config),
-    ]);
-  
-    if (
-      presentationResponse.status === 200 &&
-      childrenResponse.status === 200
-    ) {
-      const myChildren = childrenResponse.data;
-      setLocalChildData(myChildren); // update localChildData state variable
-  
-      const presentationsWithChildName = presentationResponse.data.map(
-        (presentation) => {
-          const childrenInSameAgeGroup = myChildren.filter(
-            (child) => child.ageGroup === presentation.ageGroup
-          );
-          const childNames = childrenInSameAgeGroup
-            .map((child) => child.name)
-            .join(", ");
-          const childTestGrades = childrenInSameAgeGroup
-            .map((child) => child.testGrade)
-            .join(", ");
-          return {
-            ...presentation,
-            childName: childNames,
-            testGrade: childTestGrades,
-            oldSlotId: presentation.timeSlots[0]._id,
-            myQrCode: presentation.myQrCode, // include the QR code
-            myAttendance: presentation.myAttendance
-          };
-        }
-        
-      );
-      setMyPresentations(presentationsWithChildName);
-      
-    } else {
+
+    try {
+      const [presentationResponse, childrenResponse] = await Promise.all([
+        axios.get(`${backendURL}/api/presentations/myBookings`, config),
+        axios.get(`${backendURL}/api/users/${userId}/children`, config),
+      ]);
+
+      if (
+        presentationResponse.status === 200 &&
+        childrenResponse.status === 200
+      ) {
+        const myChildren = childrenResponse.data;
+        setLocalChildData(myChildren); // update localChildData state variable
+
+        const presentationsWithChildName = presentationResponse.data.map(
+          (presentation) => {
+            const childrenInSameAgeGroup = myChildren.filter(
+              (child) => child.ageGroup === presentation.ageGroup
+            );
+            const childNames = childrenInSameAgeGroup
+              .map((child) => child.name)
+              .join(", ");
+            const childTestGrades = childrenInSameAgeGroup
+              .map((child) => child.testGrade)
+              .join(", ");
+            return {
+              ...presentation,
+              childName: childNames,
+              testGrade: childTestGrades,
+              oldSlotId: presentation.timeSlots[0]._id,
+              myQrCode: presentation.myQrCode, // include the QR code
+              myAttendance: presentation.myAttendance,
+            };
+          }
+        );
+        setMyPresentations(presentationsWithChildName);
+      } else {
+        setError("Error fetching my presentations");
+      }
+    } catch (error) {
       setError("Error fetching my presentations");
-      
+    } finally {
+      console.log("Before decrementing:", pendingFetches);
+      setPendingFetches((prev) => prev - 1);
+      console.log("After decrementing:", pendingFetches);
     }
   };
 
-  
   useEffect(() => {
-    
+    console.log("useEffect is running");
     fetchMyPresentations();
   }, []);
-
-
 
   const handleCancelPresentation = async (presentationId, timeSlotIndex) => {
     if (
@@ -205,66 +219,109 @@ function BookPresentationModal({
     }
   };
 
+  //Fetch can book age groups to see if the user's child's age group can book
+
   useEffect(() => {
+    console.log("useEffect is running");
     // Fetch campuses and check if the user's campus can book
     const fetchCampuses = async () => {
       const backendURL = process.env.REACT_APP_BACKEND_URL;
       try {
         const response = await axios.get(`${backendURL}/api/campus`); // Replace with your campus API endpoint
         const campuses = response.data;
-        const userCampus = campuses.find(c => c.name === campus);
-        
+        const userCampus = campuses.find((c) => c.name === campus);
+
         if (userCampus && userCampus.canBook) {
           setCanBookCampus(true);
         }
       } catch (err) {
-        console.error("Error fetching campuses:", err);
+      } finally {
+        console.log("Before decrementing:", pendingFetches);
+        setPendingFetches((prev) => prev - 1);
+        console.log("After decrementing:", pendingFetches);
       }
     };
 
     fetchCampuses();
   }, [campus]);
 
-
-
   const filteredMyPresentations = myPresentations
     ? myPresentations.filter((p) => p.ageGroup === childData.ageGroup)
     : [];
 
-    return (
-      <div className="book-presentation-modal-new">
-        <div className="modal-header-new">
-          <h1 style={{ flex: 1, textAlign: "center" }}>J LEE 설명회 예약</h1>
-          <button className="close-button" onClick={closeModal}>
-            &times;
-          </button>
-        </div>
-        {filteredMyPresentations.length > 0 ? (
-          <MyPresentations
-            myPresentations={filteredMyPresentations}
-            handleCancelPresentation={handleCancelPresentation}
-           
-          />
-        ) : (
-          <>
-            {canBookCampus ? (
-              <BookPresentations
-                presentations={presentations}
-                toggleExpandCard={toggleExpandCard}
-                expandedPresentation={expandedPresentation}
-                handleBooking={handleBooking}
-                getUserId={getUserId}
-                toast={toast}
-                moment={moment}
-              />
-            ) : (
-              <p>You are not eligible to book right now.</p>
-            )}
-          </>
-        )}
+  useEffect(() => {
+    console.log("useEffect is running");
+    const fetchCanBookForTestGrade = async () => {
+      const backendURL = process.env.REACT_APP_BACKEND_URL;
+      try {
+        console.log("Fetching canBook for:", childData.testGrade);
+
+        const response = await axios.get(
+          `${backendURL}/api/canBook/${childData.testGrade}`
+        );
+
+        console.log("API Response:", response.data);
+
+        if (response.data && response.data.canBook === true) {
+          // Set canBookForChild based on the API response
+          setCanBookForChild(true);
+        }
+      } catch (err) {
+      } finally {
+        console.log("Before decrementing:", pendingFetches);
+        setPendingFetches((prev) => prev - 1);
+        console.log("After decrementing:", pendingFetches);
+      }
+    };
+
+    fetchCanBookForTestGrade();
+  }, [childData.testGrade]);
+
+  return (
+    <div className="book-presentation-modal-new">
+      <div className="modal-header-new">
+        <h1 style={{ flex: 1, textAlign: "center" }}>J LEE 설명회 예약</h1>
+     
       </div>
-    );
-    
+
+      {isLoading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <CircularProgress />
+        </div>
+      ) : (
+        <>
+          {filteredMyPresentations.length > 0 ? (
+            <MyPresentations
+              myPresentations={filteredMyPresentations}
+              handleCancelPresentation={handleCancelPresentation}
+            />
+          ) : (
+            <>
+              {canBookCampus && canBookForChild ? ( // Check both campus and child age group eligibility
+                <BookPresentations
+                  presentations={presentations}
+                  toggleExpandCard={toggleExpandCard}
+                  expandedPresentation={expandedPresentation}
+                  handleBooking={handleBooking}
+                  getUserId={getUserId}
+                  toast={toast}
+                  moment={moment}
+                />
+              ) : (
+                <p style={{flex:1,textAlign:"center"}}>You are not eligible to book right now.</p>
+              )}
+            </>
+          )}
+        </>
+      )}
+    </div>
+  );
 }
 
 export default BookPresentationModal;
