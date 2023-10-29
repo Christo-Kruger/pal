@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";  // Added useMemo and useCallback
 import axios from "axios";
 import { toast } from "react-toastify";
 import moment from "moment";
@@ -10,10 +10,10 @@ import {
 } from "../utils/auth";
 import BookPresentations from "../components/Parents/BookPresentations";
 import MyPresentations from "../components/Parents/MyPresentations";
-import "./BookPresentationModal.css";
-import CircularProgress from "@mui/material/CircularProgress";
 import CannotBookCard from "./Presentation/CannotBookCard";
 import FindingBookingsLoadingScreen from "./Structure/FindingBookingsLoadingScreen";
+import "./BookPresentationModal.css"
+import { useFetch } from "./Structure/useFetch";
 
 function BookPresentationModal({
   presentations: initialPresentations,
@@ -32,6 +32,9 @@ function BookPresentationModal({
   const [canBook, setCanBook] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Initialize to true to indicate loading
   const [pendingFetches, setPendingFetches] = useState(3);
+  const [updatedPresentations, setUpdatedPresentations] = useState([]);
+
+  
 
   useEffect(() => {
     if (pendingFetches === 0) {
@@ -47,7 +50,7 @@ function BookPresentationModal({
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleBooking = async (
+  const handleBooking = useCallback(async (
     presentationId,
     slotId,
     presentationName,
@@ -165,15 +168,15 @@ function BookPresentationModal({
         toast.error("An unknown error occurred.");
       }
     }
-  };
+  }, [presentations, childData]); 
 
-  const toggleExpandCard = (presentationId) => {
+  const toggleExpandCard = useCallback((presentationId) => {
     if (expandedPresentation === presentationId) {
       setExpandedPresentation(null);
     } else {
       setExpandedPresentation(presentationId);
     }
-  };
+  }, [expandedPresentation]);  // <-- Dependencies
 
   useEffect(() => {
     console.log("useEffect is running");
@@ -183,66 +186,35 @@ function BookPresentationModal({
     }
   }, [initialPresentations]);
 
-  const fetchMyPresentations = async () => {
-    const backendURL = process.env.REACT_APP_BACKEND_URL;
-    const userId = getUserId();
-    const token = getAuthToken();
-
-    const config = { headers: { Authorization: `Bearer ${token}` } };
-
-    try {
-      const [presentationResponse, childrenResponse] = await Promise.all([
-        axios.get(`${backendURL}/api/presentations/myBookings`, config),
-        axios.get(`${backendURL}/api/users/${userId}/children`, config),
-      ]);
-
-      if (
-        presentationResponse.status === 200 &&
-        childrenResponse.status === 200
-      ) {
-        const myChildren = childrenResponse.data;
-        setLocalChildData(myChildren); // update localChildData state variable
-
-        const presentationsWithChildName = presentationResponse.data.map(
-          (presentation) => {
-            const childrenInSameAgeGroup = myChildren.filter(
-              (child) => child.ageGroup === presentation.ageGroup
-            );
-            const childNames = childrenInSameAgeGroup
-              .map((child) => child.name)
-              .join(", ");
-            const childTestGrades = childrenInSameAgeGroup
-              .map((child) => child.testGrade)
-              .join(", ");
-            return {
-              ...presentation,
-              childName: childNames,
-              testGrade: childTestGrades,
-              oldSlotId: presentation.timeSlots[0]._id,
-              myQrCode: presentation.myQrCode, // include the QR code
-              myAttendance: presentation.myAttendance,
-            };
-          }
-        );
-        setMyPresentations(presentationsWithChildName);
-      } else {
-        setError("Error fetching my presentations");
-      }
-    } catch (error) {
-      setError("Error fetching my presentations");
-    } finally {
-      console.log("Before decrementing:", pendingFetches);
-      setPendingFetches((prev) => prev - 1);
-      console.log("After decrementing:", pendingFetches);
-    }
-  };
-
+  const { data: myBookings, error: bookingError, isLoading: bookingLoading } = useFetch(`${process.env.REACT_APP_BACKEND_URL}/api/presentations/myBookings`, [], getAuthToken());
+  const userId = getUserId();
+  const { data: myChildren, error: childrenError, isLoading: childrenLoading } = useFetch(`${process.env.REACT_APP_BACKEND_URL}/api/users/${userId}/children`, [], getAuthToken());
+  
   useEffect(() => {
-    console.log("useEffect is running");
-    fetchMyPresentations();
-  }, []);
+    if (!bookingLoading && !childrenLoading && !bookingError && !childrenError) {
+      const presentationsWithChildName = myBookings.map((presentation) => {
+        const childrenInSameAgeGroup = myChildren.filter(
+          (child) => child.ageGroup === presentation.ageGroup
+        );
+        const childNames = childrenInSameAgeGroup.map((child) => child.name).join(", ");
+        const childTestGrades = childrenInSameAgeGroup.map((child) => child.testGrade).join(", ");
+        return {
+          ...presentation,
+          childName: childNames,
+          testGrade: childTestGrades,
+          oldSlotId: presentation.timeSlots[0]._id,
+          myQrCode: presentation.myQrCode,
+          myAttendance: presentation.myAttendance,
+        };
+      });
+      setMyPresentations(presentationsWithChildName);
+    }
+    if (bookingError || childrenError) {
+      setError("Error fetching my presentations");
+    }
+  }, [myBookings, myChildren, bookingLoading, childrenLoading, bookingError, childrenError]);
 
-  const handleCancelPresentation = async (presentationId, timeSlotIndex) => {
+  const handleCancelPresentation = useCallback(async  (presentationId, timeSlotIndex) => {
     if (
       window.confirm(
         `설명회 예약 취소 시 최초 예약 기록은 삭제됩니다. 정말 예약 취소하시겠습니까?  
@@ -254,9 +226,12 @@ function BookPresentationModal({
         `${backendURL}/api/presentations/${presentationId}/attendees/${getUserId()}`,
         getAuthHeader()
       );
-
+  
       if (response.status === 200) {
-        fetchMyPresentations(); // reload presentations
+        const newPresentations = updatedPresentations.filter(
+          (presentation) => presentation._id !== presentationId
+        );
+        setUpdatedPresentations(newPresentations);
         toast.success("설명회 예약 취소가 완료되었습니다.");
       } else {
         toast.error(
@@ -264,8 +239,8 @@ function BookPresentationModal({
         );
       }
     }
-  };
-
+  }, [updatedPresentations]);
+  
   //Fetch can book age groups to see if the user's child's age group can book
 
   useEffect(() => {
@@ -293,9 +268,9 @@ function BookPresentationModal({
     fetchCanBookStatus();
   }, [campus, childData.testGrade]); // Depend on both campus and childData.testGrade
 
-  const filteredMyPresentations = myPresentations
-    ? myPresentations.filter((p) => p.ageGroup === childData.ageGroup)
-    : [];
+  const filteredMyPresentations = useMemo(() => {
+    return myPresentations ? myPresentations.filter((p) => p.ageGroup === childData.ageGroup) : [];
+  }, [myPresentations, childData.ageGroup]); // <-- Dependencies
 
   return (
     <div className="book-presentation-modal-new">
