@@ -6,7 +6,7 @@ import {
   getAuthToken,
 } from "../../utils/auth";
 
-function BasicPres({ childData,  triggerRefresh }) {
+function BasicPres({ childData }) {
   const [myPresentations, setMyPresentations] = useState([]);
   const [localChildData, setLocalChildData] = useState(childData);
   const [error, setError] = useState(null);
@@ -37,8 +37,7 @@ function BasicPres({ childData,  triggerRefresh }) {
             childName: childNames,
             testGrade: childTestGrades,
             oldSlotId: presentation.timeSlots[0]._id,
-           
-            
+          
           };
         });
         setMyPresentations(presentationsWithChildName);
@@ -52,7 +51,7 @@ function BasicPres({ childData,  triggerRefresh }) {
 
   useEffect(() => {
     fetchMyPresentations();
-  }, [triggerRefresh]);
+  }, []);
 
   const filteredMyPresentations = myPresentations
     ? myPresentations.filter((p) => p.ageGroup === childData.ageGroup)
@@ -86,8 +85,8 @@ function BasicPres({ childData,  triggerRefresh }) {
                   src={`data:image/png;base64,${presentation.myQrCode}`}
                   alt="User QR Code"
                 />
-              </div>
-            )} */}
+              </div> */}
+            )}
           </div>
         ))}
         {error && <div>{error}</div>}

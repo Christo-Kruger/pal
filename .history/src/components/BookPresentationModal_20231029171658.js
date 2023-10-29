@@ -197,6 +197,7 @@ function BookPresentationModal({
           childName: childNames,
           testGrade: childTestGrades,
           oldSlotId: presentation.timeSlots[0]._id,
+          myQrCode: presentation.myQrCode,
           myAttendance: presentation.myAttendance,
         };
       });

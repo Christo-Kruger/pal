@@ -37,7 +37,7 @@ function BasicPres({ childData,  triggerRefresh }) {
             childName: childNames,
             testGrade: childTestGrades,
             oldSlotId: presentation.timeSlots[0]._id,
-           
+            myQrCode: presentation.myQrCode // include the QR code
             
           };
         });

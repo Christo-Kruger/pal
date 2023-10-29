@@ -9,7 +9,7 @@ import {
 // import "./ParentDashboard.css";
 import { MdError } from "react-icons/md";
 import ChildCard from "../components/Parents/ChildCard";
-
+import CircularProgress from "@mui/material/CircularProgress";
 import ParentNav from "./ParentNav";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
@@ -23,7 +23,7 @@ function ParentDashboard() {
   const [childData, setChildData] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // New loading state
   const campus = getUserCampus();
-
+  const [qrCodeData, setQrCodeData] = useState({});
 
   const fetchBookings = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;

@@ -37,7 +37,7 @@ function BasicPres({ childData,  triggerRefresh }) {
             childName: childNames,
             testGrade: childTestGrades,
             oldSlotId: presentation.timeSlots[0]._id,
-           
+            myQrCode: presentation.myQrCode // include the QR code
             
           };
         });
@@ -80,14 +80,14 @@ function BasicPres({ childData,  triggerRefresh }) {
             ) +
             ")"}
         </h4>
-            {/* {presentation.myQrCode && (
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <img
-                  src={`data:image/png;base64,${presentation.myQrCode}`}
-                  alt="User QR Code"
-                />
-              </div>
-            )} */}
+            {presentation.myQrCode && (
+              // <div style={{ display: "flex", justifyContent: "center" }}>
+              //   <img
+              //     src={`data:image/png;base64,${presentation.myQrCode}`}
+              //     alt="User QR Code"
+              //   />
+              // </div>
+            )}
           </div>
         ))}
         {error && <div>{error}</div>}
