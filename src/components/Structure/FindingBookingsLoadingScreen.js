@@ -9,7 +9,7 @@ const FindingBookingsLoadingScreen = () => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      minHeight="100vh"
+      minHeight="300px"
     >
       <FindInPageOutlinedIcon style={{ fontSize: 50 }} />
       <Typography variant="h6" gutterBottom>

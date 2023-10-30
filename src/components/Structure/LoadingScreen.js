@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import AnimatedCircle from '../../media/AnimatedCircle';
+import Logo from './Logo';
 
 const LoadingScreen = () => {
   return (
@@ -21,11 +22,19 @@ const LoadingScreen = () => {
         bottom: 0,
       }}
     >
+      <Logo 
+        sx={{
+          width: 400,
+          height: 400,
+          marginBottom: 2,
+        }}
+      
+      />
+  
       <AnimatedCircle />
       <Typography variant="h4" sx={{ marginTop: 2, marginBottom: 1 }}>
         Welcome to J Lee Preparatory
       </Typography>
-      <Typography variant="h6">Logging you in...</Typography>
     </Box>
   );
 };

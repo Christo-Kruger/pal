@@ -12,6 +12,7 @@ import BookPresentations from "../Parents/BookPresentations";
 import MyPresentations from "../Parents/MyPresentations";
 import CannotBookCard from "../Presentation/CannotBookCard";
 import FindingBookingsLoadingScreen from "../Structure/FindingBookingsLoadingScreen";
+import BookingLoading from "../Structure/BookingLoading";
 //css
 import "./BookPresentationModal.css";
 
@@ -30,17 +31,17 @@ function BookPresentationModal({
   const [localChildData, setLocalChildData] = useState(childData);
   const campus = getUserCampus();
   const [canBook, setCanBook] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Initialize to true to indicate loading
-  const [pendingFetches, setPendingFetches] = useState(3);
+  const [isBookingLoading, setIsBookingLoading] = useState(false); 
+  const [isDataLoading, setIsDataLoading] = useState(false);
   
+  // consolidated loading state example
+  const [loading, setLoading] = useState({
+    booking: false,
+    data: false
+  });
 
-  useEffect(() => {
-    if (pendingFetches === 0) {
-      setIsLoading(false);
-    }
-  }, [pendingFetches]);
 
-
+ 
 
   const handleBooking = async (
     presentationId,
@@ -48,6 +49,7 @@ function BookPresentationModal({
     presentationName,
     startTime
   ) => {
+    setIsBookingLoading(true)
     const presentation = presentations.find((p) => p._id === presentationId);
 
     const child = childData;
@@ -85,11 +87,9 @@ function BookPresentationModal({
       );
 
       if (response.status === 200) {
-    
         const presentationIndex = presentations.findIndex(
           (p) => p._id === presentationId
         );
-    
 
         if (presentationIndex === -1) {
           // Handle presentation not found
@@ -100,8 +100,6 @@ function BookPresentationModal({
         const slotIndex = presentations[presentationIndex].timeSlots.findIndex(
           (slot) => slot.slotId === slotId // use 'slotId' instead of 'id'
         );
-
-        console.log("Found slotIndex:", slotIndex);
 
         if (slotIndex === -1) {
           // Handle slot not found
@@ -158,6 +156,8 @@ function BookPresentationModal({
         // This means the request didn't even reach the server.
         toast.error("An unknown error occurred.");
       }
+    } finally {
+      setIsBookingLoading(false); // Set isLoading to false after API call is done
     }
   };
 
@@ -177,6 +177,7 @@ function BookPresentationModal({
   }, [initialPresentations]);
 
   const fetchMyPresentations = async () => {
+    setIsDataLoading(true);
     const backendURL = process.env.REACT_APP_BACKEND_URL;
     const userId = getUserId();
     const token = getAuthToken();
@@ -212,7 +213,7 @@ function BookPresentationModal({
               childName: childNames,
               testGrade: childTestGrades,
               oldSlotId: presentation.timeSlots[0]._id,
-            
+
               myAttendance: presentation.myAttendance,
             };
           }
@@ -224,14 +225,11 @@ function BookPresentationModal({
     } catch (error) {
       setError("Error fetching my presentations");
     } finally {
- 
-      setPendingFetches((prev) => prev - 1);
-
+      setIsDataLoading(false);
     }
   };
 
   useEffect(() => {
-
     fetchMyPresentations();
   }, []);
 
@@ -279,7 +277,6 @@ function BookPresentationModal({
         setCanBook(false);
       } finally {
         // Decrement pending fetches or perform other final actions
-        setPendingFetches((prev) => prev - 1);
       }
     };
 
@@ -290,52 +287,45 @@ function BookPresentationModal({
     ? myPresentations.filter((p) => p.ageGroup === childData.ageGroup)
     : [];
 
-  return (
-    <div className="book-presentation-modal-new">
-      <div className="modal-header-new">
-        <h1 style={{ flex: 1, textAlign: "center" }}>J LEE 설명회 예약</h1>
-      </div>
-
-      {isLoading ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <FindingBookingsLoadingScreen />
+    return (
+      <div className="book-presentation-modal-new">
+        <div className="modal-header-new">
+          <h1 style={{ flex: 1, textAlign: "center" }}>J LEE 설명회 예약</h1>
         </div>
-      ) : (
-        <>
-          {filteredMyPresentations.length > 0 ? (
-            <MyPresentations
-              myPresentations={filteredMyPresentations}
-              handleCancelPresentation={handleCancelPresentation}
-            />
-          ) : (
-            <>
-              {canBook ? ( // Check both campus and child age group eligibility
-                <BookPresentations
-                  presentations={presentations}
-                  toggleExpandCard={toggleExpandCard}
-                  expandedPresentation={expandedPresentation}
-                  handleBooking={handleBooking}
-                  getUserId={getUserId}
-                  toast={toast}
-                  moment={moment}
-                  //trigger refesh
-                  triggerRefresh={triggerRefresh}
-                />
-              ) : (
-                <CannotBookCard />
-              )}
-            </>
-          )}
-        </>
-      )}
-    </div>
-  );
-}
-
+        
+        {/* Handling Loading States */}
+        {isDataLoading && <FindingBookingsLoadingScreen />}
+        {isBookingLoading && <BookingLoading/>}
+    
+        {/* Handling Data Display */}
+        {!isDataLoading && !isBookingLoading && (
+          <>
+            {filteredMyPresentations.length > 0 ? (
+              <MyPresentations
+                myPresentations={filteredMyPresentations}
+                handleCancelPresentation={handleCancelPresentation}
+              />
+            ) : (
+              <>
+                {canBook ? (
+                  <BookPresentations
+                    presentations={presentations}
+                    toggleExpandCard={toggleExpandCard}
+                    expandedPresentation={expandedPresentation}
+                    handleBooking={handleBooking}
+                    getUserId={getUserId}
+                    toast={toast}
+                    moment={moment}
+                    triggerRefresh={triggerRefresh}
+                  />
+                ) : (
+                  <CannotBookCard />
+                )}
+              </>
+            )}
+          </>
+        )}
+      </div>
+    );
+  }
 export default BookPresentationModal;
