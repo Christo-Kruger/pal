@@ -11,9 +11,9 @@ const FindingBookingsLoadingScreen = () => {
       alignItems="center"
       minHeight="300px"
     >
-      <ScheduleIcon style={{ fontSize: 50 }} />
+      <ScheduleIcon style={{ fontSize: 50, color:"364150" }} />
       <Typography variant="h6" gutterBottom>
-        Bookings...
+        Booking...
       </Typography>
       <CircularProgress />
     </Box>

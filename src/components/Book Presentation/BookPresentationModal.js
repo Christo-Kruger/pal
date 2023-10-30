@@ -13,6 +13,7 @@ import MyPresentations from "../Parents/MyPresentations";
 import CannotBookCard from "../Presentation/CannotBookCard";
 import FindingBookingsLoadingScreen from "../Structure/FindingBookingsLoadingScreen";
 import BookingLoading from "../Structure/BookingLoading";
+import DeletingLoading from "../Structure/DeletingLoading.js";
 //css
 import "./BookPresentationModal.css";
 
@@ -33,15 +34,8 @@ function BookPresentationModal({
   const [canBook, setCanBook] = useState(false);
   const [isBookingLoading, setIsBookingLoading] = useState(false); 
   const [isDataLoading, setIsDataLoading] = useState(false);
+  const [isDeletingLoading, setIsDeletingLoading] = useState(false);
   
-  // consolidated loading state example
-  const [loading, setLoading] = useState({
-    booking: false,
-    data: false
-  });
-
-
- 
 
   const handleBooking = async (
     presentationId,
@@ -234,6 +228,7 @@ function BookPresentationModal({
   }, []);
 
   const handleCancelPresentation = async (presentationId, timeSlotIndex) => {
+    setIsDeletingLoading(true);
     if (
       window.confirm(
         `설명회 예약 취소 시 최초 예약 기록은 삭제됩니다. 정말 예약 취소하시겠습니까?  
@@ -249,6 +244,7 @@ function BookPresentationModal({
       if (response.status === 200) {
         fetchMyPresentations(); // reload presentations
         toast.success("설명회 예약 취소가 완료되었습니다.");
+        setIsDeletingLoading(false);
       } else {
         toast.error(
           "설명회 예약 취소가 정상적으로 완료되지 않았습니다. 다시 시도해주세요."
@@ -292,13 +288,16 @@ function BookPresentationModal({
         <div className="modal-header-new">
           <h1 style={{ flex: 1, textAlign: "center" }}>J LEE 설명회 예약</h1>
         </div>
-        
-        {/* Handling Loading States */}
-        {isDataLoading && <FindingBookingsLoadingScreen />}
-        {isBookingLoading && <BookingLoading/>}
     
-        {/* Handling Data Display */}
-        {!isDataLoading && !isBookingLoading && (
+        {/* If any loading state is true, only show the loading component(s) */}
+        {(isDataLoading || isBookingLoading || isDeletingLoading) ? (
+          <>
+            {isDataLoading && <FindingBookingsLoadingScreen />}
+            {isBookingLoading && <BookingLoading/>}
+            {isDeletingLoading && <DeletingLoading/>}  {/* New Loading Component */}
+          </>
+        ) : (
+          // If no loading states are true, show the data components
           <>
             {filteredMyPresentations.length > 0 ? (
               <MyPresentations

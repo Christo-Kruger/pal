@@ -11,7 +11,7 @@ const FindingBookingsLoadingScreen = () => {
       alignItems="center"
       minHeight="300px"
     >
-      <FindInPageOutlinedIcon style={{ fontSize: 50 }} />
+      <FindInPageOutlinedIcon style={{ fontSize: 50, color:"364150" }} />
       <Typography variant="h6" gutterBottom>
         Finding Your Bookings...
       </Typography>
