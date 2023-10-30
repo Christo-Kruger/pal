@@ -4,7 +4,7 @@ import ChangeTimeSlotModal from "../Presentation/ChangeTimeSlotModal";
 const MyPresentations = ({
   myPresentations,
   handleCancelPresentation,
-  setActiveModal,
+
 }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [editingBooking, setEditingBooking] = useState(null);

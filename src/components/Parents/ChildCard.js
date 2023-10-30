@@ -10,7 +10,7 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import TestBooking from "./TestBooking";
 import { getAuthHeader, getUserCampus, getUserId } from "../../utils/auth";
-import BookPresentationModal from "../BookPresentationModal";
+import BookPresentationModal from "../Book Presentation/BookPresentationModal";
 import BasicPres from "./BasicPres";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
@@ -73,7 +73,7 @@ function ChildCard() {
         );
         if (response.ok) {
           const data = await response.json();
-          console.log("Fetched child data???:", data);
+    
           setChildren(data);
           setEditedChildren(
             data.map((child) => ({
@@ -89,10 +89,10 @@ function ChildCard() {
             setChildAgeGroup(data[0].ageGroup);
           }
         } else {
-          console.error("Failed to fetch children");
-        }
+      
+        }  
       } catch (error) {
-        console.error("Error fetching children:", error);
+    
       } finally {
         setIsLoading(false);
       }
@@ -102,7 +102,7 @@ function ChildCard() {
   }, [token]);
 
   useEffect(() => {
-    console.log("Updated selectedChild:", selectedChild);
+    
   }, [selectedChild]);
 
   const handleClickOpen = (type, childData = null) => {
@@ -112,7 +112,7 @@ function ChildCard() {
       setChildAgeGroup(childData.ageGroup);
     }
     setOpen(true);
-    console.log("Selected Child in handleClickOpen:", childData);
+
   };
 
   const handleClose = () => {

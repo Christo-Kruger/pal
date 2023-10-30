@@ -24,13 +24,15 @@ function ChildForm({ parentId }) {
   const navigate = useNavigate();
 
   const handleSave = async () => {
+    console.log("Saving Date of Birth:", dateOfBirth); // Debugging line
     const isSuccess = await saveChild();
     if (isSuccess) {
       navigate("/parent", { replace: true });
     }
   };
-
+  
   const handleAddAnotherChild = async () => {
+    console.log("Adding another child, Date of Birth:", dateOfBirth); // Debugging line
     const isSuccess = await saveChild();
     if (isSuccess) {
       resetForm();

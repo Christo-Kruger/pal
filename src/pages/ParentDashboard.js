@@ -17,7 +17,6 @@ import LoadingScreen from "../components/Structure/LoadingScreen";
 
 
 function ParentDashboard() {
-  const [bookings, setBookings] = useState([]);
   const [error, setError] = useState(null);
   const [myPresentations, setMyPresentations] = useState([]);
   const [childData, setChildData] = useState([]);
@@ -25,23 +24,23 @@ function ParentDashboard() {
   const campus = getUserCampus();
 
 
-  const fetchBookings = async () => {
-    const backendURL = process.env.REACT_APP_BACKEND_URL;
-    const response = await axios.get(
-      `${backendURL}/api/bookings/parent?userId=${getUserId()}`,
-      getAuthHeader()
-    );
+  // const fetchBookings = async () => {
+  //   const backendURL = process.env.REACT_APP_BACKEND_URL;
+  //   const response = await axios.get(
+  //     `${backendURL}/api/bookings/parent?userId=${getUserId()}`,
+  //     getAuthHeader()
+  //   );
 
-    if (response.status === 200) {
-      setBookings(response.data);
-    } else {
-      setError("Error fetching bookings");
-    }
-  };
+  //   if (response.status === 200) {
+  //     setBookings(response.data);
+  //   } else {
+  //     setError("Error fetching bookings");
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchBookings();
-  }, [bookings.length]);
+  // useEffect(() => {
+  //   fetchBookings();
+  // }, [bookings.length]);
 
   const fetchMyPresentations = async () => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
